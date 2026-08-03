@@ -24,6 +24,13 @@ Watch the server and test files, rerunning the suite after each Python change:
 
 Add test modules under `server/tests/`; the script discovers and runs the full suite.
 
+## Database
+
+The API stores fixed login tokens in SQLite. On startup, the development and
+production app creates the table and seeds it only when the table is empty.
+Tests use an isolated in-memory database and seed the fixed tokens for every
+test.
+
 ## Docker
 
 ```bash

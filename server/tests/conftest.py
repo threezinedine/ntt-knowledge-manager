@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from server.database import Base, get_db
+from server.features.login.token_model import seed_login_tokens
 from server.main import app
 
 
@@ -19,6 +20,7 @@ def db_session() -> Generator[Session, None, None]:
     )
     Base.metadata.create_all(engine)
     session = sessionmaker(bind=engine, autoflush=False, autocommit=False)()
+    seed_login_tokens(session)
 
     try:
         yield session
@@ -34,6 +36,8 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
         yield db_session
 
     app.dependency_overrides[get_db] = override_get_db
+    app.state.skip_database_initialization = True
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+    del app.state.skip_database_initialization
