@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vscode/
+.idea/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+
+# OS generated files
+.DS_Store
+Thumbs.db
