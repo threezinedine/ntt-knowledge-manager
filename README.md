@@ -16,6 +16,12 @@ Run the FastAPI tests against an in-memory SQLite database with:
 ./run-tests.sh
 ```
 
+Watch the server and test files, rerunning the suite after each Python change:
+
+```bash
+./run-tests.sh --watch
+```
+
 Add test modules under `server/tests/`; the script discovers and runs the full suite.
 
 ## Docker
