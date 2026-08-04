@@ -11,6 +11,10 @@ npm run build:web
 npm run build:desktop
 ```
 
+For Docker development, `docker compose -f compose.dev.yaml up --build` starts
+Vite at `http://localhost:5173` from the mounted `client/` directory. Production
+builds compile the web client and serve it from FastAPI at `http://localhost:8000`.
+
 ## Local development
 
 ```bash
