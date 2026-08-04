@@ -1,5 +1,16 @@
 # Knowledge Manager Server
 
+## Client
+
+The React web and Electron desktop client lives in `client/`.
+
+```bash
+cd client
+npm install
+npm run build:web
+npm run build:desktop
+```
+
 ## Local development
 
 ```bash
