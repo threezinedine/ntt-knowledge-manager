@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import String, func, select
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
@@ -12,16 +14,21 @@ class LoginToken(Base):
     label: Mapped[str] = mapped_column(String(128))
 
 
-FIXED_LOGIN_TOKENS = (
-    ("development-token", "Development user"),
-    ("support-token", "Support user"),
-)
+FIX_TOKEN = os.getenv("FIX_TOKEN", "")
+
+
+def get_fixed_login_tokens() -> tuple[tuple[str, str], ...]:
+    if not FIX_TOKEN:
+        return ()
+
+    return ((FIX_TOKEN, "Fixed token"),)
 
 
 def seed_login_tokens(db: Session) -> None:
     token_count = db.scalar(select(func.count()).select_from(LoginToken))
     if token_count == 0:
         db.add_all(
-            LoginToken(token=token, label=label) for token, label in FIXED_LOGIN_TOKENS
+            LoginToken(token=token, label=label)
+            for token, label in get_fixed_login_tokens()
         )
         db.commit()

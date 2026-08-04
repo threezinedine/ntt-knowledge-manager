@@ -1,10 +1,16 @@
 from collections.abc import Generator
+import os
+from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
+
+os.environ["APP_ENV"] = "test"
+load_dotenv(Path(__file__).resolve().parents[2] / ".test.env", override=True)
 
 from server.database import Base, get_db
 from server.features.login.token_model import seed_login_tokens

@@ -1,3 +1,5 @@
+import os
+
 from fastapi.testclient import TestClient
 
 
@@ -19,7 +21,7 @@ def test_secure_health_rejects_an_unknown_login_token(client: TestClient) -> Non
 
 def test_secure_health_accepts_a_known_login_token(client: TestClient) -> None:
     response = client.get(
-        "/secure-health", headers={"Authorization": "Bearer development-token"}
+        "/secure-health", headers={"Authorization": f"Bearer {os.environ['FIX_TOKEN']}"}
     )
 
     assert response.status_code == 200

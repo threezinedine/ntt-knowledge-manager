@@ -4,6 +4,8 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
+import server.config
+
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./knowledge_manager.db")
 
 

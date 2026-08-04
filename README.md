@@ -11,6 +11,16 @@ npm run build:web
 npm run build:desktop
 ```
 
+Both applications read the shared root `.env`. Choose a local environment file
+before running outside Docker:
+
+```bash
+cp .dev.env .env
+```
+
+Docker development and production images copy `.dev.env` and `.prod.env`,
+respectively, to `/app/.env`. Pytest loads only `.test.env`.
+
 For Docker development, `docker compose -f compose.dev.yaml up --build` starts
 Vite at `http://localhost:5173` from the mounted `client/` directory. Production
 builds compile the web client and serve it from FastAPI at `http://localhost:8000`.

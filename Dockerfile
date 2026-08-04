@@ -11,10 +11,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 FROM node:20-slim AS client-development
 
-WORKDIR /app
+WORKDIR /app/client
 
 COPY client/package.json client/package-lock.json ./
 RUN npm ci
+
+COPY .dev.env /app/.env
 
 EXPOSE 5173
 
@@ -22,26 +24,29 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 FROM node:20-slim AS client-build
 
-WORKDIR /app
+WORKDIR /app/client
 
 COPY client/package.json client/package-lock.json ./
 RUN npm ci
 
+COPY .prod.env /app/.env
 COPY client ./
 RUN npm run build:web
 
-FROM base AS development
+FROM base AS server-development
 
+COPY .dev.env ./.env
 COPY server ./server
 
 EXPOSE 8000
 
 CMD ["uvicorn", "server.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
-FROM base AS production
+FROM base AS server-production
 
+COPY .prod.env ./.env
 COPY server ./server
-COPY --from=client-build /app/dist ./server/static
+COPY --from=client-build /app/client/dist ./server/static
 
 EXPOSE 8000
 
