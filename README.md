@@ -21,6 +21,22 @@ cp .dev.env .env
 Docker development and production images copy `.dev.env` and `.prod.env`,
 respectively, to `/app/.env`. Pytest loads only `.test.env`.
 
+## Browser E2E Tests
+
+Playwright lives in the separate `e2e/` workspace. It tests Docker services you
+start manually: Vite at `http://localhost:5173` for development and FastAPI at
+`http://localhost:8000` for production.
+
+```bash
+cd e2e && npm install && npm run install:browsers
+
+docker compose -f compose.dev.yaml up --build
+./run-e2e.sh dev
+
+docker compose -f compose.prod.yaml up --build
+./run-e2e.sh prod
+```
+
 For Docker development, `docker compose -f compose.dev.yaml up --build` starts
 Vite at `http://localhost:5173` from the mounted `client/` directory. Production
 builds compile the web client and serve it from FastAPI at `http://localhost:8000`.
