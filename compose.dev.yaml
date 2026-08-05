@@ -26,6 +26,17 @@ services:
       - ./client:/app/client
       - client_node_modules:/app/client/node_modules
     command: npm run test:component:watch
+  storybook:
+    build:
+      context: .
+      target: client-development
+    ports:
+      - "6006:6006"
+    working_dir: /app/client
+    volumes:
+      - ./client:/app/client
+      - client_node_modules:/app/client/node_modules
+    command: npm run storybook
 
 volumes:
   client_node_modules:

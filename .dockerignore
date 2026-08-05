@@ -10,3 +10,4 @@ client/release
 client/**/*.test.*
 client/**/*.spec.*
 client/coverage
+client/storybook-static

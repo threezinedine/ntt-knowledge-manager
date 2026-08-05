@@ -41,6 +41,13 @@ For Docker development, `docker compose -f compose.dev.yaml up --build` starts
 Vite at `http://localhost:5173` from the mounted `client/` directory. Production
 builds compile the web client and serve it from FastAPI at `http://localhost:8000`.
 
+Development client dependencies are stored in Docker's `client_node_modules`
+volume. Initialize or refresh that volume manually when dependencies change:
+
+```bash
+docker compose -f compose.dev.yaml run --rm web npm ci
+```
+
 ## Client Component Tests
 
 Run client component tests locally with:
@@ -57,6 +64,15 @@ docker compose -f compose.dev.yaml up --build
 ```
 
 Client test files and coverage are excluded from Docker image build contexts.
+
+## Storybook
+
+The development Compose stack also starts Storybook at
+`http://localhost:6006` for the components in `client/src/`:
+
+```bash
+docker compose -f compose.dev.yaml up --build
+```
 
 ## Local development
 

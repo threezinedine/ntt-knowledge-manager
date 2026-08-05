@@ -9,12 +9,9 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-FROM node:20-slim AS client-development
+FROM node:24-slim AS client-development
 
 WORKDIR /app/client
-
-COPY client/package.json client/package-lock.json ./
-RUN npm ci
 
 COPY .dev.env /app/.env
 
@@ -22,7 +19,7 @@ EXPOSE 5173
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
-FROM node:20-slim AS client-build
+FROM node:24-slim AS client-build
 
 WORKDIR /app/client
 
@@ -46,6 +43,9 @@ FROM base AS server-production
 COPY .prod.env ./.env
 COPY server ./server
 COPY --from=client-build /app/client/dist ./server/static
+
+WORKDIR /app/server
+RUN python -m pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 

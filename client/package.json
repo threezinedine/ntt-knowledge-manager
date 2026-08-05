@@ -17,6 +17,8 @@
 		"lint": "oxlint",
 		"test:component": "vitest run",
 		"test:component:watch": "vitest",
+		"storybook": "storybook dev --port 6006 --host 0.0.0.0",
+		"build-storybook": "storybook build",
 		"preview": "vite preview"
 	},
 	"dependencies": {
@@ -25,6 +27,7 @@
 		"react-dom": "^19.2.8"
 	},
 	"devDependencies": {
+		"@storybook/react-vite": "^10.5.6",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/react": "^16.3.2",
 		"@types/node": "^24.13.3",
@@ -35,6 +38,9 @@
 		"electron-builder": "^26.8.1",
 		"jsdom": "^29.1.1",
 		"oxlint": "^1.75.0",
+		"sass": "^1.102.0",
+		"sass-embedded": "^1.100.0",
+		"storybook": "^10.5.6",
 		"typescript": "~6.0.2",
 		"vite": "^8.2.0",
 		"vitest": "^4.1.10"
