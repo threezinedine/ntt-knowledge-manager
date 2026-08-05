@@ -41,6 +41,23 @@ For Docker development, `docker compose -f compose.dev.yaml up --build` starts
 Vite at `http://localhost:5173` from the mounted `client/` directory. Production
 builds compile the web client and serve it from FastAPI at `http://localhost:8000`.
 
+## Client Component Tests
+
+Run client component tests locally with:
+
+```bash
+cd client && npm run test:component
+```
+
+The Docker development stack starts a component-test watcher alongside the API
+and Vite. It shares the development client dependencies and does not start Vite:
+
+```bash
+docker compose -f compose.dev.yaml up --build
+```
+
+Client test files and coverage are excluded from Docker image build contexts.
+
 ## Local development
 
 ```bash

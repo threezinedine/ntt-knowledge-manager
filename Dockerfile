@@ -36,7 +36,6 @@ RUN npm run build:web
 FROM base AS server-development
 
 COPY .dev.env ./.env
-COPY server ./server
 
 EXPOSE 8000
 

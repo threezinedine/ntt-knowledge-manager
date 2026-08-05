@@ -15,5 +15,17 @@ services:
       - "5173:5173"
     volumes:
       - ./client:/app/client
-      - /app/client/node_modules
+      - client_node_modules:/app/client/node_modules
       - ./.dev.env:/app/client/.env
+  component-tests:
+    build:
+      context: .
+      target: client-development
+    working_dir: /app/client
+    volumes:
+      - ./client:/app/client
+      - client_node_modules:/app/client/node_modules
+    command: npm run test:component:watch
+
+volumes:
+  client_node_modules:
