@@ -37,6 +37,15 @@ services:
       - ./client:/app/client
       - client_node_modules:/app/client/node_modules
     command: npm run storybook
+  server-tests:
+    build:
+      context: .
+      target: server-development
+    working_dir: /app
+    volumes:
+      - ./server:/app/server
+      - ./.test.env:/app/.test.env
+    command: python -m watchfiles --filter python 'python -m pytest server/tests' server
 
 volumes:
   client_node_modules:
