@@ -42,4 +42,47 @@ describe("Button", () => {
 			).toMatch(new RegExp(`button--${size}`));
 		},
 	);
+
+	it("shows a spinner and disables the button while loading", () => {
+		render(<Button isLoading>Save note</Button>);
+
+		const button = screen.getByRole("button", { name: "Save note" });
+		expect(button).toBeDisabled();
+		expect(button).toHaveAttribute("aria-busy", "true");
+		expect(button.querySelector(`[aria-hidden="true"]`)).not.toBeNull();
+	});
+
+	it.each([
+		"primary",
+		"secondary",
+		"outline",
+		"ghost",
+		"danger",
+		"link",
+	] as const)("shows the loading state for the %s variant", (variant) => {
+		render(
+			<Button variant={variant} isLoading>
+				Save note
+			</Button>,
+		);
+
+		const button = screen.getByRole("button", { name: "Save note" });
+		expect(button).toBeDisabled();
+		expect(button.className).toMatch(/button--loading/);
+	});
+
+	it.each(["sm", "md", "lg"] as const)(
+		"shows the loading state for the %s size",
+		(size) => {
+			render(
+				<Button size={size} isLoading>
+					Save note
+				</Button>,
+			);
+
+			const button = screen.getByRole("button", { name: "Save note" });
+			expect(button).toBeDisabled();
+			expect(button.className).toMatch(/button--loading/);
+		},
+	);
 });

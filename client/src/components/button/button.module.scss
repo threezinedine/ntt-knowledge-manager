@@ -1,6 +1,10 @@
-$background: #25372f;
-$background-hover: #405448;
-$foreground: #fffaf0;
+$primary-background: #38bdf8;
+$primary-background-hover: #0ea5e9;
+$primary-foreground: #082f49;
+
+// darker than $primary-background so text/borders stay readable on transparent surfaces
+$accent: #0284c7;
+$accent-hover: #0369a1;
 
 $secondary-background: #eef1ee;
 $secondary-background-hover: #dde3dd;
@@ -15,6 +19,10 @@ $danger-foreground: #fffaf0;
 	border: 1px solid transparent;
 	border-radius: 4px;
 	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5em;
 	font: inherit;
 	font-weight: 700;
 	line-height: 1.2;
@@ -44,13 +52,13 @@ $danger-foreground: #fffaf0;
 	}
 
 	&--primary {
-		background: $background;
-		border-color: $background;
-		color: $foreground;
+		background: $primary-background;
+		border-color: $primary-background;
+		color: $primary-foreground;
 
 		&:hover:not(:disabled) {
-			background: $background-hover;
-			border-color: $background-hover;
+			background: $primary-background-hover;
+			border-color: $primary-background-hover;
 		}
 	}
 
@@ -67,21 +75,21 @@ $danger-foreground: #fffaf0;
 
 	&--outline {
 		background: transparent;
-		border-color: $background;
-		color: $background;
+		border-color: $accent;
+		color: $accent;
 
 		&:hover:not(:disabled) {
-			background: rgba($background, 0.08);
+			background: rgba($accent, 0.08);
 		}
 	}
 
 	&--ghost {
 		background: transparent;
 		border-color: transparent;
-		color: $background;
+		color: $accent;
 
 		&:hover:not(:disabled) {
-			background: rgba($background, 0.08);
+			background: rgba($accent, 0.08);
 		}
 	}
 
@@ -99,12 +107,27 @@ $danger-foreground: #fffaf0;
 	&--link {
 		background: transparent;
 		border-color: transparent;
-		color: $background;
+		color: $accent;
 		padding: 0;
 		text-decoration: underline;
 
 		&:hover:not(:disabled) {
-			color: $background-hover;
+			color: $accent-hover;
 		}
+	}
+}
+
+.spinner {
+	width: 1em;
+	height: 1em;
+	border: 0.15em solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: button-spin 0.75s linear infinite;
+}
+
+@keyframes button-spin {
+	to {
+		transform: rotate(360deg);
 	}
 }

@@ -23,6 +23,9 @@ const meta = {
 			control: "select",
 			options: ["sm", "md", "lg"],
 		},
+		isLoading: {
+			control: "boolean",
+		},
 	},
 } satisfies Meta<typeof Button>;
 
@@ -80,5 +83,11 @@ export const Large: Story = {
 export const Disabled: Story = {
 	args: {
 		disabled: true,
+	},
+};
+
+export const Loading: Story = {
+	args: {
+		isLoading: true,
 	},
 };
