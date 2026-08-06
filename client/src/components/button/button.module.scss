@@ -19,6 +19,7 @@ $danger-foreground: #fffaf0;
 	border: 1px solid transparent;
 	border-radius: 4px;
 	cursor: pointer;
+	user-select: none;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -29,7 +30,14 @@ $danger-foreground: #fffaf0;
 	transition:
 		background-color 0.15s ease,
 		border-color 0.15s ease,
-		color 0.15s ease;
+		color 0.15s ease,
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
+
+	&:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+	}
 
 	&:disabled {
 		cursor: not-allowed;
@@ -109,10 +117,14 @@ $danger-foreground: #fffaf0;
 		border-color: transparent;
 		color: $accent;
 		padding: 0;
-		text-decoration: underline;
+		text-decoration: none;
 
+		// a link shouldn't lift off the page like a raised button
 		&:hover:not(:disabled) {
 			color: $accent-hover;
+			text-decoration: underline;
+			transform: none;
+			box-shadow: none;
 		}
 	}
 }
