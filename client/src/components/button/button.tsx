@@ -1,19 +1,10 @@
 import type { ButtonHTMLAttributes } from "react";
 import styles from "./button.module.scss";
-
-export type ButtonVariant =
-	| "primary"
-	| "secondary"
-	| "outline"
-	| "ghost"
-	| "danger"
-	| "link";
-
-export type ButtonSize = "sm" | "md" | "lg";
+import type { Variant, Size } from "../common";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-	variant?: ButtonVariant;
-	size?: ButtonSize;
+	variant?: Variant;
+	size?: Size;
 };
 
 export function Button({

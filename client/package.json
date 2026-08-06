@@ -16,7 +16,7 @@
 		"build:app:dir": "npm run build && electron-builder --dir",
 		"lint": "oxlint",
 		"test:component": "vitest run",
-		"test:component:watch": "vitest",
+		"test:component:watch": "vitest --watch",
 		"storybook": "storybook dev --port 6006 --host 0.0.0.0",
 		"build-storybook": "storybook build",
 		"preview": "vite preview"

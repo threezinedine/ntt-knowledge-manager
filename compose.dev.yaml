@@ -42,6 +42,9 @@ services:
       context: .
       target: server-development
     working_dir: /app
+    environment:
+      # bind-mounted volumes don't reliably emit inotify events
+      WATCHFILES_FORCE_POLLING: "true"
     volumes:
       - ./server:/app/server
       - ./.test.env:/app/.test.env

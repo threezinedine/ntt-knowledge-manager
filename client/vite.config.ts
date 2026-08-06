@@ -10,6 +10,13 @@ export default defineConfig({
 	resolve: {
 		dedupe: ["react", "react-dom"],
 	},
+	// bind-mounted volumes in Docker don't reliably emit inotify events
+	server: {
+		watch: {
+			usePolling: true,
+			interval: 300,
+		},
+	},
 	test: {
 		environment: "jsdom",
 		setupFiles: "./src/test/setup.ts",
