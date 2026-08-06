@@ -8,4 +8,38 @@ describe("Button", () => {
 
 		expect(screen.getByRole("button", { name: "Save note" })).toBeVisible();
 	});
+
+	it("defaults to the primary variant and medium size", () => {
+		render(<Button>Save note</Button>);
+
+		const button = screen.getByRole("button", { name: "Save note" });
+		expect(button.className).toMatch(/button--primary/);
+		expect(button.className).toMatch(/button--md/);
+	});
+
+	it.each([
+		"primary",
+		"secondary",
+		"outline",
+		"ghost",
+		"danger",
+		"link",
+	] as const)("applies the %s variant class", (variant) => {
+		render(<Button variant={variant}>Save note</Button>);
+
+		expect(
+			screen.getByRole("button", { name: "Save note" }).className,
+		).toMatch(new RegExp(`button--${variant}`));
+	});
+
+	it.each(["sm", "md", "lg"] as const)(
+		"applies the %s size class",
+		(size) => {
+			render(<Button size={size}>Save note</Button>);
+
+			expect(
+				screen.getByRole("button", { name: "Save note" }).className,
+			).toMatch(new RegExp(`button--${size}`));
+		},
+	);
 });
