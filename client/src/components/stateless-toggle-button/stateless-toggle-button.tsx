@@ -33,7 +33,6 @@ export function ToggleButton({
 	const classes = [
 		styles.toggle,
 		styles[`toggle--${size}`],
-		value && styles["toggle--active"],
 		isLoading && styles["toggle--loading"],
 		className,
 	]

@@ -1,13 +1,10 @@
-$accent: #0284c7;
-$accent-hover: #0369a1;
-$border-color: #dde3dd;
 $idle-foreground: #25372f;
-$active-foreground: #fffaf0;
 
 .toggle {
 	appearance: none;
-	border: 1px solid $border-color;
-	border-radius: 4px;
+	border: none;
+	background: transparent;
+	padding: 0;
 	cursor: pointer;
 	user-select: none;
 	display: inline-flex;
@@ -15,20 +12,14 @@ $active-foreground: #fffaf0;
 	justify-content: center;
 	position: relative;
 	font: inherit;
-	font-weight: 700;
-	line-height: 1.2;
-	background: transparent;
+	line-height: 1;
 	color: $idle-foreground;
-	transition:
-		background-color 0.15s ease,
-		border-color 0.15s ease,
-		color 0.15s ease,
-		transform 0.15s ease,
-		box-shadow 0.15s ease;
+	transition: all 0.15s ease;
 
+	// drop-shadow follows the icon's glyph shape, unlike box-shadow's rectangular outline
 	&:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+		filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
 	}
 
 	&:disabled {
@@ -37,29 +28,15 @@ $active-foreground: #fffaf0;
 	}
 
 	&--sm {
-		padding: 0.375rem 0.75rem;
-		font-size: 0.8125rem;
-	}
-
-	&--md {
-		padding: 0.625rem 1rem;
 		font-size: 1rem;
 	}
 
-	&--lg {
-		padding: 0.875rem 1.5rem;
-		font-size: 1.125rem;
+	&--md {
+		font-size: 1.25rem;
 	}
 
-	&--active {
-		background: $accent;
-		border-color: $accent;
-		color: $active-foreground;
-
-		&:hover:not(:disabled) {
-			background: $accent-hover;
-			border-color: $accent-hover;
-		}
+	&--lg {
+		font-size: 1.5rem;
 	}
 }
 

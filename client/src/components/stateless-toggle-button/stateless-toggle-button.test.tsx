@@ -54,7 +54,6 @@ describe("ToggleButton", () => {
 
 		const button = screen.getByRole("button", { name: "Pin note" });
 		expect(button).toHaveAttribute("aria-pressed", "false");
-		expect(button.className).not.toMatch(/toggle--active/);
 	});
 
 	it("reflects an on value through aria-pressed", () => {
@@ -70,7 +69,6 @@ describe("ToggleButton", () => {
 
 		const button = screen.getByRole("button", { name: "Pin note" });
 		expect(button).toHaveAttribute("aria-pressed", "true");
-		expect(button.className).toMatch(/toggle--active/);
 	});
 
 	it("calls onValueChanged with true when toggled on", () => {
