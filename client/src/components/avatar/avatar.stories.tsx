@@ -20,6 +20,12 @@ const meta = {
 			control: "select",
 			options: SIZES,
 		},
+		disabled: {
+			control: "boolean",
+		},
+		isLoading: {
+			control: "boolean",
+		},
 	},
 } satisfies Meta<typeof Avatar>;
 
@@ -53,5 +59,17 @@ export const Letter: Story = {
 		src: undefined,
 		alt: "Jane Doe",
 		children: "J",
+	},
+};
+
+export const Disabled: Story = {
+	args: {
+		disabled: true,
+	},
+};
+
+export const Loading: Story = {
+	args: {
+		isLoading: true,
 	},
 };

@@ -6,6 +6,8 @@ type AvatarProps = HTMLAttributes<HTMLDivElement> & {
 	size?: Size;
 	src?: string;
 	alt?: string;
+	disabled?: boolean;
+	isLoading?: boolean;
 };
 
 export function Avatar({
@@ -13,12 +15,28 @@ export function Avatar({
 	size = "md",
 	src,
 	alt = "",
+	disabled = false,
+	isLoading = false,
 	children,
+	onClick,
 	...props
 }: AvatarProps) {
-	const classes = [styles.avatar, styles[`avatar--${size}`], className]
+	const isDisabled = disabled || isLoading;
+
+	const classes = [
+		styles.avatar,
+		styles[`avatar--${size}`],
+		isDisabled && styles["avatar--disabled"],
+		isLoading && styles["avatar--loading"],
+		className,
+	]
 		.filter(Boolean)
 		.join(" ");
+
+	const contentClasses = (base: string) =>
+		[base, isLoading && styles["content--hidden"]]
+			.filter(Boolean)
+			.join(" ");
 
 	// without an image, the wrapper itself stands in for the accessible image role
 	const accessibilityProps = src
@@ -26,11 +44,28 @@ export function Avatar({
 		: ({ role: "img", "aria-label": alt } as const);
 
 	return (
-		<div className={classes} {...accessibilityProps} {...props}>
+		<div
+			className={classes}
+			aria-disabled={isDisabled || undefined}
+			aria-busy={isLoading || undefined}
+			onClick={isDisabled ? undefined : onClick}
+			{...accessibilityProps}
+			{...props}
+		>
+			{isLoading && (
+				<span className={styles.spinner} aria-hidden="true" />
+			)}
 			{src ? (
-				<img className={styles.image} src={src} alt={alt} />
+				<img
+					className={contentClasses(styles.image)}
+					src={src}
+					alt={alt}
+				/>
 			) : (
-				<span className={styles.label} aria-hidden="true">
+				<span
+					className={contentClasses(styles.label)}
+					aria-hidden="true"
+				>
 					{children}
 				</span>
 			)}

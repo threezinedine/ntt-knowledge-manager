@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { Avatar } from "./avatar";
 
 const PNG_URL = "/images/user.png";
@@ -57,5 +57,79 @@ describe("Avatar", () => {
 		expect(avatar).toBeVisible();
 		expect(avatar).toHaveTextContent("J");
 		expect(avatar.querySelector("img")).toBeNull();
+	});
+
+	it("marks the avatar as disabled", () => {
+		render(<Avatar src={PNG_URL} alt="Jane Doe" disabled />);
+
+		const wrapper = screen.getByRole("img", { name: "Jane Doe" })
+			.parentElement as HTMLElement;
+		expect(wrapper).toHaveAttribute("aria-disabled", "true");
+		expect(wrapper.className).toMatch(/avatar--disabled/);
+	});
+
+	it("shows a spinner and marks the avatar as busy while loading", () => {
+		render(<Avatar src={PNG_URL} alt="Jane Doe" isLoading />);
+
+		const wrapper = screen.getByRole("img", { name: "Jane Doe" })
+			.parentElement as HTMLElement;
+		expect(wrapper).toHaveAttribute("aria-busy", "true");
+		expect(wrapper).toHaveAttribute("aria-disabled", "true");
+		expect(wrapper.className).toMatch(/avatar--loading/);
+		expect(wrapper.querySelector(`[aria-hidden="true"]`)).not.toBeNull();
+		expect(screen.getByRole("img", { name: "Jane Doe" }).className).toMatch(
+			/content--hidden/,
+		);
+	});
+
+	it("hides the letter fallback behind the spinner while loading", () => {
+		render(
+			<Avatar alt="Jane Doe" isLoading>
+				J
+			</Avatar>,
+		);
+
+		const wrapper = screen.getByRole("img", { name: "Jane Doe" });
+		expect(wrapper).toHaveAttribute("aria-busy", "true");
+		expect(screen.getByText("J").className).toMatch(/content--hidden/);
+	});
+
+	it("ignores clicks while disabled or loading", () => {
+		const handleClick = vi.fn();
+		const { rerender } = render(
+			<Avatar
+				src={PNG_URL}
+				alt="Jane Doe"
+				disabled
+				onClick={handleClick}
+			/>,
+		);
+
+		fireEvent.click(
+			screen.getByRole("img", { name: "Jane Doe" })
+				.parentElement as HTMLElement,
+		);
+		expect(handleClick).not.toHaveBeenCalled();
+
+		rerender(
+			<Avatar
+				src={PNG_URL}
+				alt="Jane Doe"
+				isLoading
+				onClick={handleClick}
+			/>,
+		);
+		fireEvent.click(
+			screen.getByRole("img", { name: "Jane Doe" })
+				.parentElement as HTMLElement,
+		);
+		expect(handleClick).not.toHaveBeenCalled();
+
+		rerender(<Avatar src={PNG_URL} alt="Jane Doe" onClick={handleClick} />);
+		fireEvent.click(
+			screen.getByRole("img", { name: "Jane Doe" })
+				.parentElement as HTMLElement,
+		);
+		expect(handleClick).toHaveBeenCalledOnce();
 	});
 });

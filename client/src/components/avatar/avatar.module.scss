@@ -9,44 +9,42 @@ $label-color: #25372f;
 	border-radius: 50%;
 	border: 2px solid $border-color;
 	background: #eef1ee;
+	color: $label-color;
 	overflow: hidden;
 	flex-shrink: 0;
 	cursor: pointer;
 	user-select: none;
 	transition:
 		transform 0.15s ease,
-		box-shadow 0.15s ease;
+		box-shadow 0.15s ease,
+		opacity 0.15s ease;
 
-	&:hover {
+	&:hover:not(.avatar--disabled) {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+	}
+
+	&--disabled {
+		cursor: not-allowed;
+		opacity: 0.55;
 	}
 
 	&--sm {
 		width: 2rem;
 		height: 2rem;
-
-		.label {
-			font-size: 0.875rem;
-		}
+		font-size: 0.875rem;
 	}
 
 	&--md {
 		width: 2.5rem;
 		height: 2.5rem;
-
-		.label {
-			font-size: 1rem;
-		}
+		font-size: 1rem;
 	}
 
 	&--lg {
 		width: 3.5rem;
 		height: 3.5rem;
-
-		.label {
-			font-size: 1.375rem;
-		}
+		font-size: 1.375rem;
 	}
 }
 
@@ -63,4 +61,29 @@ $label-color: #25372f;
 	color: $label-color;
 	user-select: none;
 	text-transform: uppercase;
+}
+
+.spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 1em;
+	height: 1em;
+	border: 0.15em solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: avatar-spin 0.75s linear infinite;
+}
+
+.content--hidden {
+	visibility: hidden;
+}
+
+@keyframes avatar-spin {
+	from {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	to {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
 }
