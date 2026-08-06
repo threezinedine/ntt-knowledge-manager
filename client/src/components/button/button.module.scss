@@ -141,6 +141,12 @@ $danger-foreground: #fffaf0;
 	animation: button-spin 0.75s linear infinite;
 }
 
+.content {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
 .content--hidden {
 	visibility: hidden;
 }

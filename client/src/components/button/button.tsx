@@ -6,6 +6,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 	variant?: Variant;
 	size?: Size;
 	isLoading?: boolean;
+	/** Font Awesome class(es), e.g. "fa-solid fa-star". Omit to render no icon. */
+	icon?: string;
 };
 
 export function Button({
@@ -14,6 +16,7 @@ export function Button({
 	variant = "primary",
 	size = "md",
 	isLoading = false,
+	icon,
 	disabled,
 	children,
 	...props
@@ -39,7 +42,15 @@ export function Button({
 			{isLoading && (
 				<span className={styles.spinner} aria-hidden="true" />
 			)}
-			<span className={isLoading ? styles["content--hidden"] : undefined}>
+			<span
+				className={[
+					styles.content,
+					isLoading && styles["content--hidden"],
+				]
+					.filter(Boolean)
+					.join(" ")}
+			>
+				{icon && <i className={icon} aria-hidden="true" />}
 				{children}
 			</span>
 		</button>

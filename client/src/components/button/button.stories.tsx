@@ -31,6 +31,9 @@ const meta = {
 		isLoading: {
 			control: "boolean",
 		},
+		icon: {
+			control: "text",
+		},
 	},
 } satisfies Meta<typeof Button>;
 
@@ -97,5 +100,11 @@ export const Sizes: Story = {
 export const Disabled: Story = {
 	args: {
 		disabled: true,
+	},
+};
+
+export const Icon: Story = {
+	args: {
+		icon: "fa-solid fa-star",
 	},
 };

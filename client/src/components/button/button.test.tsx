@@ -88,4 +88,24 @@ describe("Button", () => {
 			expect(button.className).toMatch(/button--loading/);
 		},
 	);
+
+	it("does not render an icon when none is given", () => {
+		render(<Button>Save note</Button>);
+
+		expect(
+			screen
+				.getByRole("button", { name: "Save note" })
+				.querySelector("i"),
+		).toBeNull();
+	});
+
+	it("renders the given icon", () => {
+		render(<Button icon="fa-solid fa-star">Save note</Button>);
+
+		const icon = screen
+			.getByRole("button", { name: "Save note" })
+			.querySelector("i");
+		expect(icon).not.toBeNull();
+		expect(icon?.className).toBe("fa-solid fa-star");
+	});
 });
