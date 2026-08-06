@@ -50,6 +50,9 @@ describe("Button", () => {
 		expect(button).toBeDisabled();
 		expect(button).toHaveAttribute("aria-busy", "true");
 		expect(button.querySelector(`[aria-hidden="true"]`)).not.toBeNull();
+		expect(screen.getByText("Save note").className).toMatch(
+			/content--hidden/,
+		);
 	});
 
 	it.each([

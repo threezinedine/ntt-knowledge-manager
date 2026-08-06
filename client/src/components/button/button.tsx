@@ -39,7 +39,9 @@ export function Button({
 			{isLoading && (
 				<span className={styles.spinner} aria-hidden="true" />
 			)}
-			{children}
+			<span className={isLoading ? styles["content--hidden"] : undefined}>
+				{children}
+			</span>
 		</button>
 	);
 }

@@ -22,7 +22,7 @@ $danger-foreground: #fffaf0;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5em;
+	position: relative;
 	font: inherit;
 	font-weight: 700;
 	line-height: 1.2;
@@ -118,6 +118,9 @@ $danger-foreground: #fffaf0;
 }
 
 .spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
 	width: 1em;
 	height: 1em;
 	border: 0.15em solid currentColor;
@@ -126,8 +129,15 @@ $danger-foreground: #fffaf0;
 	animation: button-spin 0.75s linear infinite;
 }
 
+.content--hidden {
+	visibility: hidden;
+}
+
 @keyframes button-spin {
+	from {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
 	to {
-		transform: rotate(360deg);
+		transform: translate(-50%, -50%) rotate(360deg);
 	}
 }

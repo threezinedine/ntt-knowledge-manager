@@ -1,5 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "./button";
+import type { Variant, Size } from "../common";
+
+const VARIANTS: Variant[] = [
+	"primary",
+	"secondary",
+	"outline",
+	"ghost",
+	"danger",
+	"link",
+];
+
+const SIZES: Size[] = ["sm", "md", "lg"];
 
 const meta = {
 	title: "Components/Button",
@@ -10,18 +22,11 @@ const meta = {
 	argTypes: {
 		variant: {
 			control: "select",
-			options: [
-				"primary",
-				"secondary",
-				"outline",
-				"ghost",
-				"danger",
-				"link",
-			],
+			options: VARIANTS,
 		},
 		size: {
 			control: "select",
-			options: ["sm", "md", "lg"],
+			options: SIZES,
 		},
 		isLoading: {
 			control: "boolean",
@@ -32,62 +37,65 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-	args: {
-		variant: "primary",
-	},
+export const Variants: Story = {
+	render: (args) => (
+		<div
+			style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+		>
+			<div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+				{VARIANTS.map((variant) => (
+					<Button key={variant} {...args} variant={variant} />
+				))}
+			</div>
+			<div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+				{VARIANTS.map((variant) => (
+					<Button
+						key={variant}
+						{...args}
+						variant={variant}
+						isLoading
+					/>
+				))}
+			</div>
+		</div>
+	),
 };
 
-export const Secondary: Story = {
-	args: {
-		variant: "secondary",
-	},
-};
-
-export const Outline: Story = {
-	args: {
-		variant: "outline",
-	},
-};
-
-export const Ghost: Story = {
-	args: {
-		variant: "ghost",
-	},
-};
-
-export const Danger: Story = {
-	args: {
-		variant: "danger",
-	},
-};
-
-export const Link: Story = {
-	args: {
-		variant: "link",
-	},
-};
-
-export const Small: Story = {
-	args: {
-		size: "sm",
-	},
-};
-
-export const Large: Story = {
-	args: {
-		size: "lg",
-	},
+export const Sizes: Story = {
+	render: (args) => (
+		<div
+			style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+		>
+			<div
+				style={{
+					display: "flex",
+					gap: "0.75rem",
+					alignItems: "center",
+					flexWrap: "wrap",
+				}}
+			>
+				{SIZES.map((size) => (
+					<Button key={size} {...args} size={size} />
+				))}
+			</div>
+			<div
+				style={{
+					display: "flex",
+					gap: "0.75rem",
+					alignItems: "center",
+					flexWrap: "wrap",
+				}}
+			>
+				{SIZES.map((size) => (
+					<Button key={size} {...args} size={size} isLoading />
+				))}
+			</div>
+		</div>
+	),
 };
 
 export const Disabled: Story = {
 	args: {
 		disabled: true,
-	},
-};
-
-export const Loading: Story = {
-	args: {
-		isLoading: true,
 	},
 };
