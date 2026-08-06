@@ -48,7 +48,7 @@ services:
     volumes:
       - ./server:/app/server
       - ./.test.env:/app/.test.env
-    command: python -m watchfiles --filter python 'python -m pytest server/tests' server
+    command: python -m watchfiles --filter python 'python -m pytest server/tests --color=yes' server
 
 volumes:
   client_node_modules:

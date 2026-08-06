@@ -18,4 +18,4 @@ if [ "${1:-}" = "--watch" ]; then
 	exit $?
 fi
 
-"$PYTHON" -m pytest server/tests "$@"
+"$PYTHON" -m pytest server/tests --color=yes "$@"
