@@ -3,7 +3,7 @@ import { Dropdown } from "./stateless-dropdown";
 import { Button } from "../button";
 
 const meta = {
-	title: "Components/Dropdown",
+	title: "Components/StatelessDropdown",
 	component: Dropdown,
 	args: {
 		showMenu: false,

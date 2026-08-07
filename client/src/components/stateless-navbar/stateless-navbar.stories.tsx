@@ -3,7 +3,7 @@ import { Navbar } from "./stateless-navbar";
 import heroImage from "../../assets/hero.png";
 
 const meta = {
-	title: "Components/Navbar",
+	title: "Components/StatelessNavbar",
 	component: Navbar,
 	args: {
 		isAuthenticated: false,

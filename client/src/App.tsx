@@ -9,7 +9,7 @@ import {
 	Settings,
 	Star,
 } from "lucide-react";
-import { ToggleButton } from "./components";
+import { StatelessToggleButton } from "./components";
 import { ThemeProvider, useTheme } from "./theme";
 import "./App.css";
 
@@ -75,7 +75,7 @@ function AppContent() {
 						<h1>Notes</h1>
 					</div>
 					<div className="header-actions">
-						<ToggleButton
+						<StatelessToggleButton
 							value={theme === "dark"}
 							onValueChanged={toggleTheme}
 							trueIcon="fa-solid fa-moon"

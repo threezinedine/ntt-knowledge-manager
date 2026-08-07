@@ -5,7 +5,7 @@ import type { Size } from "../common";
 const SIZES: Size[] = ["sm", "md", "lg"];
 
 const meta = {
-	title: "Components/ToggleButton",
+	title: "Components/StatelessToggleButton",
 	component: ToggleButton,
 	args: {
 		value: false,
