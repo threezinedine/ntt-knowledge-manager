@@ -9,6 +9,8 @@ import {
 	Settings,
 	Star,
 } from "lucide-react";
+import { ToggleButton } from "./components";
+import { ThemeProvider, useTheme } from "./theme";
 import "./App.css";
 
 const notes = [
@@ -35,8 +37,9 @@ const notes = [
 	},
 ];
 
-function App() {
+function AppContent() {
 	const [activeNote, setActiveNote] = useState(notes[0].title);
+	const { theme, toggleTheme } = useTheme();
 
 	return (
 		<main className="workspace">
@@ -71,9 +74,18 @@ function App() {
 						<p className="eyebrow">Personal library</p>
 						<h1>Notes</h1>
 					</div>
-					<button className="icon-button" title="Search notes">
-						<Search size={19} />
-					</button>
+					<div className="header-actions">
+						<ToggleButton
+							value={theme === "dark"}
+							onValueChanged={toggleTheme}
+							trueIcon="fa-solid fa-moon"
+							falseIcon="fa-solid fa-sun"
+							aria-label="Toggle dark theme"
+						/>
+						<button className="icon-button" title="Search notes">
+							<Search size={19} />
+						</button>
+					</div>
 				</header>
 				<div className="search">
 					<Search size={16} />
@@ -134,6 +146,14 @@ function App() {
 				</div>
 			</article>
 		</main>
+	);
+}
+
+function App() {
+	return (
+		<ThemeProvider>
+			<AppContent />
+		</ThemeProvider>
 	);
 }
 

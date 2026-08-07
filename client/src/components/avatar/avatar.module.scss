@@ -1,5 +1,5 @@
-$border-color: #dde3dd;
-$label-color: #25372f;
+$border-color: var(--color-border);
+$label-color: var(--color-foreground);
 
 .avatar {
 	position: relative;
@@ -8,7 +8,7 @@ $label-color: #25372f;
 	justify-content: center;
 	border-radius: 50%;
 	border: 2px solid $border-color;
-	background: #eef1ee;
+	background: var(--color-secondary-bg);
 	color: $label-color;
 	overflow: hidden;
 	flex-shrink: 0;

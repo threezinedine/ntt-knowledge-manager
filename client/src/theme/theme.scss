@@ -1,0 +1,50 @@
+:root,
+[data-theme="light"] {
+	--color-primary-bg: #38bdf8;
+	--color-primary-bg-hover: #0ea5e9;
+	--color-primary-fg: #082f49;
+
+	--color-accent: #0284c7;
+	--color-accent-hover: #0369a1;
+
+	--color-secondary-bg: #eef1ee;
+	--color-secondary-bg-hover: #dde3dd;
+	--color-secondary-fg: #25372f;
+
+	--color-danger-bg: #b3261e;
+	--color-danger-bg-hover: #8c1d17;
+	--color-danger-fg: #fffaf0;
+
+	--color-border: #dde3dd;
+	--color-surface: #ffffff;
+	--color-foreground: #25372f;
+}
+
+[data-theme="dark"] {
+	--color-primary-bg: #38bdf8;
+	--color-primary-bg-hover: #7dd3fc;
+	--color-primary-fg: #082f49;
+
+	--color-accent: #38bdf8;
+	--color-accent-hover: #7dd3fc;
+
+	--color-secondary-bg: #1f2a26;
+	--color-secondary-bg-hover: #29362f;
+	--color-secondary-fg: #e5e9e2;
+
+	--color-danger-bg: #dc4b42;
+	--color-danger-bg-hover: #ef6a61;
+	--color-danger-fg: #1a0d0c;
+
+	--color-border: #33413a;
+	--color-surface: #16211c;
+	--color-foreground: #e5e9e2;
+}
+
+body {
+	background-color: var(--color-surface);
+	color: var(--color-foreground);
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+}

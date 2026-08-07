@@ -1,6 +1,6 @@
-$border-color: #dde3dd;
-$background: #ffffff;
-$foreground: #25372f;
+$border-color: var(--color-border);
+$background: var(--color-surface);
+$foreground: var(--color-foreground);
 $height: 4rem;
 
 .navbar {

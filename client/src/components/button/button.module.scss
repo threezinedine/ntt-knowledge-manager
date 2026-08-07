@@ -1,18 +1,18 @@
-$primary-background: #38bdf8;
-$primary-background-hover: #0ea5e9;
-$primary-foreground: #082f49;
+$primary-background: var(--color-primary-bg);
+$primary-background-hover: var(--color-primary-bg-hover);
+$primary-foreground: var(--color-primary-fg);
 
 // darker than $primary-background so text/borders stay readable on transparent surfaces
-$accent: #0284c7;
-$accent-hover: #0369a1;
+$accent: var(--color-accent);
+$accent-hover: var(--color-accent-hover);
 
-$secondary-background: #eef1ee;
-$secondary-background-hover: #dde3dd;
-$secondary-foreground: #25372f;
+$secondary-background: var(--color-secondary-bg);
+$secondary-background-hover: var(--color-secondary-bg-hover);
+$secondary-foreground: var(--color-secondary-fg);
 
-$danger-background: #b3261e;
-$danger-background-hover: #8c1d17;
-$danger-foreground: #fffaf0;
+$danger-background: var(--color-danger-bg);
+$danger-background-hover: var(--color-danger-bg-hover);
+$danger-foreground: var(--color-danger-fg);
 
 .button {
 	appearance: none;

@@ -1,4 +1,4 @@
-$idle-foreground: #25372f;
+$idle-foreground: var(--color-foreground);
 
 .toggle {
 	appearance: none;
