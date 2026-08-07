@@ -1,0 +1,32 @@
+$border-color: #dde3dd;
+$background: #ffffff;
+$foreground: #25372f;
+$height: 4rem;
+
+.navbar {
+	user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: $height;
+	padding: 0 1.5rem;
+	background: $background;
+	border-bottom: 1px solid $border-color;
+	box-sizing: border-box;
+	flex-shrink: 0;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-weight: 700;
+	font-size: 1.125rem;
+	color: $foreground;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
