@@ -1,0 +1,167 @@
+$surface: var(--color-surface);
+$foreground: var(--color-foreground);
+$muted: var(--color-secondary-fg);
+$border: var(--color-border);
+$secondary-bg: var(--color-secondary-bg);
+$accent: var(--color-accent);
+
+.page {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: $surface;
+	color: $foreground;
+}
+
+.nav {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+}
+
+.hero {
+	flex: 1;
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+	align-items: center;
+	gap: 3rem;
+	width: 100%;
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: 5rem 1.5rem;
+
+	@media (max-width: 768px) {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+		text-align: center;
+		padding: 3rem 1.5rem;
+	}
+}
+
+.copy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+
+	@media (max-width: 768px) {
+		align-items: center;
+	}
+}
+
+.eyebrow {
+	margin: 0 0 1rem;
+	padding: 0.3rem 0.75rem;
+	border: 1px solid $border;
+	border-radius: 999px;
+	background: $secondary-bg;
+	color: $accent;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.title {
+	margin: 0;
+	font-size: 2.75rem;
+	line-height: 1.1;
+	color: $foreground;
+
+	@media (max-width: 768px) {
+		font-size: 2rem;
+	}
+}
+
+.lead {
+	margin: 1.25rem 0 2rem;
+	font-size: 1.125rem;
+	line-height: 1.65;
+	color: $muted;
+}
+
+.actions {
+	display: flex;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+
+	@media (max-width: 768px) {
+		justify-content: center;
+	}
+}
+
+.heroImage {
+	width: 100%;
+	height: auto;
+	border: 1px solid $border;
+	border-radius: 12px;
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+
+.features {
+	border-top: 1px solid $border;
+	background: $secondary-bg;
+}
+
+.featuresInner {
+	width: 100%;
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: 4rem 1.5rem;
+}
+
+.featuresTitle {
+	margin: 0;
+	font-size: 1.75rem;
+	text-align: center;
+	color: $foreground;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+	margin-top: 2.5rem;
+
+	@media (max-width: 768px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.card {
+	border: 1px solid $border;
+	border-radius: 8px;
+	background: $surface;
+	padding: 1.5rem;
+}
+
+.cardIcon {
+	display: grid;
+	place-items: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	margin-bottom: 1rem;
+	border-radius: 8px;
+	background: $secondary-bg;
+	color: $accent;
+}
+
+.cardTitle {
+	margin: 0 0 0.5rem;
+	font-size: 1.125rem;
+	color: $foreground;
+}
+
+.cardText {
+	margin: 0;
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: $muted;
+}
+
+.footer {
+	border-top: 1px solid $border;
+	padding: 1.5rem;
+	text-align: center;
+	font-size: 0.8125rem;
+	color: $muted;
+}
