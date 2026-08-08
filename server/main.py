@@ -8,9 +8,9 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from server.database import SessionLocal, get_db, initialize_database
+from server.database import get_db, initialize_database
 from server.features.login.login import router as login_router
-from server.features.login.middleware import validate_login_token
+from server.features.login.middleware import require_login
 
 
 @asynccontextmanager
@@ -21,8 +21,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Knowledge Manager API", lifespan=lifespan)
-app.state.db_session_factory = SessionLocal
-app.middleware("http")(validate_login_token)
 
 # allow the dev client origin to reach the API during development
 app.add_middleware(
@@ -46,7 +44,7 @@ async def health(db: Session = Depends(get_db)) -> dict[str, str]:
     return {"status": "ok Thao"}
 
 
-@app.get("/secure-health")
+@app.get("/secure-health", dependencies=[Depends(require_login)])
 async def secure_health(db: Session = Depends(get_db)) -> dict[str, str]:
     db.execute(text("SELECT 1"))
     return {"status": "ok"}

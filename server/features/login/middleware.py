@@ -1,31 +1,29 @@
-from collections.abc import Awaitable, Callable
-
-from fastapi import Request
-from starlette.responses import JSONResponse, Response
+from fastapi import Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from server.database import get_db
 from server.features.login.token_model import LoginToken
 
-PROTECTED_PATHS = {"/secure-health"}
 
+def require_login(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> str:
+    """Route-level guard: validates the Bearer login token and returns it.
 
-async def validate_login_token(
-    request: Request, call_next: Callable[[Request], Awaitable[Response]]
-) -> Response:
-    if request.url.path not in PROTECTED_PATHS:
-        return await call_next(request)
-
+    Attach it to a route at definition time via
+    ``dependencies=[Depends(require_login)]`` (or ``token: str = Depends(require_login)``
+    when the endpoint needs the token) so protection is declared per-route
+    instead of being looked up from a hardcoded path list.
+    """
     authorization = request.headers.get("Authorization", "")
     scheme, _, token = authorization.partition(" ")
     if scheme.lower() != "bearer" or not token:
-        return JSONResponse({"detail": "Invalid login token"}, status_code=401)
+        raise HTTPException(status_code=401, detail="Invalid login token")
 
-    session_factory: Callable[[], Session] = request.app.state.db_session_factory
-    with session_factory() as db:
-        login_token = db.scalar(select(LoginToken).where(LoginToken.token == token))
-
+    login_token = db.scalar(select(LoginToken).where(LoginToken.token == token))
     if login_token is None:
-        return JSONResponse({"detail": "Invalid login token"}, status_code=401)
+        raise HTTPException(status_code=401, detail="Invalid login token")
 
-    return await call_next(request)
+    return token

@@ -42,10 +42,8 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
         yield db_session
 
     app.dependency_overrides[get_db] = override_get_db
-    app.state.db_session_factory = lambda: db_session
     app.state.skip_database_initialization = True
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
-    del app.state.db_session_factory
     del app.state.skip_database_initialization
