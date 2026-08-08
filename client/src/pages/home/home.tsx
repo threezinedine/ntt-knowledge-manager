@@ -34,7 +34,9 @@ export function Home() {
 				className={styles.nav}
 				isAuthenticated={false}
 				loginLabel="Log in"
-				onLoginClick={() => {}}
+				onLoginClick={() => {
+					window.location.hash = "#/login";
+				}}
 			/>
 			<main>
 				<section className={styles.hero}>
