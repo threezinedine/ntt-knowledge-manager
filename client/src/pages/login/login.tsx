@@ -1,4 +1,5 @@
 import { Button, Form } from "../../components";
+import { storeToken } from "../../auth";
 import styles from "./login.module.scss";
 
 export function Login() {
@@ -7,10 +8,9 @@ export function Login() {
 			<Form
 				className={styles.form}
 				title="Log in"
-				onSubmit={() => {
-					// Server auth is not implemented yet; for now a valid
-					// submission simply navigates back to the home page.
-					window.location.hash = "#/";
+				onSubmit={(values) => {
+					storeToken(values.token);
+					window.location.hash = "#/workspace";
 				}}
 				items={[
 					{

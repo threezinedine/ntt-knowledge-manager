@@ -1,7 +1,9 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -21,6 +23,21 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Knowledge Manager API", lifespan=lifespan)
 app.state.db_session_factory = SessionLocal
 app.middleware("http")(validate_login_token)
+
+# allow the dev client origin to reach the API during development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        origin.strip()
+        for origin in os.getenv(
+            "ALLOWED_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173",
+        ).split(",")
+        if origin.strip()
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")

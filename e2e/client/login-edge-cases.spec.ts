@@ -28,3 +28,27 @@ test("clears the required error once a token is entered", async ({ page }) => {
 		"true",
 	);
 });
+
+test("redirects to login when accessing the workspace without a token", async ({
+	page,
+}) => {
+	await page.goto("/#/workspace");
+
+	await expect(page.getByRole("heading", { name: "Log in" })).toBeVisible();
+});
+
+test("redirects to login and clears an invalid stored token", async ({
+	page,
+}) => {
+	await page.addInitScript(() => {
+		window.localStorage.setItem("knowledge-manager-token", "bogus-token");
+	});
+	await page.goto("/#/workspace");
+
+	await expect(page.getByRole("heading", { name: "Log in" })).toBeVisible();
+
+	const token = await page.evaluate(() =>
+		window.localStorage.getItem("knowledge-manager-token"),
+	);
+	expect(token).toBeNull();
+});

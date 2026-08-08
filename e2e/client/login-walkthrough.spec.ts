@@ -21,15 +21,14 @@ test("navigates back to home from the login page", async ({ page }) => {
 	).toBeVisible();
 });
 
-test("submits a valid token and returns home", async ({ page }) => {
+test("submits a valid token and enters the workspace", async ({ page }) => {
 	await page.goto("/#/login");
 
-	await page.getByLabel("Token").fill("secret-token-123");
+	// matches the dev server's FIX_TOKEN (.dev.env)
+	await page.getByLabel("Token").fill("dev-fix-token");
 	await page.getByRole("button", { name: "Log in" }).click();
 
 	await expect(
-		page.getByRole("heading", {
-			name: "Turn scattered notes into decisions",
-		}),
+		page.getByRole("heading", { name: "Workspace" }),
 	).toBeVisible();
 });
