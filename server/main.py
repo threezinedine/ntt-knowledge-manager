@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from server.database import get_db, initialize_database
 from server.features.login.login import router as login_router
 from server.features.login.middleware import require_login
+from server.features.node.node import router as nodes_router
 
 
 @asynccontextmanager
@@ -51,6 +52,7 @@ async def secure_health(db: Session = Depends(get_db)) -> dict[str, str]:
 
 
 app.include_router(login_router)
+app.include_router(nodes_router)
 app.mount(
     "/",
     StaticFiles(directory=Path(__file__).with_name("static"), html=True),

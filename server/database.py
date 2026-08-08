@@ -4,7 +4,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-import server.config
+import server.config  # pyright: ignore[reportUnusedImport]  # side-effect: loads env vars before DATABASE_URL
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./knowledge_manager.db")
 
