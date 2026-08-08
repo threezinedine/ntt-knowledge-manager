@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import type { HTMLAttributes, ReactNode, Ref } from "react";
 import styles from "./stateless-dropdown.module.scss";
 
 export type DropdownItem =
@@ -22,6 +22,8 @@ export type DropdownItem =
 	  };
 
 type DropdownProps = HTMLAttributes<HTMLDivElement> & {
+	/** React 19 ref-as-prop for the root element. */
+	ref?: Ref<HTMLDivElement>;
 	/** Controls whether the menu is visible. */
 	showMenu: boolean;
 	items: DropdownItem[];
@@ -33,6 +35,7 @@ type DropdownProps = HTMLAttributes<HTMLDivElement> & {
 
 export function Dropdown({
 	className,
+	ref,
 	showMenu,
 	items,
 	onItemSelect,
@@ -54,7 +57,7 @@ export function Dropdown({
 	};
 
 	return (
-		<div className={classes} {...props}>
+		<div ref={ref} className={classes} {...props}>
 			{children}
 			{showMenu && (
 				<ul className={styles.menu} role="menu" aria-label={menuLabel}>
