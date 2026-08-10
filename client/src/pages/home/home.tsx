@@ -1,5 +1,6 @@
 import { Inbox, Link2, Sparkles, type LucideIcon } from "lucide-react";
-import { Button, Navbar } from "../../components";
+import { Button } from "../../components";
+import { Navbar } from "../../features";
 import heroImage from "../../assets/hero.png";
 import styles from "./home.module.scss";
 
@@ -30,14 +31,7 @@ const FEATURES: Feature[] = [
 export function Home() {
 	return (
 		<div className={styles.page}>
-			<Navbar
-				className={styles.nav}
-				isAuthenticated={false}
-				loginLabel="Log in"
-				onLoginClick={() => {
-					window.location.hash = "#/login";
-				}}
-			/>
+			<Navbar className={styles.nav} />
 			<main>
 				<section className={styles.hero}>
 					<div className={styles.copy}>
