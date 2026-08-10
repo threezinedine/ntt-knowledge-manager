@@ -9,6 +9,8 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY alembic.ini ./
+
 FROM node:24-slim AS client-development
 
 WORKDIR /app/client

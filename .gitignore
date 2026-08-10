@@ -24,6 +24,7 @@ venv/
 ENV/
 .pytest_cache/
 .coverage
+*.db
 
 # OS generated files
 .DS_Store

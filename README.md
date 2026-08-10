@@ -100,10 +100,26 @@ Add test modules under `server/tests/`; the script discovers and runs the full s
 
 ## Database
 
-The API stores fixed login tokens in SQLite. On startup, the development and
-production app creates the table and seeds it only when the table is empty.
-Tests use an isolated in-memory database and seed the fixed tokens for every
-test.
+SQLite is managed with **Alembic** migrations. The schema lives in
+`server/migrations/versions/`, and on startup the app runs
+`alembic upgrade head` automatically (see `server/database.py`). When Alembic
+meets a database that was created before migrations existed (no
+`alembic_version` table), it stamps the revision that matches the on-disk
+schema first, so the upgrade only applies the migrations that are actually
+missing.
+
+Generate a new migration after changing a model:
+
+```bash
+.venv/bin/alembic revision --autogenerate -m "describe the change"
+.venv/bin/alembic upgrade head
+```
+
+Review generated revisions in `server/migrations/versions/` before applying
+them. Tests are unaffected: they use an isolated in-memory database built
+directly from the models.
+
+The API seeds fixed login tokens only when the token table is empty.
 
 ## Docker
 
