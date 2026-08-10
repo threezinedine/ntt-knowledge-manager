@@ -88,6 +88,83 @@ def test_delete_node(client: TestClient) -> None:
     assert client.get(f"/nodes/{node['id']}", headers=AUTH).status_code == 404
 
 
+def test_create_child_node(client: TestClient) -> None:
+    parent = create_node(client, "Root")
+
+    child = create_node(client, "Child", parent_node_id=parent["id"])
+
+    assert child["parent_node_id"] == parent["id"]
+
+
+def test_create_node_with_missing_parent_404(client: TestClient) -> None:
+    response = client.post(
+        "/nodes", headers=AUTH, json={"title": "Orphan", "parent_node_id": 999}
+    )
+
+    assert response.status_code == 404
+
+
+def test_update_node_parent(client: TestClient) -> None:
+    parent = create_node(client, "Root")
+    child = create_node(client, "Child")
+
+    response = client.patch(
+        f"/nodes/{child['id']}",
+        headers=AUTH,
+        json={"parent_node_id": parent["id"]},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["parent_node_id"] == parent["id"]
+
+
+def test_clear_node_parent(client: TestClient) -> None:
+    parent = create_node(client, "Root")
+    child = create_node(client, "Child", parent_node_id=parent["id"])
+
+    response = client.patch(
+        f"/nodes/{child['id']}", headers=AUTH, json={"clear_parent": True}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["parent_node_id"] is None
+
+
+def test_node_cannot_be_its_own_parent(client: TestClient) -> None:
+    node = create_node(client, "Alpha")
+
+    response = client.patch(
+        f"/nodes/{node['id']}",
+        headers=AUTH,
+        json={"parent_node_id": node["id"]},
+    )
+
+    assert response.status_code == 400
+
+
+def test_node_parent_cycle_rejected(client: TestClient) -> None:
+    root = create_node(client, "Root")
+    child = create_node(client, "Child", parent_node_id=root["id"])
+
+    response = client.patch(
+        f"/nodes/{root['id']}",
+        headers=AUTH,
+        json={"parent_node_id": child["id"]},
+    )
+
+    assert response.status_code == 400
+
+
+def test_deleting_a_node_detaches_its_children(client: TestClient) -> None:
+    parent = create_node(client, "Root")
+    child = create_node(client, "Child", parent_node_id=parent["id"])
+
+    client.delete(f"/nodes/{parent['id']}", headers=AUTH)
+
+    response = client.get(f"/nodes/{child['id']}", headers=AUTH)
+    assert response.json()["parent_node_id"] is None
+
+
 def test_create_and_list_relations(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
     beta = create_node(client, "Beta")

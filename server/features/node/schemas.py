@@ -7,6 +7,7 @@ class NodeCreate(BaseModel):
     title: str
     node_type: str = "note"
     content: str = ""
+    parent_node_id: int | None = None
     metadata: dict[str, object] = Field(default_factory=dict)
 
 
@@ -14,6 +15,8 @@ class NodeUpdate(BaseModel):
     title: str | None = None
     node_type: str | None = None
     content: str | None = None
+    parent_node_id: int | None = None
+    clear_parent: bool = False
     metadata: dict[str, object] | None = None
 
 
@@ -22,6 +25,7 @@ class NodeRead(BaseModel):
     title: str
     node_type: str
     content: str
+    parent_node_id: int | None
     metadata: dict[str, object]
     created_at: datetime
     updated_at: datetime

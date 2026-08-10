@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import delete, or_, select
+from sqlalchemy import delete, or_, select, update
 from sqlalchemy.orm import Session
 
 from server.database import get_db
@@ -27,6 +27,7 @@ def node_to_dict(node: Node) -> dict[str, object]:
         "title": node.title,
         "node_type": node.node_type,
         "content": node.content,
+        "parent_node_id": node.parent_node_id,
         "metadata": node.meta,
         "created_at": node.created_at,
         "updated_at": node.updated_at,
@@ -58,6 +59,18 @@ def get_relation_or_404(db: Session, relation_id: int) -> NodeRelation:
     return relation
 
 
+def assert_no_cycle(db: Session, node_id: int, parent_node_id: int) -> None:
+    # walk up the ancestor chain to make sure node_id doesn't appear in it
+    current: int | None = parent_node_id
+    while current is not None:
+        if current == node_id:
+            raise HTTPException(
+                status_code=400, detail="A node cannot be its own ancestor"
+            )
+        ancestor = db.get(Node, current)
+        current = ancestor.parent_node_id if ancestor is not None else None
+
+
 @router.get("", response_model=list[NodeRead])
 def list_nodes(db: Session = Depends(get_db)) -> list[dict[str, object]]:
     nodes = db.scalars(select(Node).order_by(Node.id)).all()
@@ -68,10 +81,14 @@ def list_nodes(db: Session = Depends(get_db)) -> list[dict[str, object]]:
 def create_node(
     payload: NodeCreate, db: Session = Depends(get_db)
 ) -> dict[str, object]:
+    if payload.parent_node_id is not None:
+        get_node_or_404(db, payload.parent_node_id)
+
     node = Node(
         title=payload.title,
         node_type=payload.node_type,
         content=payload.content,
+        parent_node_id=payload.parent_node_id,
         meta=payload.metadata,
     )
     db.add(node)
@@ -97,6 +114,16 @@ def update_node(
         node.node_type = payload.node_type
     if payload.content is not None:
         node.content = payload.content
+    if payload.clear_parent:
+        node.parent_node_id = None
+    elif payload.parent_node_id is not None:
+        if payload.parent_node_id == node_id:
+            raise HTTPException(
+                status_code=400, detail="A node cannot be its own parent"
+            )
+        get_node_or_404(db, payload.parent_node_id)
+        assert_no_cycle(db, node_id, payload.parent_node_id)
+        node.parent_node_id = payload.parent_node_id
     if payload.metadata is not None:
         node.meta = payload.metadata
 
@@ -116,6 +143,10 @@ def delete_node(node_id: int, db: Session = Depends(get_db)) -> None:
                 NodeRelation.target_node_id == node_id,
             )
         )
+    )
+    # detach children instead of deleting them (SQLite FKs aren't enforced)
+    db.execute(
+        update(Node).where(Node.parent_node_id == node_id).values(parent_node_id=None)
     )
     db.delete(node)
     db.commit()

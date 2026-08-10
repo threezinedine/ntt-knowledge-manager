@@ -17,6 +17,9 @@ class Node(Base):
     title: Mapped[str] = mapped_column(String(255))
     node_type: Mapped[str] = mapped_column(String(64), default="note")
     content: Mapped[str] = mapped_column(Text, default="")
+    parent_node_id: Mapped[int | None] = mapped_column(
+        ForeignKey("nodes.id"), nullable=True, index=True, default=None
+    )
     # "metadata" is reserved by SQLAlchemy's declarative API, so the attribute
     # is named `meta` while the column itself is stored as "metadata".
     meta: Mapped[dict[str, object]] = mapped_column("metadata", JSON, default=dict)
