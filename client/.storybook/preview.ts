@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react-vite";
 // @ts-ignore
-import "../src/theme/theme.scss";
+import "../src/features/theme/theme.scss";
 
 const preview: Preview = {
 	parameters: {

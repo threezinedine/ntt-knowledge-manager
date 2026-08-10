@@ -1,5 +1,5 @@
 import { Button, Form } from "../../components";
-import { storeToken } from "../../auth";
+import { useAuthStore } from "../../features/auth";
 import styles from "./login.module.scss";
 
 export function Login() {
@@ -9,7 +9,7 @@ export function Login() {
 				className={styles.form}
 				title="Log in"
 				onSubmit={(values) => {
-					storeToken(values.token);
+					useAuthStore.getState().login(values.token);
 					window.location.hash = "#/workspace";
 				}}
 				items={[

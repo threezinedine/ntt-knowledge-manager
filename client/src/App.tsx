@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "./theme";
+import { ProtectedRoute, ThemeProvider } from "./features";
 import { Home, Login, NotFound, Workspace } from "./pages";
-import { ProtectedRoute } from "./auth";
 
 function getRoute(): string {
 	return window.location.hash.replace(/^#\/?/, "");
