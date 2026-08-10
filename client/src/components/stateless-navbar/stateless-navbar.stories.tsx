@@ -14,6 +14,10 @@ const meta = {
 		isAuthenticated: {
 			control: "boolean",
 		},
+		variant: {
+			control: "inline-radio",
+			options: ["default", "brand"],
+		},
 		avatarSrc: {
 			control: "text",
 		},
@@ -49,5 +53,12 @@ export const AuthenticatedWithoutImage: Story = {
 		avatarSrc: undefined,
 		avatarAlt: "Jane Doe",
 		avatarFallback: "J",
+	},
+};
+
+export const Brand: Story = {
+	args: {
+		variant: "brand",
+		isAuthenticated: false,
 	},
 };

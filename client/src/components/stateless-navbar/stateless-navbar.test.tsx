@@ -61,4 +61,12 @@ describe("Navbar", () => {
 
 		expect(screen.getByRole("button", { name: "Sign in" })).toBeVisible();
 	});
+
+	it("renders only the brand when variant is brand", () => {
+		render(<Navbar variant="brand" isAuthenticated={false} />);
+
+		expect(screen.getByText("Knowledge")).toBeVisible();
+		expect(screen.queryByRole("button")).not.toBeInTheDocument();
+		expect(screen.queryByRole("img")).not.toBeInTheDocument();
+	});
 });

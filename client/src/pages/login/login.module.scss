@@ -2,11 +2,23 @@
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
+	background: var(--color-surface);
+}
+
+.nav {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+}
+
+.content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 1.25rem;
 	padding: 1.5rem;
-	background: var(--color-surface);
 }
 
 .form {

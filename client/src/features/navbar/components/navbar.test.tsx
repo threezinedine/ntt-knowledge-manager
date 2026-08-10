@@ -36,4 +36,12 @@ describe("Navbar", () => {
 
 		expect(window.location.hash).toBe("#/login");
 	});
+
+	it("renders only the brand in brand variant", () => {
+		render(<Navbar variant="brand" />);
+
+		expect(screen.getByText("Knowledge")).toBeVisible();
+		expect(screen.queryByRole("button")).not.toBeInTheDocument();
+		expect(screen.queryByRole("img")).not.toBeInTheDocument();
+	});
 });

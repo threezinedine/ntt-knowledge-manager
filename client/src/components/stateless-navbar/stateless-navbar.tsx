@@ -4,8 +4,11 @@ import styles from "./stateless-navbar.module.scss";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
 
+export type NavbarVariant = "default" | "brand";
+
 type NavbarProps = {
 	className?: string;
+	variant?: NavbarVariant;
 	isAuthenticated: boolean;
 	avatarSrc?: string;
 	avatarAlt?: string;
@@ -17,6 +20,7 @@ type NavbarProps = {
 
 export function Navbar({
 	className,
+	variant = "default",
 	isAuthenticated,
 	avatarSrc,
 	avatarAlt = "User avatar",
@@ -33,21 +37,27 @@ export function Navbar({
 				<BookOpen aria-hidden="true" size={20} />
 				<span>Knowledge</span>
 			</div>
-			<div className={styles.actions}>
-				{isAuthenticated ? (
-					<Avatar
-						src={avatarSrc}
-						alt={avatarAlt}
-						onClick={onAvatarClick}
-					>
-						{avatarFallback}
-					</Avatar>
-				) : (
-					<Button variant="primary" size="sm" onClick={onLoginClick}>
-						{loginLabel}
-					</Button>
-				)}
-			</div>
+			{variant === "default" && (
+				<div className={styles.actions}>
+					{isAuthenticated ? (
+						<Avatar
+							src={avatarSrc}
+							alt={avatarAlt}
+							onClick={onAvatarClick}
+						>
+							{avatarFallback}
+						</Avatar>
+					) : (
+						<Button
+							variant="primary"
+							size="sm"
+							onClick={onLoginClick}
+						>
+							{loginLabel}
+						</Button>
+					)}
+				</div>
+			)}
 		</header>
 	);
 }

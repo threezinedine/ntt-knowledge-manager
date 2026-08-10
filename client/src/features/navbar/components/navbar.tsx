@@ -1,10 +1,11 @@
 import { useEffect, type ReactNode } from "react";
 import { User } from "lucide-react";
-import { StatelessNavbar } from "../../../components";
+import { StatelessNavbar, type NavbarVariant } from "../../../components";
 import { useAuthStore } from "../../auth";
 
 type NavbarProps = {
 	className?: string;
+	variant?: NavbarVariant;
 	loginLabel?: string;
 	avatarAlt?: string;
 	avatarFallback?: ReactNode;
@@ -12,6 +13,7 @@ type NavbarProps = {
 
 export function Navbar({
 	className,
+	variant = "default",
 	loginLabel,
 	avatarAlt = "User avatar",
 	avatarFallback = <User aria-hidden="true" size={16} />,
@@ -22,10 +24,10 @@ export function Navbar({
 
 	// resolve an unverified stored token so the right control is shown
 	useEffect(() => {
-		if (token && status === "checking") {
+		if (variant !== "brand" && token && status === "checking") {
 			verify();
 		}
-	}, [token, status, verify]);
+	}, [variant, token, status, verify]);
 
 	// a stored token counts as signed in until verification says otherwise
 	const isAuthenticated =
@@ -34,6 +36,7 @@ export function Navbar({
 	return (
 		<StatelessNavbar
 			className={className}
+			variant={variant}
 			isAuthenticated={isAuthenticated}
 			avatarAlt={avatarAlt}
 			avatarFallback={avatarFallback}
