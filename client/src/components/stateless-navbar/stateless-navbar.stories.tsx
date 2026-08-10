@@ -9,6 +9,9 @@ const meta = {
 		isAuthenticated: false,
 		onLoginClick: () => {},
 		onAvatarClick: () => {},
+		onSettingsClick: () => {},
+		onWorkspaceClick: () => {},
+		onLogoutClick: () => {},
 	},
 	argTypes: {
 		isAuthenticated: {

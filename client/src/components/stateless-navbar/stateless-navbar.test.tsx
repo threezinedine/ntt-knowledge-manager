@@ -69,4 +69,75 @@ describe("Navbar", () => {
 		expect(screen.queryByRole("button")).not.toBeInTheDocument();
 		expect(screen.queryByRole("img")).not.toBeInTheDocument();
 	});
+
+	it("opens the account menu when the avatar is clicked", () => {
+		render(
+			<Navbar
+				isAuthenticated
+				avatarAlt="Jane Doe"
+				onSettingsClick={() => {}}
+				onWorkspaceClick={() => {}}
+				onLogoutClick={() => {}}
+			/>,
+		);
+
+		fireEvent.click(screen.getByRole("img", { name: "Jane Doe" }));
+
+		expect(
+			screen.getByRole("menuitem", { name: "Settings" }),
+		).toBeVisible();
+		expect(
+			screen.getByRole("menuitem", { name: "Workspace" }),
+		).toBeVisible();
+		expect(screen.getByRole("menuitem", { name: "Logout" })).toBeVisible();
+		expect(screen.getByRole("separator")).toBeInTheDocument();
+	});
+
+	it("calls onSettingsClick when Settings is selected", () => {
+		const handleSettingsClick = vi.fn();
+		render(
+			<Navbar
+				isAuthenticated
+				avatarAlt="Jane Doe"
+				onSettingsClick={handleSettingsClick}
+			/>,
+		);
+
+		fireEvent.click(screen.getByRole("img", { name: "Jane Doe" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Settings" }));
+
+		expect(handleSettingsClick).toHaveBeenCalledOnce();
+	});
+
+	it("calls onWorkspaceClick when Workspace is selected", () => {
+		const handleWorkspaceClick = vi.fn();
+		render(
+			<Navbar
+				isAuthenticated
+				avatarAlt="Jane Doe"
+				onWorkspaceClick={handleWorkspaceClick}
+			/>,
+		);
+
+		fireEvent.click(screen.getByRole("img", { name: "Jane Doe" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Workspace" }));
+
+		expect(handleWorkspaceClick).toHaveBeenCalledOnce();
+	});
+
+	it("calls onLogoutClick when Logout is selected", () => {
+		const handleLogoutClick = vi.fn();
+		render(
+			<Navbar
+				isAuthenticated
+				avatarAlt="Jane Doe"
+				onLogoutClick={handleLogoutClick}
+			/>,
+		);
+
+		fireEvent.click(screen.getByRole("img", { name: "Jane Doe" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Logout" }));
+
+		expect(handleLogoutClick).toHaveBeenCalledOnce();
+	});
 });
