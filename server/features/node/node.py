@@ -7,6 +7,7 @@ from server.features.login.middleware import require_login
 from server.features.node.model import Node, NodeRelation
 from server.features.node.schemas import (
     NodeCreate,
+    NodeMapItem,
     NodeRead,
     NodeUpdate,
     RelationCreate,
@@ -95,6 +96,31 @@ def create_node(
     db.commit()
     db.refresh(node)
     return node_to_dict(node)
+
+
+@router.get("/map", response_model=list[NodeMapItem])
+def get_node_map(db: Session = Depends(get_db)) -> list[dict[str, object]]:
+    nodes = db.scalars(select(Node).order_by(Node.id)).all()
+    relations = db.scalars(select(NodeRelation).order_by(NodeRelation.id)).all()
+
+    relations_by_source: dict[int, list[NodeRelation]] = {}
+    for relation in relations:
+        relations_by_source.setdefault(relation.source_node_id, []).append(relation)
+
+    return [
+        {
+            "nodeId": node.id,
+            "nodeName": node.title,
+            "map": {
+                str(relation.target_node_id): {
+                    "relationId": relation.id,
+                    "relationName": relation.relation_type,
+                }
+                for relation in relations_by_source.get(node.id, [])
+            },
+        }
+        for node in nodes
+    ]
 
 
 @router.get("/{node_id}", response_model=NodeRead)

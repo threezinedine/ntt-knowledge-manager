@@ -63,6 +63,34 @@ def test_get_missing_node_404(client: TestClient) -> None:
     assert response.json() == {"detail": "Node not found"}
 
 
+def test_node_map_requires_login(client: TestClient) -> None:
+    assert client.get("/nodes/map").status_code == 401
+
+
+def test_node_map_returns_outgoing_relations(client: TestClient) -> None:
+    alpha = create_node(client, "Alpha")
+    beta = create_node(client, "Beta")
+    relation = client.post(
+        f"/nodes/{alpha['id']}/relations",
+        headers=AUTH,
+        json={"target_node_id": beta["id"], "relation_type": "references"},
+    ).json()
+
+    response = client.get("/nodes/map", headers=AUTH)
+
+    assert response.status_code == 200
+    data = response.json()
+    by_name = {item["nodeName"]: item for item in data}
+    assert by_name["Alpha"]["nodeId"] == alpha["id"]
+    assert by_name["Alpha"]["map"] == {
+        str(beta["id"]): {
+            "relationId": relation["id"],
+            "relationName": "references",
+        }
+    }
+    assert by_name["Beta"]["map"] == {}
+
+
 def test_update_node_metadata(client: TestClient) -> None:
     node = create_node(client, "Alpha")
 

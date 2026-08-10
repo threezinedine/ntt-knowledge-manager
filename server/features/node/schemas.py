@@ -49,3 +49,14 @@ class RelationRead(BaseModel):
     relation_type: str
     metadata: dict[str, object]
     created_at: datetime
+
+
+class NodeMapRelation(BaseModel):
+    relationId: int
+    relationName: str
+
+
+class NodeMapItem(BaseModel):
+    nodeId: int
+    nodeName: str
+    map: dict[str, NodeMapRelation]

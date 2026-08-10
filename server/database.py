@@ -2,6 +2,8 @@ from collections.abc import Generator
 import os
 from pathlib import Path
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -26,9 +28,7 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-def _alembic_config() -> "Config":
-    from alembic.config import Config
-
+def _alembic_config() -> Config:
     root = Path(__file__).resolve().parent.parent
     cfg = Config(str(root / "alembic.ini"))
     # resolve the script location absolutely so it works regardless of cwd
@@ -44,8 +44,6 @@ def _stamp_pre_alembic_database() -> None:
     on-disk schema so the subsequent ``upgrade`` only applies the migrations
     that are actually missing.
     """
-    from alembic import command
-
     inspector = inspect(engine)
     table_names = set(inspector.get_table_names())
     if "alembic_version" in table_names or not table_names:
@@ -58,7 +56,6 @@ def _stamp_pre_alembic_database() -> None:
 
 def initialize_database() -> None:
     from server.features.login.token_model import seed_login_tokens
-    from alembic import command
 
     _stamp_pre_alembic_database()
     command.upgrade(_alembic_config(), "head")
