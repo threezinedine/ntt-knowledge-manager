@@ -1,8 +1,6 @@
 import { useEffect, type ReactNode } from "react";
-import { useShallow } from "zustand/react/shallow";
-import { useThemeStore, type ThemeName } from "./theme-store";
-
-export type { ThemeName } from "./theme-store";
+import { useThemeStore } from "../store";
+import type { ThemeName } from "../utils";
 
 type ThemeProviderProps = {
 	children: ReactNode;
@@ -23,18 +21,4 @@ export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
 	}, [defaultTheme]);
 
 	return children;
-}
-
-export function useTheme(): {
-	theme: ThemeName;
-	setTheme: (theme: ThemeName) => void;
-	toggleTheme: () => void;
-} {
-	return useThemeStore(
-		useShallow((state) => ({
-			theme: state.theme,
-			setTheme: state.setTheme,
-			toggleTheme: state.toggleTheme,
-		})),
-	);
 }

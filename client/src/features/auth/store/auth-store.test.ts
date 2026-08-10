@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAuthStore } from "./auth-store";
-import { verifyTokenWithServer } from "./verify";
+import { verifyTokenWithServer } from "../apis/verify";
 
-vi.mock("./verify", () => ({
+vi.mock("../apis/verify", () => ({
 	verifyTokenWithServer: vi.fn(),
 }));
 

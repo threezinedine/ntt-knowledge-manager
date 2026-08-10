@@ -1,24 +1,12 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-
-export type ThemeName = "light" | "dark";
-
-const STORAGE_KEY = "knowledge-manager-theme";
+import { getInitialTheme, THEME_STORAGE_KEY, type ThemeName } from "../utils";
 
 type ThemeState = {
 	theme: ThemeName;
 	setTheme: (theme: ThemeName) => void;
 	toggleTheme: () => void;
 };
-
-function getInitialTheme(): ThemeName {
-	if (typeof window === "undefined") {
-		return "light";
-	}
-	return window.matchMedia?.("(prefers-color-scheme: dark)").matches
-		? "dark"
-		: "light";
-}
 
 export const useThemeStore = create<ThemeState>()(
 	persist(
@@ -31,7 +19,7 @@ export const useThemeStore = create<ThemeState>()(
 				})),
 		}),
 		{
-			name: STORAGE_KEY,
+			name: THEME_STORAGE_KEY,
 			storage: createJSONStorage(() => window.localStorage),
 		},
 	),

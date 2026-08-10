@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { useAuthStore } from "./auth-store";
+import { useAuthStore } from "../store/auth-store";
 
 type ProtectedRouteProps = {
 	/** Content rendered only after the stored token is verified with the server. */

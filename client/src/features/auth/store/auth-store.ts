@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { clearToken, getStoredToken, storeToken } from "./token";
-import { verifyTokenWithServer } from "./verify";
+import { clearToken, getStoredToken, storeToken } from "../utils/token";
+import { verifyTokenWithServer } from "../apis/verify";
 
 export type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
