@@ -18,9 +18,7 @@ type NavbarProps = {
 	onLoginClick?: () => void;
 	loginLabel?: string;
 	// account menu
-	onSettingsClick?: () => void;
-	onWorkspaceClick?: () => void;
-	onLogoutClick?: () => void;
+	accountItems?: DropdownItem[];
 };
 
 export function Navbar({
@@ -33,34 +31,9 @@ export function Navbar({
 	onAvatarClick,
 	onLoginClick,
 	loginLabel = "Log in",
-	onSettingsClick,
-	onWorkspaceClick,
-	onLogoutClick,
+	accountItems = [],
 }: NavbarProps) {
 	const classes = [styles.navbar, className].filter(Boolean).join(" ");
-
-	const accountItems: DropdownItem[] = [
-		{
-			id: "settings",
-			label: "Settings",
-			icon: "fa-solid fa-gear",
-			onSelect: onSettingsClick,
-		},
-		{
-			id: "workspace",
-			label: "Workspace",
-			icon: "fa-solid fa-diagram-project",
-			onSelect: onWorkspaceClick,
-		},
-		{ id: "account-separator", separator: true },
-		{
-			id: "logout",
-			label: "Logout",
-			icon: "fa-solid fa-right-from-bracket",
-			danger: true,
-			onSelect: onLogoutClick,
-		},
-	];
 
 	return (
 		<header className={classes}>

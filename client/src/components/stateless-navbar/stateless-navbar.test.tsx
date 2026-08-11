@@ -1,6 +1,38 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Navbar } from "./stateless-navbar";
+import type { DropdownItem } from "../dropdown";
+
+function accountItems(
+	handlers: {
+		onSettingsClick?: () => void;
+		onWorkspaceClick?: () => void;
+		onLogoutClick?: () => void;
+	} = {},
+): DropdownItem[] {
+	return [
+		{
+			id: "settings",
+			label: "Settings",
+			icon: "fa-solid fa-gear",
+			onSelect: handlers.onSettingsClick,
+		},
+		{
+			id: "workspace",
+			label: "Workspace",
+			icon: "fa-solid fa-diagram-project",
+			onSelect: handlers.onWorkspaceClick,
+		},
+		{ id: "account-separator", separator: true },
+		{
+			id: "logout",
+			label: "Logout",
+			icon: "fa-solid fa-right-from-bracket",
+			danger: true,
+			onSelect: handlers.onLogoutClick,
+		},
+	];
+}
 
 describe("Navbar", () => {
 	it("renders the fixed brand logo", () => {
@@ -75,9 +107,7 @@ describe("Navbar", () => {
 			<Navbar
 				isAuthenticated
 				avatarAlt="Jane Doe"
-				onSettingsClick={() => {}}
-				onWorkspaceClick={() => {}}
-				onLogoutClick={() => {}}
+				accountItems={accountItems()}
 			/>,
 		);
 
@@ -93,13 +123,15 @@ describe("Navbar", () => {
 		expect(screen.getByRole("separator")).toBeInTheDocument();
 	});
 
-	it("calls onSettingsClick when Settings is selected", () => {
+	it("calls the Settings handler when Settings is selected", () => {
 		const handleSettingsClick = vi.fn();
 		render(
 			<Navbar
 				isAuthenticated
 				avatarAlt="Jane Doe"
-				onSettingsClick={handleSettingsClick}
+				accountItems={accountItems({
+					onSettingsClick: handleSettingsClick,
+				})}
 			/>,
 		);
 
@@ -109,13 +141,15 @@ describe("Navbar", () => {
 		expect(handleSettingsClick).toHaveBeenCalledOnce();
 	});
 
-	it("calls onWorkspaceClick when Workspace is selected", () => {
+	it("calls the Workspace handler when Workspace is selected", () => {
 		const handleWorkspaceClick = vi.fn();
 		render(
 			<Navbar
 				isAuthenticated
 				avatarAlt="Jane Doe"
-				onWorkspaceClick={handleWorkspaceClick}
+				accountItems={accountItems({
+					onWorkspaceClick: handleWorkspaceClick,
+				})}
 			/>,
 		);
 
@@ -125,13 +159,15 @@ describe("Navbar", () => {
 		expect(handleWorkspaceClick).toHaveBeenCalledOnce();
 	});
 
-	it("calls onLogoutClick when Logout is selected", () => {
+	it("calls the Logout handler when Logout is selected", () => {
 		const handleLogoutClick = vi.fn();
 		render(
 			<Navbar
 				isAuthenticated
 				avatarAlt="Jane Doe"
-				onLogoutClick={handleLogoutClick}
+				accountItems={accountItems({
+					onLogoutClick: handleLogoutClick,
+				})}
 			/>,
 		);
 

@@ -7,5 +7,6 @@ export { ToggleButton as StatelessToggleButton } from "./stateless-toggle-button
 export { Navbar as StatelessNavbar } from "./stateless-navbar";
 export type { NavbarVariant } from "./stateless-navbar";
 export { Dropdown } from "./dropdown";
+export type { DropdownItem } from "./dropdown";
 export { Dropdown as StatelessDropdown } from "./stateless-dropdown";
 export type { Size, Variant } from "./common";

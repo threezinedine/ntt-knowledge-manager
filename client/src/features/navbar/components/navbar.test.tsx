@@ -44,4 +44,41 @@ describe("Navbar", () => {
 		expect(screen.queryByRole("button")).not.toBeInTheDocument();
 		expect(screen.queryByRole("img")).not.toBeInTheDocument();
 	});
+
+	it("shows the account menu items when authenticated", () => {
+		useAuthStore.setState({ token: "token-1", status: "authenticated" });
+		render(<Navbar />);
+
+		fireEvent.click(screen.getByRole("img", { name: "User avatar" }));
+
+		expect(
+			screen.getByRole("menuitem", { name: "Settings" }),
+		).toBeVisible();
+		expect(
+			screen.getByRole("menuitem", { name: "Workspace" }),
+		).toBeVisible();
+		expect(screen.getByRole("menuitem", { name: "Logout" })).toBeVisible();
+	});
+
+	it("navigates to the workspace when Workspace is selected", () => {
+		useAuthStore.setState({ token: "token-1", status: "authenticated" });
+		render(<Navbar />);
+
+		fireEvent.click(screen.getByRole("img", { name: "User avatar" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Workspace" }));
+
+		expect(window.location.hash).toBe("#/workspace");
+	});
+
+	it("logs out and returns home when Logout is selected", () => {
+		useAuthStore.setState({ token: "token-1", status: "authenticated" });
+		render(<Navbar />);
+
+		fireEvent.click(screen.getByRole("img", { name: "User avatar" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Logout" }));
+
+		expect(useAuthStore.getState().token).toBeNull();
+		expect(useAuthStore.getState().status).toBe("unauthenticated");
+		expect(window.location.hash).toBe("#/");
+	});
 });

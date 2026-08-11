@@ -1,6 +1,30 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Navbar } from "./stateless-navbar";
 import heroImage from "../../assets/hero.png";
+import type { DropdownItem } from "../dropdown";
+
+const accountItems: DropdownItem[] = [
+	{
+		id: "settings",
+		label: "Settings",
+		icon: "fa-solid fa-gear",
+		onSelect: () => {},
+	},
+	{
+		id: "workspace",
+		label: "Workspace",
+		icon: "fa-solid fa-diagram-project",
+		onSelect: () => {},
+	},
+	{ id: "account-separator", separator: true },
+	{
+		id: "logout",
+		label: "Logout",
+		icon: "fa-solid fa-right-from-bracket",
+		danger: true,
+		onSelect: () => {},
+	},
+];
 
 const meta = {
 	title: "Components/StatelessNavbar",
@@ -9,9 +33,6 @@ const meta = {
 		isAuthenticated: false,
 		onLoginClick: () => {},
 		onAvatarClick: () => {},
-		onSettingsClick: () => {},
-		onWorkspaceClick: () => {},
-		onLogoutClick: () => {},
 	},
 	argTypes: {
 		isAuthenticated: {
@@ -47,6 +68,7 @@ export const Authenticated: Story = {
 		isAuthenticated: true,
 		avatarSrc: heroImage,
 		avatarAlt: "Jane Doe",
+		accountItems,
 	},
 };
 
@@ -56,6 +78,7 @@ export const AuthenticatedWithoutImage: Story = {
 		avatarSrc: undefined,
 		avatarAlt: "Jane Doe",
 		avatarFallback: "J",
+		accountItems,
 	},
 };
 
