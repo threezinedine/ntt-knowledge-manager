@@ -4,6 +4,20 @@ import { Graph } from "./stateless-graph";
 const meta = {
 	title: "Components/StatelessGraph",
 	component: Graph,
+	// border is a story-only affordance to make the canvas bounds visible
+	// (it is intentionally NOT part of the component itself)
+	decorators: [
+		(Story) => (
+			<div
+				style={{
+					display: "inline-block",
+					border: "1px dashed #6b7280",
+				}}
+			>
+				<Story />
+			</div>
+		),
+	],
 	argTypes: {
 		width: {
 			control: "number",
