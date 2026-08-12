@@ -2,7 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
@@ -38,21 +38,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+api = APIRouter(prefix="/api")
 
-@app.get("/health")
+
+@api.get("/health")
 async def health(db: Session = Depends(get_db)) -> dict[str, str]:
     db.execute(text("SELECT 1"))
     return {"status": "ok Thao"}
 
 
-@app.get("/secure-health", dependencies=[Depends(require_login)])
+@api.get("/secure-health", dependencies=[Depends(require_login)])
 async def secure_health(db: Session = Depends(get_db)) -> dict[str, str]:
     db.execute(text("SELECT 1"))
     return {"status": "ok"}
 
 
-app.include_router(login_router)
-app.include_router(nodes_router)
+api.include_router(login_router)
+api.include_router(nodes_router)
+app.include_router(api)
 app.mount(
     "/",
     StaticFiles(directory=Path(__file__).with_name("static"), html=True),

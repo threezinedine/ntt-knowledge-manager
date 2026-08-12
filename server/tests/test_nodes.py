@@ -8,19 +8,19 @@ AUTH = {"Authorization": f"Bearer {os.environ['FIX_TOKEN']}"}
 def create_node(
     client: TestClient, title: str, **overrides: object
 ) -> dict[str, object]:
-    response = client.post("/nodes", headers=AUTH, json={"title": title, **overrides})
+    response = client.post("/api/nodes", headers=AUTH, json={"title": title, **overrides})
     assert response.status_code == 201
     return response.json()
 
 
 def test_nodes_require_login(client: TestClient) -> None:
-    assert client.get("/nodes").status_code == 401
-    assert client.post("/nodes", json={"title": "X"}).status_code == 401
+    assert client.get("/api/nodes").status_code == 401
+    assert client.post("/api/nodes", json={"title": "X"}).status_code == 401
 
 
 def test_create_node_with_metadata(client: TestClient) -> None:
     response = client.post(
-        "/nodes",
+        "/api/nodes",
         headers=AUTH,
         json={
             "title": "Alpha",
@@ -41,7 +41,7 @@ def test_list_nodes(client: TestClient) -> None:
     create_node(client, "Alpha")
     create_node(client, "Beta")
 
-    response = client.get("/nodes", headers=AUTH)
+    response = client.get("/api/nodes", headers=AUTH)
 
     assert response.status_code == 200
     assert [node["title"] for node in response.json()] == ["Alpha", "Beta"]
@@ -50,33 +50,33 @@ def test_list_nodes(client: TestClient) -> None:
 def test_get_node(client: TestClient) -> None:
     node = create_node(client, "Alpha")
 
-    response = client.get(f"/nodes/{node['id']}", headers=AUTH)
+    response = client.get(f"/api/nodes/{node['id']}", headers=AUTH)
 
     assert response.status_code == 200
     assert response.json()["title"] == "Alpha"
 
 
 def test_get_missing_node_404(client: TestClient) -> None:
-    response = client.get("/nodes/999", headers=AUTH)
+    response = client.get("/api/nodes/999", headers=AUTH)
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Node not found"}
 
 
 def test_node_map_requires_login(client: TestClient) -> None:
-    assert client.get("/nodes/map").status_code == 401
+    assert client.get("/api/nodes/map").status_code == 401
 
 
 def test_node_map_returns_outgoing_relations(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
     beta = create_node(client, "Beta")
     relation = client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={"target_node_id": beta["id"], "relation_type": "references"},
     ).json()
 
-    response = client.get("/nodes/map", headers=AUTH)
+    response = client.get("/api/nodes/map", headers=AUTH)
 
     assert response.status_code == 200
     data = response.json()
@@ -95,7 +95,7 @@ def test_update_node_metadata(client: TestClient) -> None:
     node = create_node(client, "Alpha")
 
     response = client.patch(
-        f"/nodes/{node['id']}",
+        f"/api/nodes/{node['id']}",
         headers=AUTH,
         json={"metadata": {"color": "blue"}, "content": "hello"},
     )
@@ -110,10 +110,10 @@ def test_update_node_metadata(client: TestClient) -> None:
 def test_delete_node(client: TestClient) -> None:
     node = create_node(client, "Alpha")
 
-    response = client.delete(f"/nodes/{node['id']}", headers=AUTH)
+    response = client.delete(f"/api/nodes/{node['id']}", headers=AUTH)
 
     assert response.status_code == 204
-    assert client.get(f"/nodes/{node['id']}", headers=AUTH).status_code == 404
+    assert client.get(f"/api/nodes/{node['id']}", headers=AUTH).status_code == 404
 
 
 def test_create_child_node(client: TestClient) -> None:
@@ -126,7 +126,7 @@ def test_create_child_node(client: TestClient) -> None:
 
 def test_create_node_with_missing_parent_404(client: TestClient) -> None:
     response = client.post(
-        "/nodes", headers=AUTH, json={"title": "Orphan", "parent_node_id": 999}
+        "/api/nodes", headers=AUTH, json={"title": "Orphan", "parent_node_id": 999}
     )
 
     assert response.status_code == 404
@@ -137,7 +137,7 @@ def test_update_node_parent(client: TestClient) -> None:
     child = create_node(client, "Child")
 
     response = client.patch(
-        f"/nodes/{child['id']}",
+        f"/api/nodes/{child['id']}",
         headers=AUTH,
         json={"parent_node_id": parent["id"]},
     )
@@ -151,7 +151,7 @@ def test_clear_node_parent(client: TestClient) -> None:
     child = create_node(client, "Child", parent_node_id=parent["id"])
 
     response = client.patch(
-        f"/nodes/{child['id']}", headers=AUTH, json={"clear_parent": True}
+        f"/api/nodes/{child['id']}", headers=AUTH, json={"clear_parent": True}
     )
 
     assert response.status_code == 200
@@ -162,7 +162,7 @@ def test_node_cannot_be_its_own_parent(client: TestClient) -> None:
     node = create_node(client, "Alpha")
 
     response = client.patch(
-        f"/nodes/{node['id']}",
+        f"/api/nodes/{node['id']}",
         headers=AUTH,
         json={"parent_node_id": node["id"]},
     )
@@ -175,7 +175,7 @@ def test_node_parent_cycle_rejected(client: TestClient) -> None:
     child = create_node(client, "Child", parent_node_id=root["id"])
 
     response = client.patch(
-        f"/nodes/{root['id']}",
+        f"/api/nodes/{root['id']}",
         headers=AUTH,
         json={"parent_node_id": child["id"]},
     )
@@ -187,9 +187,9 @@ def test_deleting_a_node_detaches_its_children(client: TestClient) -> None:
     parent = create_node(client, "Root")
     child = create_node(client, "Child", parent_node_id=parent["id"])
 
-    client.delete(f"/nodes/{parent['id']}", headers=AUTH)
+    client.delete(f"/api/nodes/{parent['id']}", headers=AUTH)
 
-    response = client.get(f"/nodes/{child['id']}", headers=AUTH)
+    response = client.get(f"/api/nodes/{child['id']}", headers=AUTH)
     assert response.json()["parent_node_id"] is None
 
 
@@ -198,7 +198,7 @@ def test_create_and_list_relations(client: TestClient) -> None:
     beta = create_node(client, "Beta")
 
     response = client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={
             "target_node_id": beta["id"],
@@ -215,15 +215,15 @@ def test_create_and_list_relations(client: TestClient) -> None:
     assert relation["metadata"] == {"weight": 3}
 
     # the relation is visible from either endpoint node
-    assert len(client.get(f"/nodes/{alpha['id']}/relations", headers=AUTH).json()) == 1
-    assert len(client.get(f"/nodes/{beta['id']}/relations", headers=AUTH).json()) == 1
+    assert len(client.get(f"/api/nodes/{alpha['id']}/relations", headers=AUTH).json()) == 1
+    assert len(client.get(f"/api/nodes/{beta['id']}/relations", headers=AUTH).json()) == 1
 
 
 def test_self_relation_rejected(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
 
     response = client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={"target_node_id": alpha["id"]},
     )
@@ -235,7 +235,7 @@ def test_relation_to_missing_node_404(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
 
     response = client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={"target_node_id": 999},
     )
@@ -247,13 +247,13 @@ def test_update_relation_metadata(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
     beta = create_node(client, "Beta")
     relation = client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={"target_node_id": beta["id"], "metadata": {"weight": 1}},
     ).json()
 
     response = client.patch(
-        f"/nodes/relations/{relation['id']}",
+        f"/api/nodes/relations/{relation['id']}",
         headers=AUTH,
         json={"relation_type": "related", "metadata": {"weight": 9}},
     )
@@ -268,26 +268,26 @@ def test_delete_relation(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
     beta = create_node(client, "Beta")
     relation = client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={"target_node_id": beta["id"]},
     ).json()
 
-    response = client.delete(f"/nodes/relations/{relation['id']}", headers=AUTH)
+    response = client.delete(f"/api/nodes/relations/{relation['id']}", headers=AUTH)
 
     assert response.status_code == 204
-    assert len(client.get(f"/nodes/{alpha['id']}/relations", headers=AUTH).json()) == 0
+    assert len(client.get(f"/api/nodes/{alpha['id']}/relations", headers=AUTH).json()) == 0
 
 
 def test_deleting_a_node_removes_its_relations(client: TestClient) -> None:
     alpha = create_node(client, "Alpha")
     beta = create_node(client, "Beta")
     client.post(
-        f"/nodes/{alpha['id']}/relations",
+        f"/api/nodes/{alpha['id']}/relations",
         headers=AUTH,
         json={"target_node_id": beta["id"]},
     )
 
-    client.delete(f"/nodes/{alpha['id']}", headers=AUTH)
+    client.delete(f"/api/nodes/{alpha['id']}", headers=AUTH)
 
-    assert len(client.get(f"/nodes/{beta['id']}/relations", headers=AUTH).json()) == 0
+    assert len(client.get(f"/api/nodes/{beta['id']}/relations", headers=AUTH).json()) == 0

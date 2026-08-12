@@ -14,7 +14,7 @@ def test_login_tokens_are_seeded(db_session: Session) -> None:
 
 
 def test_known_login_token_is_valid(client: TestClient) -> None:
-    response = client.get(f"/login-tokens/{os.environ['FIX_TOKEN']}")
+    response = client.get(f"/api/login-tokens/{os.environ['FIX_TOKEN']}")
     print(os.environ["FIX_TOKEN"])
 
     assert response.status_code == 200
@@ -22,7 +22,7 @@ def test_known_login_token_is_valid(client: TestClient) -> None:
 
 
 def test_unknown_login_token_is_invalid(client: TestClient) -> None:
-    response = client.get("/login-tokens/unknown-token")
+    response = client.get("/api/login-tokens/unknown-token")
 
     assert response.status_code == 200
     assert response.json() == {"valid": False}
