@@ -115,5 +115,5 @@ export class Node {
 		this.drawImpl(ctx);
 	}
 
-	protected drawImpl(ctx: CanvasRenderingContext2D): void {}
+	protected drawImpl(_ctx: CanvasRenderingContext2D): void {}
 }

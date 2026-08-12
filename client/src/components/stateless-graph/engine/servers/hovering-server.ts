@@ -6,9 +6,9 @@ export class HoveringServer extends Server {
 
 	protected stopImpl(): void {}
 
-	protected addElementImpl(element: Node): void {}
+	protected addElementImpl(_element: Node): void {}
 
-	protected removeElementImpl(element: Node): void {}
+	protected removeElementImpl(_element: Node): void {}
 
-	protected updateImpl(dt: number): void {}
+	protected updateImpl(_dt: number): void {}
 }
