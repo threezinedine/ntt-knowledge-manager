@@ -1,0 +1,119 @@
+import type { Point } from "../type";
+import type { Rectangle } from "../type";
+
+export class Node {
+	private children: Node[] = [];
+	private parent: Node | null = null;
+
+	protected position: Point = { x: 0, y: 0 };
+	protected bounds: Rectangle = {
+		topLeft: { x: 0, y: 0 },
+		topRight: { x: 0, y: 0 },
+		bottomRight: { x: 0, y: 0 },
+		bottomLeft: { x: 0, y: 0 },
+	};
+
+	get Position(): Point {
+		return this.position;
+	}
+
+	get WorldPosition(): Point {
+		if (this.parent) {
+			const parentWorldPos = this.parent.WorldPosition;
+			return {
+				x: parentWorldPos.x + this.position.x,
+				y: parentWorldPos.y + this.position.y,
+			};
+		}
+		return this.position;
+	}
+
+	set Position(pos: Point) {
+		this.position = pos;
+		this.onPositionChanged();
+	}
+
+	set WorldPosition(pos: Point) {
+		if (this.parent) {
+			const parentWorldPos = this.parent.WorldPosition;
+			this.position = {
+				x: pos.x - parentWorldPos.x,
+				y: pos.y - parentWorldPos.y,
+			};
+		} else {
+			this.position = pos;
+		}
+		this.onPositionChanged();
+	}
+
+	get Bounds(): Rectangle {
+		return this.bounds;
+	}
+
+	get WorldBounds(): Rectangle {
+		const worldPos = this.WorldPosition;
+		return {
+			topLeft: {
+				x: worldPos.x + this.bounds.topLeft.x,
+				y: worldPos.y + this.bounds.topLeft.y,
+			},
+			topRight: {
+				x: worldPos.x + this.bounds.topRight.x,
+				y: worldPos.y + this.bounds.topRight.y,
+			},
+			bottomRight: {
+				x: worldPos.x + this.bounds.bottomRight.x,
+				y: worldPos.y + this.bounds.bottomRight.y,
+			},
+			bottomLeft: {
+				x: worldPos.x + this.bounds.bottomLeft.x,
+				y: worldPos.y + this.bounds.bottomLeft.y,
+			},
+		};
+	}
+
+	private onPositionChanged(): void {
+		this.onPositionChangedImpl();
+	}
+
+	// There're 2 main objects types in the graph: nodes and edges.
+	// Nodes are the main objects that can have children, while edges are connections between nodes.
+	// The onPositionChanged method is called whenever a node's position is updated, allowing for
+	//      any necessary updates to be made to the node's state or its children's state.
+	protected onPositionChangedImpl(): void {}
+
+	get Parent(): Node | null {
+		return this.parent;
+	}
+
+	public addChild(child: Node): void {
+		this.children.push(child);
+		child.parent = this;
+		this.onChildAdded(child);
+		child.onPositionChanged();
+	}
+
+	protected onChildAdded(_: Node): void {}
+
+	public removeChild(child: Node): void {
+		const index = this.children.indexOf(child);
+		if (index !== -1) {
+			this.children.splice(index, 1);
+			child.parent = null;
+			this.onChildRemoved(child);
+			child.onPositionChanged();
+		}
+	}
+
+	protected onChildRemoved(_: Node): void {}
+
+	get Children(): Node[] {
+		return this.children;
+	}
+
+	public draw(ctx: CanvasRenderingContext2D): void {
+		this.drawImpl(ctx);
+	}
+
+	protected drawImpl(ctx: CanvasRenderingContext2D): void {}
+}
