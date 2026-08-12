@@ -4,6 +4,7 @@
 	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
+		"test:local": "playwright test --config=playwright.local.config.ts",
 		"test:dev": "playwright test --config=playwright.dev.config.ts",
 		"test:prod": "playwright test --config=playwright.prod.config.ts",
 		"install:browsers": "playwright install chromium"

@@ -48,12 +48,57 @@ services:
       target: server-development
     working_dir: /app
     environment:
-      # bind-mounted volumes don't reliably emit inotify events
       WATCHFILES_FORCE_POLLING: "true"
     volumes:
       - ./server:/app/server
       - ./.test.env:/app/.test.env
-    command: python -m watchfiles --filter python 'python -m pytest server/tests --color=yes' server
+      - ./test-dashboard/run-server-tests.sh:/scripts/run-server-tests.sh:ro
+      - ./test-dashboard/gen-server-report.sh:/scripts/gen-server-report.sh:ro
+      - ./test-dashboard/gen-report.py:/scripts/gen-report.py:ro
+      - ./test-results:/test-results
+    command: sh /scripts/run-server-tests.sh
+  client-tests:
+    build:
+      context: .
+      target: client-development
+    working_dir: /app/client
+    volumes:
+      - ./client:/app/client
+      - client_node_modules:/app/client/node_modules
+      - ./test-dashboard/run-client-tests.sh:/scripts/run-client-tests.sh:ro
+      - ./test-dashboard/gen-client-report.sh:/scripts/gen-client-report.sh:ro
+      - ./test-results:/test-results
+    command: sh /scripts/run-client-tests.sh
+  e2e-tests:
+    build:
+      context: .
+      target: client-development
+    working_dir: /app/e2e
+    volumes:
+      - ./e2e:/app/e2e
+      - e2e_node_modules:/app/e2e/node_modules
+      - playwright_browsers:/root/.cache/ms-playwright
+      - ./test-dashboard/run-e2e-tests.sh:/scripts/run-e2e-tests.sh:ro
+      - ./test-dashboard/gen-e2e-report.sh:/scripts/gen-e2e-report.sh:ro
+      - ./test-results:/test-results
+    depends_on:
+      - nginx
+    command: sh /scripts/run-e2e-tests.sh
+  test-dashboard:
+    build:
+      context: .
+      target: server-development
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./test-dashboard:/app/test-dashboard:ro
+      - ./test-results:/test-results
+    command: python /app/test-dashboard/serve.py
+    depends_on:
+      - server-tests
+      - client-tests
 
 volumes:
   client_node_modules:
+  e2e_node_modules:
+  playwright_browsers:

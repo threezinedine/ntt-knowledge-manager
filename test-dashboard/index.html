@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; }
+    .toolbar { display: flex; align-items: center; justify-content: center; padding: 12px 16px; gap: 16px; }
+    h1 { font-size: 1.4rem; color: #a0c4ff; }
+    .btn { padding: 8px 20px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-run { background: #4ade80; color: #0d1117; }
+    .btn-run:hover { background: #22c55e; }
+    .btn-run:disabled { background: #555; color: #999; cursor: not-allowed; }
+    .status-text { font-size: 0.8rem; color: #8b949e; }
+    .panels { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 8px 8px; height: calc(100vh - 60px); }
+    .panel { flex: 1 1 30%; min-width: 300px; display: flex; flex-direction: column; background: #16213e; border-radius: 8px; overflow: hidden; }
+    .panel-header { padding: 8px 12px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .panel-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.server { background: #4ade80; }
+    .dot.client { background: #60a5fa; }
+    .dot.e2e { background: #f59e0b; }
+    .panel iframe { flex: 1; border: none; background: #0d1117; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>Test Results Dashboard</h1>
+    <button class="btn btn-run" id="run-btn" onclick="triggerAll()">Run All Tests</button>
+    <span class="status-text" id="status"></span>
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-header"><span class="dot server"></span> Server Tests</div>
+      <iframe id="server-frame" src="/results/server/report.html"></iframe>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="dot client"></span> Client Tests</div>
+      <iframe id="client-frame" src="/results/client/report.html"></iframe>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="dot e2e"></span> E2E Tests</div>
+      <iframe id="e2e-frame" src="/results/e2e/report.html"></iframe>
+    </div>
+  </div>
+  <script>
+    var mtimes = { server: 0, client: 0, e2e: 0 };
+    var statusEl = document.getElementById('status');
+    var runBtn = document.getElementById('run-btn');
+
+    function reloadFrame(suite) {
+      var frame = document.getElementById(suite + '-frame');
+      if (frame) {
+        frame.src = '/results/' + suite + '/report.html?t=' + Date.now();
+      }
+    }
+
+    function pollMtimes() {
+      fetch('/api/mtimes')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          for (var suite in data) {
+            if (data[suite] > mtimes[suite]) {
+              mtimes[suite] = data[suite];
+              reloadFrame(suite);
+            }
+          }
+        })
+        .catch(function() {});
+    }
+
+    function triggerAll() {
+      runBtn.disabled = true;
+      runBtn.textContent = 'Running...';
+      statusEl.textContent = 'Tests triggered, waiting for results...';
+
+      fetch('/api/trigger', { method: 'POST' })
+        .then(function() {
+          setTimeout(function() {
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run All Tests';
+            statusEl.textContent = '';
+          }, 3000);
+        })
+        .catch(function() {
+          runBtn.disabled = false;
+          runBtn.textContent = 'Run All Tests';
+          statusEl.textContent = 'Trigger failed';
+        });
+    }
+
+    setInterval(pollMtimes, 2000);
+    pollMtimes();
+  </script>
+</body>
+</html>
