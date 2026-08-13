@@ -8,6 +8,8 @@ export { Navbar as StatelessNavbar } from "./stateless-navbar";
 export type { NavbarVariant } from "./stateless-navbar";
 export { Dropdown } from "./dropdown";
 export type { DropdownItem } from "./dropdown";
+export { Modal } from "./modal";
+export type { ModalRef } from "./modal";
 export { Dropdown as StatelessDropdown } from "./stateless-dropdown";
 export { Graph as StatelessGraph } from "./stateless-graph";
 export type { GraphItem, GraphRelation } from "./stateless-graph";
