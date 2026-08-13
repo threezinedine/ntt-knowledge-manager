@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+umask 0000
 
 mkdir -p /test-results/client
 cd /app/client
