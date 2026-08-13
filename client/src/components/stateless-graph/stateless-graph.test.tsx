@@ -14,6 +14,10 @@ beforeEach(() => {
 		stroke: vi.fn(),
 		fillText: vi.fn(),
 		closePath: vi.fn(),
+		save: vi.fn(),
+		restore: vi.fn(),
+		translate: vi.fn(),
+		rotate: vi.fn(),
 	} as unknown as CanvasRenderingContext2D;
 	vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(ctx);
 

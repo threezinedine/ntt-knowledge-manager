@@ -53,14 +53,71 @@ export class LabelNode extends Node {
 		this.textBaseline = b;
 	}
 
+	protected computeBounds() {
+		const width = this.fontSize * 0.6 * this.text.length;
+		const height = this.fontSize;
+
+		let left: number;
+		let right: number;
+		switch (this.textAlign) {
+			case "left":
+			case "start":
+				left = 0;
+				right = width;
+				break;
+			case "right":
+			case "end":
+				left = -width;
+				right = 0;
+				break;
+			default:
+				left = -width / 2;
+				right = width / 2;
+				break;
+		}
+
+		let top: number;
+		let bottom: number;
+		switch (this.textBaseline) {
+			case "top":
+			case "hanging":
+				top = 0;
+				bottom = height;
+				break;
+			case "bottom":
+			case "ideographic":
+			case "alphabetic":
+				top = -height;
+				bottom = 0;
+				break;
+			default:
+				top = -height / 2;
+				bottom = height / 2;
+				break;
+		}
+
+		return {
+			topLeft: { x: left, y: top },
+			topRight: { x: right, y: top },
+			bottomRight: { x: right, y: bottom },
+			bottomLeft: { x: left, y: bottom },
+		};
+	}
+
 	protected drawImpl(ctx: CanvasRenderingContext2D): void {
 		const worldPos = this.WorldPosition;
 		const { r, g, b, a } = this.Color;
+
+		ctx.save();
+		ctx.translate(worldPos.x, worldPos.y);
+		ctx.rotate(this.WorldRotation);
 
 		ctx.font = `${this.fontSize}px ${this.fontFamily}`;
 		ctx.textAlign = this.textAlign;
 		ctx.textBaseline = this.textBaseline;
 		ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
-		ctx.fillText(this.text, worldPos.x, worldPos.y);
+		ctx.fillText(this.text, 0, 0);
+
+		ctx.restore();
 	}
 }

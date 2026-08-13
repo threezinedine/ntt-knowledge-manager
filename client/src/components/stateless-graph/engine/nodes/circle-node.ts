@@ -17,7 +17,11 @@ export class CircleNode extends Node {
 
 	set Radius(r: number) {
 		this.radius = r;
-		this.bounds = {
+	}
+
+	protected computeBounds() {
+		const r = this.radius;
+		return {
 			topLeft: { x: -r, y: -r },
 			topRight: { x: r, y: -r },
 			bottomRight: { x: r, y: r },
@@ -44,8 +48,12 @@ export class CircleNode extends Node {
 	protected drawImpl(ctx: CanvasRenderingContext2D): void {
 		const worldPos = this.WorldPosition;
 
+		ctx.save();
+		ctx.translate(worldPos.x, worldPos.y);
+		ctx.rotate(this.WorldRotation);
+
 		ctx.beginPath();
-		ctx.arc(worldPos.x, worldPos.y, this.radius, 0, Math.PI * 2);
+		ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
 		const { r, g, b, a } = this.Color;
 		ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
 		ctx.fill();
@@ -58,5 +66,6 @@ export class CircleNode extends Node {
 		}
 
 		ctx.closePath();
+		ctx.restore();
 	}
 }

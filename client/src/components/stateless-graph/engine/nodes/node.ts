@@ -6,13 +6,8 @@ export class Node {
 	private _serverTags: Set<string> = new Set();
 
 	protected position: Point = { x: 0, y: 0 };
-	protected bounds: Rectangle = {
-		topLeft: { x: 0, y: 0 },
-		topRight: { x: 0, y: 0 },
-		bottomRight: { x: 0, y: 0 },
-		bottomLeft: { x: 0, y: 0 },
-	};
 	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
+	protected rotation: number = 0;
 
 	public addToServers(...tags: string[]): void {
 		for (const tag of tags) {
@@ -32,12 +27,30 @@ export class Node {
 	get WorldPosition(): Point {
 		if (this.parent) {
 			const parentWorldPos = this.parent.WorldPosition;
+			const parentWorldRot = this.parent.WorldRotation;
+			const cos = Math.cos(parentWorldRot);
+			const sin = Math.sin(parentWorldRot);
 			return {
-				x: parentWorldPos.x + this.position.x,
-				y: parentWorldPos.y + this.position.y,
+				x: parentWorldPos.x + this.position.x * cos - this.position.y * sin,
+				y: parentWorldPos.y + this.position.x * sin + this.position.y * cos,
 			};
 		}
 		return this.position;
+	}
+
+	get Rotation(): number {
+		return this.rotation;
+	}
+
+	set Rotation(r: number) {
+		this.rotation = r;
+	}
+
+	get WorldRotation(): number {
+		if (this.parent) {
+			return this.parent.WorldRotation + this.rotation;
+		}
+		return this.rotation;
 	}
 
 	set Position(pos: Point) {
@@ -56,9 +69,14 @@ export class Node {
 	set WorldPosition(pos: Point) {
 		if (this.parent) {
 			const parentWorldPos = this.parent.WorldPosition;
+			const parentWorldRot = this.parent.WorldRotation;
+			const cos = Math.cos(-parentWorldRot);
+			const sin = Math.sin(-parentWorldRot);
+			const dx = pos.x - parentWorldPos.x;
+			const dy = pos.y - parentWorldPos.y;
 			this.position = {
-				x: pos.x - parentWorldPos.x,
-				y: pos.y - parentWorldPos.y,
+				x: dx * cos - dy * sin,
+				y: dx * sin + dy * cos,
 			};
 		} else {
 			this.position = pos;
@@ -66,29 +84,50 @@ export class Node {
 		this.onPositionChanged();
 	}
 
+	protected computeBounds(): Rectangle {
+		return {
+			topLeft: { x: 0, y: 0 },
+			topRight: { x: 0, y: 0 },
+			bottomRight: { x: 0, y: 0 },
+			bottomLeft: { x: 0, y: 0 },
+		};
+	}
+
 	get Bounds(): Rectangle {
-		return this.bounds;
+		return this.computeBounds();
 	}
 
 	get WorldBounds(): Rectangle {
 		const worldPos = this.WorldPosition;
+		const local = this.computeBounds();
+		const worldRot = this.WorldRotation;
+		const cos = Math.cos(worldRot);
+		const sin = Math.sin(worldRot);
+
+		const corners: Point[] = [
+			local.topLeft,
+			local.topRight,
+			local.bottomRight,
+			local.bottomLeft,
+		];
+
+		const rotated = corners.map((c) => ({
+			x: worldPos.x + c.x * cos - c.y * sin,
+			y: worldPos.y + c.x * sin + c.y * cos,
+		}));
+
+		const xs = rotated.map((p) => p.x);
+		const ys = rotated.map((p) => p.y);
+		const minX = Math.min(...xs);
+		const maxX = Math.max(...xs);
+		const minY = Math.min(...ys);
+		const maxY = Math.max(...ys);
+
 		return {
-			topLeft: {
-				x: worldPos.x + this.bounds.topLeft.x,
-				y: worldPos.y + this.bounds.topLeft.y,
-			},
-			topRight: {
-				x: worldPos.x + this.bounds.topRight.x,
-				y: worldPos.y + this.bounds.topRight.y,
-			},
-			bottomRight: {
-				x: worldPos.x + this.bounds.bottomRight.x,
-				y: worldPos.y + this.bounds.bottomRight.y,
-			},
-			bottomLeft: {
-				x: worldPos.x + this.bounds.bottomLeft.x,
-				y: worldPos.y + this.bounds.bottomLeft.y,
-			},
+			topLeft: { x: minX, y: minY },
+			topRight: { x: maxX, y: minY },
+			bottomRight: { x: maxX, y: maxY },
+			bottomLeft: { x: minX, y: maxY },
 		};
 	}
 

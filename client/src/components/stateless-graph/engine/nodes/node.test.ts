@@ -126,9 +126,8 @@ describe("Node", () => {
 
 	it("reports local bounds and world-shifted bounds", () => {
 		const node = new (class extends Node {
-			constructor() {
-				super();
-				this.bounds = {
+			protected computeBounds() {
+				return {
 					topLeft: { x: -10, y: -10 },
 					topRight: { x: 10, y: -10 },
 					bottomRight: { x: 10, y: 10 },
@@ -141,6 +140,97 @@ describe("Node", () => {
 		expect(node.Bounds.topLeft).toEqual({ x: -10, y: -10 });
 		expect(node.WorldBounds.topLeft).toEqual({ x: 90, y: 40 });
 		expect(node.WorldBounds.bottomRight).toEqual({ x: 110, y: 60 });
+	});
+
+	it("applies rotation to world bounds", () => {
+		const node = new (class extends Node {
+			protected computeBounds() {
+				return {
+					topLeft: { x: -20, y: -10 },
+					topRight: { x: 20, y: -10 },
+					bottomRight: { x: 20, y: 10 },
+					bottomLeft: { x: -20, y: 10 },
+				};
+			}
+		})();
+		node.Position = { x: 0, y: 0 };
+		node.Rotation = Math.PI / 2;
+
+		const wb = node.WorldBounds;
+		expect(wb.topLeft.x).toBeCloseTo(-10);
+		expect(wb.topLeft.y).toBeCloseTo(-20);
+		expect(wb.bottomRight.x).toBeCloseTo(10);
+		expect(wb.bottomRight.y).toBeCloseTo(20);
+	});
+
+	it("rotates child world position by parent rotation", () => {
+		const parent = new Node();
+		const child = new Node();
+		parent.Position = { x: 100, y: 0 };
+		parent.Rotation = Math.PI / 2;
+		child.Position = { x: 10, y: 0 };
+
+		parent.addChild(child);
+
+		expect(child.Position).toEqual({ x: 10, y: 0 });
+		expect(child.WorldPosition.x).toBeCloseTo(100);
+		expect(child.WorldPosition.y).toBeCloseTo(10);
+	});
+
+	it("accumulates world rotation through parent chain", () => {
+		const grandparent = new Node();
+		const parent = new Node();
+		const child = new Node();
+		grandparent.Rotation = Math.PI / 4;
+		parent.Rotation = Math.PI / 4;
+		child.Rotation = Math.PI / 4;
+
+		grandparent.addChild(parent);
+		parent.addChild(child);
+
+		expect(child.WorldRotation).toBeCloseTo((3 * Math.PI) / 4);
+	});
+
+	it("returns local rotation as world rotation for a parentless node", () => {
+		const node = new Node();
+		node.Rotation = Math.PI / 3;
+
+		expect(node.WorldRotation).toBe(Math.PI / 3);
+	});
+
+	it("rotates child world position through multiple parent levels", () => {
+		const grandparent = new Node();
+		const parent = new Node();
+		const child = new Node();
+		grandparent.Position = { x: 0, y: 0 };
+		grandparent.Rotation = Math.PI / 2;
+		parent.Position = { x: 10, y: 0 };
+		child.Position = { x: 5, y: 0 };
+
+		grandparent.addChild(parent);
+		parent.addChild(child);
+
+		// grandparent rotates parent's (10,0) by 90° → world (0,10)
+		expect(parent.WorldPosition.x).toBeCloseTo(0);
+		expect(parent.WorldPosition.y).toBeCloseTo(10);
+		// parent inherits 90° rotation, so child's (5,0) rotates → world (0,15)
+		expect(child.WorldPosition.x).toBeCloseTo(0);
+		expect(child.WorldPosition.y).toBeCloseTo(15);
+	});
+
+	it("sets local position via WorldPosition accounting for parent rotation", () => {
+		const parent = new Node();
+		const child = new Node();
+		parent.Position = { x: 100, y: 0 };
+		parent.Rotation = Math.PI / 2;
+		parent.addChild(child);
+
+		child.WorldPosition = { x: 100, y: 10 };
+
+		expect(child.Position.x).toBeCloseTo(10);
+		expect(child.Position.y).toBeCloseTo(0);
+		expect(child.WorldPosition.x).toBeCloseTo(100);
+		expect(child.WorldPosition.y).toBeCloseTo(10);
 	});
 
 	it("should be added to all servers when no server tags are set", () => {

@@ -62,6 +62,8 @@ export function Graph({
 		label.FontSize = 14;
 		label.FontFamily = "Arial";
 
+		circleNode.Rotation = Math.PI / 4;
+
 		circleNode.addChild(label);
 		engine.addNode(circleNode);
 
