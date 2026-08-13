@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { EditorPreview } from "./editor-preview";
 
 describe("EditorPreview", () => {
@@ -33,5 +33,33 @@ describe("EditorPreview", () => {
 		render(<EditorPreview value={"```\nconsole.log('hi')\n```"} />);
 
 		expect(screen.getByTestId("editor-preview").querySelector("code")).toBeInTheDocument();
+	});
+
+	it("renders [[text]] as a wiki link", () => {
+		render(<EditorPreview value="go to [[my note]]" />);
+
+		const link = screen.getByTestId("editor-preview").querySelector("a[data-wiki-link]");
+		expect(link).toBeInTheDocument();
+		expect(link).toHaveTextContent("my note");
+		expect(link).toHaveAttribute("data-wiki-link", "my note");
+	});
+
+	it("calls onWikiLinkClick when a wiki link is clicked", () => {
+		const handler = vi.fn();
+		render(<EditorPreview value="see [[target page]]" onWikiLinkClick={handler} />);
+
+		const link = screen.getByTestId("editor-preview").querySelector("a[data-wiki-link]")!;
+		fireEvent.click(link);
+
+		expect(handler).toHaveBeenCalledWith("target page");
+	});
+
+	it("renders multiple wiki links", () => {
+		render(<EditorPreview value="[[first]] and [[second]]" />);
+
+		const links = screen.getByTestId("editor-preview").querySelectorAll("a[data-wiki-link]");
+		expect(links).toHaveLength(2);
+		expect(links[0]).toHaveTextContent("first");
+		expect(links[1]).toHaveTextContent("second");
 	});
 });

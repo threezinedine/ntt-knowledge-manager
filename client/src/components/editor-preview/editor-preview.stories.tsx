@@ -14,6 +14,10 @@ This is a **markdown** editor with *Vim keybindings*.
 - Markdown syntax highlighting
 - Code block support
 
+## Wiki Links
+
+Try clicking these: [[Getting Started]], [[API Reference]], [[Architecture]]
+
 ## Code Example
 
 \`\`\`typescript
@@ -60,7 +64,10 @@ function EditorWithPreview({
 					overflow: "auto",
 				}}
 			>
-				<EditorPreview value={content} />
+				<EditorPreview
+					value={content}
+					onWikiLinkClick={(link) => alert(`Navigate to: ${link}`)}
+				/>
 			</div>
 		</div>
 	);
@@ -84,6 +91,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	args: {
 		value: SAMPLE_MARKDOWN,
+		onWikiLinkClick: (link: string) => alert(`Navigate to: ${link}`),
 	},
 };
 

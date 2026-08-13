@@ -46,4 +46,15 @@
 	input[type="checkbox"] {
 		margin-right: 0.5em;
 	}
+
+	.wikiLink {
+		color: var(--color-link, #7c3aed);
+		text-decoration: none;
+		border-bottom: 1px dashed var(--color-link, #7c3aed);
+		cursor: pointer;
+
+		&:hover {
+			border-bottom-style: solid;
+		}
+	}
 }
