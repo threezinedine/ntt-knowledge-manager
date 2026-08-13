@@ -49,6 +49,18 @@ export class HoveringServer extends Server {
 		this._dragTarget = null;
 	};
 
+	private _onDblClick = (e: MouseEvent) => {
+		const pos: Point = { x: e.offsetX, y: e.offsetY };
+		for (const node of this._nodes) {
+			const hoverNode = node as HoveringNode;
+			const ref = hoverNode.RefNode;
+			if (ref && ref.hitTest(pos) && ref.onDoubleClick) {
+				ref.onDoubleClick();
+				break;
+			}
+		}
+	};
+
 	constructor(canvas: HTMLCanvasElement) {
 		super("hovering");
 		this._canvas = canvas;
@@ -59,6 +71,7 @@ export class HoveringServer extends Server {
 		this._canvas.addEventListener("mousedown", this._onMouseDown);
 		this._canvas.addEventListener("mouseup", this._onMouseUp);
 		this._canvas.addEventListener("mouseleave", this._onMouseUp);
+		this._canvas.addEventListener("dblclick", this._onDblClick);
 	}
 
 	protected stopImpl(): void {
@@ -66,6 +79,7 @@ export class HoveringServer extends Server {
 		this._canvas.removeEventListener("mousedown", this._onMouseDown);
 		this._canvas.removeEventListener("mouseup", this._onMouseUp);
 		this._canvas.removeEventListener("mouseleave", this._onMouseUp);
+		this._canvas.removeEventListener("dblclick", this._onDblClick);
 	}
 
 	protected updateImpl(_dt: number): void {

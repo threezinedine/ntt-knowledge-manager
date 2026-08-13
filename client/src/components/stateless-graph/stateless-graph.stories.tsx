@@ -262,3 +262,62 @@ export const Arrows: Story = {
 		onEngine: setupArrowsDemo,
 	},
 };
+
+function setupDoubleClickDemo(engine: Engine) {
+	const tweens = engine.tweens;
+
+	const colors = [
+		{ r: 220, g: 60, b: 60 },
+		{ r: 60, g: 180, b: 60 },
+		{ r: 60, g: 60, b: 220 },
+		{ r: 220, g: 160, b: 20 },
+	];
+
+	function makeNode(x: number, y: number, label: string) {
+		const circle = new CircleNode();
+		circle.Position = { x, y };
+		circle.Radius = 22;
+		circle.Color = { ...colors[0], a: 1 };
+		circle.BorderWidth = 2;
+		circle.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
+
+		const lbl = new LabelNode();
+		lbl.Position = { x: 0, y: 38 };
+		lbl.Text = label;
+		lbl.Color = { r: 0, g: 0, b: 0, a: 1 };
+		lbl.FontSize = 13;
+
+		const hover = new HoveringNode();
+		hover.RefNode = circle;
+
+		let hoverTween: number | null = null;
+		circle.onHoverEnter = () => {
+			if (hoverTween !== null) tweens.stop(hoverTween);
+			hoverTween = tweens.start(circle, 0.15, { prop: "Radius", to: 28 });
+		};
+		circle.onHoverExit = () => {
+			if (hoverTween !== null) tweens.stop(hoverTween);
+			hoverTween = tweens.start(circle, 0.15, { prop: "Radius", to: 22 });
+		};
+
+		let colorIdx = 0;
+		circle.onDoubleClick = () => {
+			colorIdx = (colorIdx + 1) % colors.length;
+			circle.Color = { ...colors[colorIdx], a: 1 };
+		};
+
+		circle.addChild(lbl);
+		circle.addChild(hover);
+		engine.addNode(circle);
+		return circle;
+	}
+
+	makeNode(200, 150, "Double-click me");
+	makeNode(450, 150, "Me too");
+}
+
+export const DoubleClick: Story = {
+	args: {
+		onEngine: setupDoubleClickDemo,
+	},
+};

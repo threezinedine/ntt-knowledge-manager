@@ -190,6 +190,7 @@ export class Node {
 
 	public onHoverEnter?: () => void;
 	public onHoverExit?: () => void;
+	public onDoubleClick?: () => void;
 
 	public checkHover(_mousePos: Point): void {}
 
