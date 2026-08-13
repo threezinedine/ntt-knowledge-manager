@@ -1,11 +1,11 @@
 import { useRef, useEffect } from "react";
+import { useTheme } from "../../features/theme";
 import styles from "./editor.module.scss";
 
 type EditorProps = {
 	className?: string;
 	defaultValue?: string;
 	vimMode?: boolean;
-	darkTheme?: boolean;
 	onChange?: (value: string) => void;
 };
 
@@ -13,11 +13,11 @@ export function Editor({
 	className,
 	defaultValue = "",
 	vimMode = true,
-	darkTheme = false,
 	onChange,
 }: EditorProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewRef = useRef<unknown>(null);
+	const { theme } = useTheme();
 	const classes = [styles.editor, className].filter(Boolean).join(" ");
 
 	useEffect(() => {
@@ -60,7 +60,7 @@ export function Editor({
 			];
 
 			if (vimMode) extensions.unshift(vim());
-			if (darkTheme) extensions.push(oneDark);
+			if (theme === "dark") extensions.push(oneDark);
 
 			const state = EditorState.create({
 				doc: defaultValue,
@@ -82,7 +82,7 @@ export function Editor({
 				viewRef.current = null;
 			}
 		};
-	}, [vimMode, darkTheme]);
+	}, [vimMode, theme]);
 
 	return <div ref={containerRef} className={classes} data-testid="editor" />;
 }

@@ -35,7 +35,6 @@ const meta = {
 	component: Editor,
 	argTypes: {
 		vimMode: { control: "boolean" },
-		darkTheme: { control: "boolean" },
 	},
 	decorators: [
 		(Story) => (
@@ -53,15 +52,6 @@ export const Default: Story = {
 	args: {
 		defaultValue: SAMPLE_MARKDOWN,
 		vimMode: true,
-		darkTheme: false,
-	},
-};
-
-export const DarkMode: Story = {
-	args: {
-		defaultValue: SAMPLE_MARKDOWN,
-		vimMode: true,
-		darkTheme: true,
 	},
 };
 
@@ -69,13 +59,11 @@ export const NoVim: Story = {
 	args: {
 		defaultValue: SAMPLE_MARKDOWN,
 		vimMode: false,
-		darkTheme: false,
 	},
 };
 
 export const Empty: Story = {
 	args: {
 		vimMode: true,
-		darkTheme: false,
 	},
 };

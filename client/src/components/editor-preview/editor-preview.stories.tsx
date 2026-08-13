@@ -36,13 +36,7 @@ function greet(name: string): string {
 > Press \`Escape\` to enter Normal mode, \`i\` to insert.
 `;
 
-function EditorWithPreview({
-	vimMode = true,
-	darkTheme = false,
-}: {
-	vimMode?: boolean;
-	darkTheme?: boolean;
-}) {
+function EditorWithPreview({ vimMode = true }: { vimMode?: boolean }) {
 	const [content, setContent] = useState(SAMPLE_MARKDOWN);
 
 	return (
@@ -51,7 +45,6 @@ function EditorWithPreview({
 				<Editor
 					defaultValue={SAMPLE_MARKDOWN}
 					vimMode={vimMode}
-					darkTheme={darkTheme}
 					onChange={setContent}
 				/>
 			</div>
@@ -99,6 +92,6 @@ export const WithEditor: Story = {
 	render: () => <EditorWithPreview />,
 };
 
-export const WithEditorDark: Story = {
-	render: () => <EditorWithPreview darkTheme />,
+export const WithEditorNoVim: Story = {
+	render: () => <EditorWithPreview vimMode={false} />,
 };
