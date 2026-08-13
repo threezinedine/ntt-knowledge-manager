@@ -1,5 +1,6 @@
 import { Node } from "./node";
 import type { RGBAColor } from "../type";
+import { RENDERING_SERVER_TAG } from "../servers";
 export class CircleNode extends Node {
 	protected radius: number = 20;
 	protected borderWidth: number = 2;
@@ -7,6 +8,7 @@ export class CircleNode extends Node {
 
 	constructor() {
 		super();
+		this.addToServers(RENDERING_SERVER_TAG);
 	}
 
 	get Radius(): number {

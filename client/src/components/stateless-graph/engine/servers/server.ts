@@ -2,6 +2,11 @@ import type { Node } from "../nodes";
 
 export class Server {
 	protected _nodes: Node[] = [];
+	readonly tag: string;
+
+	constructor(tag: string = "") {
+		this.tag = tag;
+	}
 
 	start(): void {
 		this.startImpl();

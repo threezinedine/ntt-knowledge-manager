@@ -3,6 +3,7 @@ import type { Point, Rectangle, RGBAColor } from "../type";
 export class Node {
 	private children: Node[] = [];
 	private parent: Node | null = null;
+	private _serverTags: Set<string> = new Set();
 
 	protected position: Point = { x: 0, y: 0 };
 	protected bounds: Rectangle = {
@@ -12,6 +13,17 @@ export class Node {
 		bottomLeft: { x: 0, y: 0 },
 	};
 	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
+
+	public addToServers(...tags: string[]): void {
+		for (const tag of tags) {
+			this._serverTags.add(tag);
+		}
+	}
+
+	public shouldAddToServer(serverTag: string): boolean {
+		if (this._serverTags.size === 0) return true;
+		return this._serverTags.has(serverTag);
+	}
 
 	get Position(): Point {
 		return this.position;

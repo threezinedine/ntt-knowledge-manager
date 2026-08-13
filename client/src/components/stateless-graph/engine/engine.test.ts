@@ -155,6 +155,65 @@ describe("Engine base building blocks (Server + Node together)", () => {
 		expect(canvas.getContext).toHaveBeenCalled();
 	});
 
+	it("only adds a node to servers matching its tags", () => {
+		const serverA = new SpyServer("alpha");
+		const serverB = new SpyServer("beta");
+
+		const node = new Node();
+		node.addToServers("alpha");
+
+		// emulate Engine.addNode with filtering
+		for (const manager of [serverA, serverB]) {
+			if (node.shouldAddToServer(manager.tag)) {
+				manager.addElement(node);
+			}
+		}
+
+		expect(serverA.nodes).toContain(node);
+		expect(serverB.nodes).not.toContain(node);
+	});
+
+	it("adds a node to all servers when no tags are set", () => {
+		const serverA = new SpyServer("alpha");
+		const serverB = new SpyServer("beta");
+
+		const node = new Node();
+
+		for (const manager of [serverA, serverB]) {
+			if (node.shouldAddToServer(manager.tag)) {
+				manager.addElement(node);
+			}
+		}
+
+		expect(serverA.nodes).toContain(node);
+		expect(serverB.nodes).toContain(node);
+	});
+
+	it("filters children independently from their parent", () => {
+		const serverA = new SpyServer("alpha");
+		const serverB = new SpyServer("beta");
+
+		const parent = new Node();
+		parent.addToServers("alpha", "beta");
+		const child = new Node();
+		child.addToServers("alpha");
+		parent.addChild(child);
+
+		for (const manager of [serverA, serverB]) {
+			if (parent.shouldAddToServer(manager.tag)) {
+				manager.addElement(parent);
+			}
+			for (const c of parent.Children) {
+				if (c.shouldAddToServer(manager.tag)) {
+					manager.addElement(c);
+				}
+			}
+		}
+
+		expect(serverA.nodes).toEqual([parent, child]);
+		expect(serverB.nodes).toEqual([parent]);
+	});
+
 	it("adds a node and its children to all servers via addNode", () => {
 		const canvas = fakeCanvas();
 		const engine = new Engine(canvas);

@@ -1,10 +1,12 @@
 import { Server } from "./server";
 
+export const RENDERING_SERVER_TAG = "rendering";
+
 export class RenderingServer extends Server {
 	private _canvas: HTMLCanvasElement;
 
 	constructor(canvas: HTMLCanvasElement) {
-		super();
+		super(RENDERING_SERVER_TAG);
 		this._canvas = canvas;
 	}
 

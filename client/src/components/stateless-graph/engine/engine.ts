@@ -32,10 +32,14 @@ export class Engine {
 
 	public addNode(node: Node): void {
 		for (const server of this._servers) {
-			server.addElement(node);
+			if (node.shouldAddToServer(server.tag)) {
+				server.addElement(node);
+			}
 
 			for (const child of node.Children) {
-				server.addElement(child);
+				if (child.shouldAddToServer(server.tag)) {
+					server.addElement(child);
+				}
 			}
 		}
 	}
@@ -43,10 +47,14 @@ export class Engine {
 	public removeNode(node: Node): void {
 		for (const server of this._servers) {
 			for (const child of node.Children) {
-				server.removeElement(child);
+				if (child.shouldAddToServer(server.tag)) {
+					server.removeElement(child);
+				}
 			}
 
-			server.removeElement(node);
+			if (node.shouldAddToServer(server.tag)) {
+				server.removeElement(node);
+			}
 		}
 	}
 }

@@ -143,6 +143,31 @@ describe("Node", () => {
 		expect(node.WorldBounds.bottomRight).toEqual({ x: 110, y: 60 });
 	});
 
+	it("should be added to all servers when no server tags are set", () => {
+		const node = new Node();
+
+		expect(node.shouldAddToServer("rendering")).toBe(true);
+		expect(node.shouldAddToServer("hovering")).toBe(true);
+		expect(node.shouldAddToServer("anything")).toBe(true);
+	});
+
+	it("should only be added to servers matching its tags", () => {
+		const node = new Node();
+		node.addToServers("rendering");
+
+		expect(node.shouldAddToServer("rendering")).toBe(true);
+		expect(node.shouldAddToServer("hovering")).toBe(false);
+	});
+
+	it("supports multiple server tags", () => {
+		const node = new Node();
+		node.addToServers("rendering", "hovering");
+
+		expect(node.shouldAddToServer("rendering")).toBe(true);
+		expect(node.shouldAddToServer("hovering")).toBe(true);
+		expect(node.shouldAddToServer("other")).toBe(false);
+	});
+
 	it("forwards draw(ctx) to its drawImpl hook", () => {
 		const onDraw = vi.fn();
 		const node = new (class extends Node {
