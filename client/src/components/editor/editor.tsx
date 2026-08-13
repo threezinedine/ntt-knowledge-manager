@@ -1,6 +1,18 @@
-import { useRef, useEffect } from "react";
-import { useTheme } from "../../features/theme";
+import { useRef, useEffect, useSyncExternalStore } from "react";
 import styles from "./editor.module.scss";
+
+function subscribeToTheme(callback: () => void) {
+	const observer = new MutationObserver(callback);
+	observer.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ["data-theme"],
+	});
+	return () => observer.disconnect();
+}
+
+function getThemeSnapshot() {
+	return document.documentElement.getAttribute("data-theme") ?? "light";
+}
 
 type EditorProps = {
 	className?: string;
@@ -17,7 +29,7 @@ export function Editor({
 }: EditorProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const viewRef = useRef<unknown>(null);
-	const { theme } = useTheme();
+	const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot);
 	const classes = [styles.editor, className].filter(Boolean).join(" ");
 
 	useEffect(() => {
