@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Graph } from "./stateless-graph";
 import type { GraphItem } from "./stateless-graph";
-import { CircleNode, LabelNode, HoveringNode, ArrowNode } from "./engine";
+import { CircleNode, LabelNode, HoveringNode, ArrowNode, GravityNode } from "./engine";
+import type { ArrowTextDirection } from "./engine/nodes/arrow-node";
 import type { Engine } from "./engine";
 
 const meta = {
@@ -220,6 +221,8 @@ function setupArrowsDemo(engine: Engine) {
 		direction: "forward" | "both" | "none",
 		color: { r: number; g: number; b: number },
 		lineWidth = 2,
+		text = "",
+		textDirection: ArrowTextDirection = "horizontal",
 	): ArrowNode {
 		const arrow = new ArrowNode();
 		arrow.StartNode = start;
@@ -227,6 +230,8 @@ function setupArrowsDemo(engine: Engine) {
 		arrow.Direction = direction;
 		arrow.Color = { ...color, a: 1 };
 		arrow.LineWidth = lineWidth;
+		arrow.Text = text;
+		arrow.TextDirection = textDirection;
 
 		const hover = new HoveringNode();
 		hover.RefNode = arrow;
@@ -250,15 +255,214 @@ function setupArrowsDemo(engine: Engine) {
 	const c = makeCircle(400, 280, "C", { r: 60, g: 180, b: 60 });
 	const d = makeCircle(650, 180, "D", { r: 180, g: 120, b: 60 });
 
-	makeArrow(a, b, "forward", { r: 80, g: 80, b: 80 });
-	makeArrow(b, c, "both", { r: 60, g: 120, b: 200 });
-	makeArrow(a, c, "none", { r: 160, g: 160, b: 160 }, 1);
-	makeArrow(c, d, "forward", { r: 80, g: 80, b: 80 });
-	makeArrow(b, d, "forward", { r: 80, g: 80, b: 80 });
+	makeArrow(a, b, "forward", { r: 80, g: 80, b: 80 }, 2, "links to", "follow");
+	makeArrow(b, c, "both", { r: 60, g: 120, b: 200 }, 2, "syncs", "horizontal");
+	makeArrow(a, c, "none", { r: 160, g: 160, b: 160 }, 1, "related", "follow");
+	makeArrow(c, d, "forward", { r: 80, g: 80, b: 80 }, 2, "depends on", "horizontal");
+	makeArrow(b, d, "forward", { r: 80, g: 80, b: 80 }, 2, "calls", "follow");
 }
 
 export const Arrows: Story = {
 	args: {
 		onEngine: setupArrowsDemo,
+	},
+};
+
+function setupDoubleClickDemo(engine: Engine) {
+	const tweens = engine.tweens;
+
+	const colors = [
+		{ r: 220, g: 60, b: 60 },
+		{ r: 60, g: 180, b: 60 },
+		{ r: 60, g: 60, b: 220 },
+		{ r: 220, g: 160, b: 20 },
+	];
+
+	function makeNode(x: number, y: number, label: string) {
+		const circle = new CircleNode();
+		circle.Position = { x, y };
+		circle.Radius = 22;
+		circle.Color = { ...colors[0], a: 1 };
+		circle.BorderWidth = 2;
+		circle.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
+
+		const lbl = new LabelNode();
+		lbl.Position = { x: 0, y: 38 };
+		lbl.Text = label;
+		lbl.Color = { r: 0, g: 0, b: 0, a: 1 };
+		lbl.FontSize = 13;
+
+		const hover = new HoveringNode();
+		hover.RefNode = circle;
+
+		let hoverTween: number | null = null;
+		circle.onHoverEnter = () => {
+			if (hoverTween !== null) tweens.stop(hoverTween);
+			hoverTween = tweens.start(circle, 0.15, { prop: "Radius", to: 28 });
+		};
+		circle.onHoverExit = () => {
+			if (hoverTween !== null) tweens.stop(hoverTween);
+			hoverTween = tweens.start(circle, 0.15, { prop: "Radius", to: 22 });
+		};
+
+		let colorIdx = 0;
+		circle.onDoubleClick = () => {
+			colorIdx = (colorIdx + 1) % colors.length;
+			circle.Color = { ...colors[colorIdx], a: 1 };
+		};
+
+		circle.addChild(lbl);
+		circle.addChild(hover);
+		engine.addNode(circle);
+		return circle;
+	}
+
+	makeNode(200, 150, "Double-click me");
+	makeNode(450, 150, "Me too");
+}
+
+export const DoubleClick: Story = {
+	args: {
+		onEngine: setupDoubleClickDemo,
+	},
+};
+
+function setupForceLayoutDemo(
+	engine: Engine,
+	opts: {
+		repulsion: number;
+		attraction: number;
+		centerGravity: number;
+		damping: number;
+	},
+) {
+	const g = engine.gravity;
+	g.RepulsionStrength = opts.repulsion;
+	g.AttractionStrength = opts.attraction;
+	g.CenterGravity = opts.centerGravity;
+	g.Damping = opts.damping;
+
+	const tweens = engine.tweens;
+	const cx = 400;
+	const cy = 200;
+
+	const nodeData = [
+		{ label: "Core", color: { r: 220, g: 60, b: 60 } },
+		{ label: "Auth", color: { r: 60, g: 60, b: 220 } },
+		{ label: "API", color: { r: 60, g: 180, b: 60 } },
+		{ label: "DB", color: { r: 180, g: 120, b: 60 } },
+		{ label: "UI", color: { r: 160, g: 60, b: 180 } },
+		{ label: "Cache", color: { r: 60, g: 160, b: 160 } },
+	];
+
+	const circles: CircleNode[] = [];
+	const gravityNodes: GravityNode[] = [];
+
+	for (const { label, color } of nodeData) {
+		const circle = new CircleNode();
+		circle.Position = {
+			x: cx + (Math.random() - 0.5) * 80,
+			y: cy + (Math.random() - 0.5) * 80,
+		};
+		circle.Radius = 18;
+		circle.Color = { ...color, a: 1 };
+		circle.BorderWidth = 1;
+		circle.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
+
+		const lbl = new LabelNode();
+		lbl.Position = { x: 0, y: 30 };
+		lbl.Text = label;
+		lbl.Color = { r: 0, g: 0, b: 0, a: 1 };
+		lbl.FontSize = 12;
+
+		const hover = new HoveringNode();
+		hover.RefNode = circle;
+
+		let tween: number | null = null;
+		circle.onHoverEnter = () => {
+			if (tween !== null) tweens.stop(tween);
+			tween = tweens.start(circle, 0.15, { prop: "Radius", to: 24 });
+		};
+		circle.onHoverExit = () => {
+			if (tween !== null) tweens.stop(tween);
+			tween = tweens.start(circle, 0.15, { prop: "Radius", to: 18 });
+		};
+
+		const gravity = new GravityNode();
+		gravity.RefNode = circle;
+
+		circle.addChild(lbl);
+		circle.addChild(hover);
+		circle.addChild(gravity);
+		engine.addNode(circle);
+
+		circles.push(circle);
+		gravityNodes.push(gravity);
+	}
+
+	const edges: [number, number][] = [
+		[0, 1], [0, 2], [0, 3],
+		[1, 2], [2, 3], [2, 4],
+		[3, 5], [4, 5],
+	];
+
+	for (const [i, j] of edges) {
+		gravityNodes[i].addLink(gravityNodes[j]);
+
+		const arrow = new ArrowNode();
+		arrow.StartNode = circles[i];
+		arrow.EndNode = circles[j];
+		arrow.Direction = "forward";
+		arrow.Color = { r: 80, g: 80, b: 80, a: 1 };
+
+		const arrowHover = new HoveringNode();
+		arrowHover.RefNode = arrow;
+		let arrowTween: number | null = null;
+		arrow.onHoverEnter = () => {
+			if (arrowTween !== null) tweens.stop(arrowTween);
+			arrowTween = tweens.start(arrow, 0.15, { prop: "LineWidth", to: 5 });
+		};
+		arrow.onHoverExit = () => {
+			if (arrowTween !== null) tweens.stop(arrowTween);
+			arrowTween = tweens.start(arrow, 0.15, { prop: "LineWidth", to: 2 });
+		};
+
+		arrow.addChild(arrowHover);
+		engine.addNode(arrow);
+	}
+}
+
+export const ForceLayout: StoryObj = {
+	args: {
+		width: 800,
+		height: 400,
+		repulsion: 50000,
+		attraction: 0,
+		centerGravity: 0.05,
+		damping: 0.92,
+	},
+	argTypes: {
+		repulsion: { control: { type: "range", min: 0, max: 50000, step: 500 } },
+		attraction: { control: { type: "range", min: 0, max: 1, step: 0.01 } },
+		centerGravity: { control: { type: "range", min: 0, max: 1, step: 0.01 } },
+		damping: { control: { type: "range", min: 0, max: 1, step: 0.01 } },
+	},
+	render: (args) => {
+		const { repulsion, attraction, centerGravity, damping, ...graphArgs } = args as {
+			repulsion: number;
+			attraction: number;
+			centerGravity: number;
+			damping: number;
+			width: number;
+			height: number;
+		};
+		return (
+			<Graph
+				{...graphArgs}
+				onEngine={(engine) =>
+					setupForceLayoutDemo(engine, { repulsion, attraction, centerGravity, damping })
+				}
+			/>
+		);
 	},
 };
