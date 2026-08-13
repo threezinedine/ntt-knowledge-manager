@@ -4,6 +4,7 @@ import type { Point, Rectangle } from "../type";
 export const ARROW_SERVER_TAG = "arrow";
 
 export type ArrowDirection = "none" | "forward" | "both";
+export type ArrowTextDirection = "follow" | "horizontal";
 
 export class ArrowNode extends Node {
 	private _startNode: Node | null = null;
@@ -12,6 +13,11 @@ export class ArrowNode extends Node {
 	private _arrowSize: number = 10;
 	private _lineWidth: number = 2;
 	private _gap: number = 4;
+	private _text: string = "";
+	private _textDirection: ArrowTextDirection = "horizontal";
+	private _fontSize: number = 12;
+	private _fontFamily: string = "sans-serif";
+	private _textOffset: number = 12;
 
 	constructor() {
 		super();
@@ -65,6 +71,46 @@ export class ArrowNode extends Node {
 
 	set Gap(g: number) {
 		this._gap = g;
+	}
+
+	get Text(): string {
+		return this._text;
+	}
+
+	set Text(t: string) {
+		this._text = t;
+	}
+
+	get TextDirection(): ArrowTextDirection {
+		return this._textDirection;
+	}
+
+	set TextDirection(d: ArrowTextDirection) {
+		this._textDirection = d;
+	}
+
+	get FontSize(): number {
+		return this._fontSize;
+	}
+
+	set FontSize(s: number) {
+		this._fontSize = s;
+	}
+
+	get FontFamily(): string {
+		return this._fontFamily;
+	}
+
+	set FontFamily(f: string) {
+		this._fontFamily = f;
+	}
+
+	get TextOffset(): number {
+		return this._textOffset;
+	}
+
+	set TextOffset(o: number) {
+		this._textOffset = o;
 	}
 
 	protected computeBounds(): Rectangle {
@@ -168,6 +214,48 @@ export class ArrowNode extends Node {
 
 		if (this._direction === "both") {
 			this.drawArrowHead(ctx, sx, sy, -ux, -uy);
+		}
+
+		if (this._text) {
+			this.drawLabel(ctx, sx, sy, ex, ey, ux, uy);
+		}
+	}
+
+	private drawLabel(
+		ctx: CanvasRenderingContext2D,
+		sx: number,
+		sy: number,
+		ex: number,
+		ey: number,
+		ux: number,
+		uy: number,
+	): void {
+		const midX = (sx + ex) / 2;
+		const midY = (sy + ey) / 2;
+		const perpX = -uy;
+		const perpY = ux;
+
+		const { r, g, b, a } = this.Color;
+		ctx.font = `${this._fontSize}px ${this._fontFamily}`;
+		ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+
+		const labelX = midX + perpX * this._textOffset;
+		const labelY = midY + perpY * this._textOffset;
+
+		if (this._textDirection === "follow") {
+			let angle = Math.atan2(ey - sy, ex - sx);
+			if (angle > Math.PI / 2) angle -= Math.PI;
+			if (angle < -Math.PI / 2) angle += Math.PI;
+
+			ctx.save();
+			ctx.translate(labelX, labelY);
+			ctx.rotate(angle);
+			ctx.fillText(this._text, 0, 0);
+			ctx.restore();
+		} else {
+			ctx.fillText(this._text, labelX, labelY);
 		}
 	}
 

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Graph } from "./stateless-graph";
 import type { GraphItem } from "./stateless-graph";
 import { CircleNode, LabelNode, HoveringNode, ArrowNode } from "./engine";
+import type { ArrowTextDirection } from "./engine/nodes/arrow-node";
 import type { Engine } from "./engine";
 
 const meta = {
@@ -220,6 +221,8 @@ function setupArrowsDemo(engine: Engine) {
 		direction: "forward" | "both" | "none",
 		color: { r: number; g: number; b: number },
 		lineWidth = 2,
+		text = "",
+		textDirection: ArrowTextDirection = "horizontal",
 	): ArrowNode {
 		const arrow = new ArrowNode();
 		arrow.StartNode = start;
@@ -227,6 +230,8 @@ function setupArrowsDemo(engine: Engine) {
 		arrow.Direction = direction;
 		arrow.Color = { ...color, a: 1 };
 		arrow.LineWidth = lineWidth;
+		arrow.Text = text;
+		arrow.TextDirection = textDirection;
 
 		const hover = new HoveringNode();
 		hover.RefNode = arrow;
@@ -250,11 +255,11 @@ function setupArrowsDemo(engine: Engine) {
 	const c = makeCircle(400, 280, "C", { r: 60, g: 180, b: 60 });
 	const d = makeCircle(650, 180, "D", { r: 180, g: 120, b: 60 });
 
-	makeArrow(a, b, "forward", { r: 80, g: 80, b: 80 });
-	makeArrow(b, c, "both", { r: 60, g: 120, b: 200 });
-	makeArrow(a, c, "none", { r: 160, g: 160, b: 160 }, 1);
-	makeArrow(c, d, "forward", { r: 80, g: 80, b: 80 });
-	makeArrow(b, d, "forward", { r: 80, g: 80, b: 80 });
+	makeArrow(a, b, "forward", { r: 80, g: 80, b: 80 }, 2, "links to", "follow");
+	makeArrow(b, c, "both", { r: 60, g: 120, b: 200 }, 2, "syncs", "horizontal");
+	makeArrow(a, c, "none", { r: 160, g: 160, b: 160 }, 1, "related", "follow");
+	makeArrow(c, d, "forward", { r: 80, g: 80, b: 80 }, 2, "depends on", "horizontal");
+	makeArrow(b, d, "forward", { r: 80, g: 80, b: 80 }, 2, "calls", "follow");
 }
 
 export const Arrows: Story = {
