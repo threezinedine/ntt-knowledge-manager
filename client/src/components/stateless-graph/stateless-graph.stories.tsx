@@ -150,6 +150,20 @@ function setupCustomEngine(engine: Engine) {
 	arrow.EndNode = blue;
 	arrow.Direction = "forward";
 	arrow.Color = { r: 80, g: 80, b: 80, a: 1 };
+
+	const arrowHover = new HoveringNode();
+	arrowHover.RefNode = arrow;
+	let arrowTween: number | null = null;
+	arrow.onHoverEnter = () => {
+		if (arrowTween !== null) tweens.stop(arrowTween);
+		arrowTween = tweens.start(arrow, 0.15, { prop: "LineWidth", to: 5 });
+	};
+	arrow.onHoverExit = () => {
+		if (arrowTween !== null) tweens.stop(arrowTween);
+		arrowTween = tweens.start(arrow, 0.15, { prop: "LineWidth", to: 2 });
+	};
+
+	arrow.addChild(arrowHover);
 	engine.addNode(arrow);
 }
 
@@ -200,47 +214,47 @@ function setupArrowsDemo(engine: Engine) {
 		return circle;
 	}
 
+	function makeArrow(
+		start: CircleNode,
+		end: CircleNode,
+		direction: "forward" | "both" | "none",
+		color: { r: number; g: number; b: number },
+		lineWidth = 2,
+	): ArrowNode {
+		const arrow = new ArrowNode();
+		arrow.StartNode = start;
+		arrow.EndNode = end;
+		arrow.Direction = direction;
+		arrow.Color = { ...color, a: 1 };
+		arrow.LineWidth = lineWidth;
+
+		const hover = new HoveringNode();
+		hover.RefNode = arrow;
+		let tween: number | null = null;
+		arrow.onHoverEnter = () => {
+			if (tween !== null) tweens.stop(tween);
+			tween = tweens.start(arrow, 0.15, { prop: "LineWidth", to: lineWidth + 3 });
+		};
+		arrow.onHoverExit = () => {
+			if (tween !== null) tweens.stop(tween);
+			tween = tweens.start(arrow, 0.15, { prop: "LineWidth", to: lineWidth });
+		};
+
+		arrow.addChild(hover);
+		engine.addNode(arrow);
+		return arrow;
+	}
+
 	const a = makeCircle(150, 120, "A", { r: 220, g: 60, b: 60 });
 	const b = makeCircle(400, 80, "B", { r: 60, g: 60, b: 220 });
 	const c = makeCircle(400, 280, "C", { r: 60, g: 180, b: 60 });
 	const d = makeCircle(650, 180, "D", { r: 180, g: 120, b: 60 });
 
-	const forwardArrow = new ArrowNode();
-	forwardArrow.StartNode = a;
-	forwardArrow.EndNode = b;
-	forwardArrow.Direction = "forward";
-	forwardArrow.Color = { r: 80, g: 80, b: 80, a: 1 };
-	engine.addNode(forwardArrow);
-
-	const biArrow = new ArrowNode();
-	biArrow.StartNode = b;
-	biArrow.EndNode = c;
-	biArrow.Direction = "both";
-	biArrow.Color = { r: 60, g: 120, b: 200, a: 1 };
-	biArrow.ArrowSize = 12;
-	engine.addNode(biArrow);
-
-	const lineArrow = new ArrowNode();
-	lineArrow.StartNode = a;
-	lineArrow.EndNode = c;
-	lineArrow.Direction = "none";
-	lineArrow.Color = { r: 160, g: 160, b: 160, a: 1 };
-	lineArrow.LineWidth = 1;
-	engine.addNode(lineArrow);
-
-	const toD = new ArrowNode();
-	toD.StartNode = c;
-	toD.EndNode = d;
-	toD.Direction = "forward";
-	toD.Color = { r: 80, g: 80, b: 80, a: 1 };
-	engine.addNode(toD);
-
-	const bToD = new ArrowNode();
-	bToD.StartNode = b;
-	bToD.EndNode = d;
-	bToD.Direction = "forward";
-	bToD.Color = { r: 80, g: 80, b: 80, a: 1 };
-	engine.addNode(bToD);
+	makeArrow(a, b, "forward", { r: 80, g: 80, b: 80 });
+	makeArrow(b, c, "both", { r: 60, g: 120, b: 200 });
+	makeArrow(a, c, "none", { r: 160, g: 160, b: 160 }, 1);
+	makeArrow(c, d, "forward", { r: 80, g: 80, b: 80 });
+	makeArrow(b, d, "forward", { r: 80, g: 80, b: 80 });
 }
 
 export const Arrows: Story = {
