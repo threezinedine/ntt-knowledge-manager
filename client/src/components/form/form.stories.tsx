@@ -184,6 +184,115 @@ export const WithSliderField: Story = {
 	),
 };
 
+export const WithRadioField: Story = {
+	args: {
+		title: "Preferences",
+		items: [
+			{
+				id: "theme",
+				label: "Theme",
+				type: "radio",
+				options: [
+					{ value: "light", label: "Light" },
+					{ value: "dark", label: "Dark" },
+					{ value: "system", label: "System" },
+				],
+				defaultValue: "system",
+				hint: "Choose your preferred theme.",
+			},
+			{
+				id: "layout",
+				label: "Layout",
+				type: "radio",
+				options: [
+					{ value: "compact", label: "Compact" },
+					{ value: "comfortable", label: "Comfortable" },
+				],
+				defaultValue: "comfortable",
+			},
+		],
+	},
+	render: (args) => (
+		<Form {...args}>
+			<Button type="submit">Save</Button>
+		</Form>
+	),
+};
+
+export const WithMultiSelect: Story = {
+	args: {
+		title: "Notifications",
+		items: [
+			{
+				id: "channels",
+				label: "Notification Channels",
+				type: "multiselect",
+				options: [
+					{ value: "email", label: "Email" },
+					{ value: "sms", label: "SMS" },
+					{ value: "push", label: "Push Notification" },
+					{ value: "slack", label: "Slack" },
+				],
+				defaultValue: ["email", "push"],
+				hint: "Select where you want to receive notifications.",
+			},
+			{
+				id: "topics",
+				label: "Topics",
+				type: "multiselect",
+				options: [
+					{ value: "updates", label: "Product Updates" },
+					{ value: "security", label: "Security Alerts" },
+					{ value: "marketing", label: "Marketing" },
+				],
+				defaultValue: ["updates", "security"],
+			},
+		],
+	},
+	render: (args) => (
+		<Form {...args}>
+			<Button type="submit">Update</Button>
+		</Form>
+	),
+};
+
+export const WithCombobox: Story = {
+	args: {
+		title: "Shipping",
+		items: [
+			{
+				id: "country",
+				label: "Country",
+				type: "combobox",
+				options: [
+					{ value: "us", label: "United States" },
+					{ value: "uk", label: "United Kingdom" },
+					{ value: "ca", label: "Canada" },
+					{ value: "de", label: "Germany" },
+					{ value: "fr", label: "France" },
+					{ value: "jp", label: "Japan" },
+					{ value: "au", label: "Australia" },
+					{ value: "br", label: "Brazil" },
+					{ value: "vn", label: "Vietnam" },
+				],
+				placeholder: "Type to search...",
+				hint: "Start typing to filter countries.",
+			},
+			{
+				id: "city",
+				label: "City",
+				type: "text",
+				placeholder: "Enter city name",
+			},
+		],
+	},
+	render: (args) => (
+		<Form {...args}>
+			<Button type="submit">Ship</Button>
+		</Form>
+	),
+};
+
 export const WithValidation: Story = {
 	args: {
 		title: "Create account",

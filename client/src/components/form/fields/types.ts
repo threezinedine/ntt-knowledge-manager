@@ -69,6 +69,22 @@ export type SliderFieldDefinition = Omit<FieldProps, "defaultValue" | "validate"
 	defaultValue?: number;
 };
 
+export type RadioFieldDefinition = Omit<FieldProps, "placeholder" | "validate"> & {
+	type: "radio";
+	options: SelectOption[];
+};
+
+export type MultiSelectFieldDefinition = Omit<FieldProps, "defaultValue" | "placeholder" | "validate"> & {
+	type: "multiselect";
+	options: SelectOption[];
+	defaultValue?: string[];
+};
+
+export type ComboboxFieldDefinition = Omit<FieldProps, "validate"> & {
+	type: "combobox";
+	options: SelectOption[];
+};
+
 export type SelectFieldDefinition = FieldProps & {
 	type: "select";
 	options: SelectOption[];
@@ -79,4 +95,7 @@ export type FormField =
 	| TextareaFieldDefinition
 	| NumberFieldDefinition
 	| SliderFieldDefinition
+	| RadioFieldDefinition
+	| MultiSelectFieldDefinition
+	| ComboboxFieldDefinition
 	| SelectFieldDefinition;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent, FormHTMLAttributes } from "react";
-import { TextField, TextareaField, NumberField, SliderField, SelectField } from "./fields";
+import { TextField, TextareaField, NumberField, SliderField, RadioField, MultiSelectField, ComboboxField, SelectField } from "./fields";
 import type { FieldChangeEvent, FormField } from "./fields";
 import styles from "./form.module.scss";
 
@@ -130,6 +130,36 @@ export function Form({
 								{...rest}
 								error={errors[field.id]}
 								onChange={handleFieldChange(field)}
+							/>
+						);
+					}
+					case "radio": {
+						const { type: _type, ...rest } = field;
+						return (
+							<RadioField
+								key={field.id}
+								{...rest}
+								error={errors[field.id]}
+							/>
+						);
+					}
+					case "multiselect": {
+						const { type: _type, ...rest } = field;
+						return (
+							<MultiSelectField
+								key={field.id}
+								{...rest}
+								error={errors[field.id]}
+							/>
+						);
+					}
+					case "combobox": {
+						const { type: _type, ...rest } = field;
+						return (
+							<ComboboxField
+								key={field.id}
+								{...rest}
+								error={errors[field.id]}
 							/>
 						);
 					}
