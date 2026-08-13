@@ -1,5 +1,4 @@
-import type { Point } from "../type";
-import type { Rectangle } from "../type";
+import type { Point, Rectangle, RGBAColor } from "../type";
 
 export class Node {
 	private children: Node[] = [];
@@ -12,6 +11,7 @@ export class Node {
 		bottomRight: { x: 0, y: 0 },
 		bottomLeft: { x: 0, y: 0 },
 	};
+	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
 
 	get Position(): Point {
 		return this.position;
@@ -31,6 +31,14 @@ export class Node {
 	set Position(pos: Point) {
 		this.position = pos;
 		this.onPositionChanged();
+	}
+
+	get Color(): RGBAColor {
+		return this.color;
+	}
+
+	set Color(c: RGBAColor) {
+		this.color = c;
 	}
 
 	set WorldPosition(pos: Point) {

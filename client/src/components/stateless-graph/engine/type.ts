@@ -9,3 +9,10 @@ export interface Rectangle {
 	bottomRight: Point;
 	bottomLeft: Point;
 }
+
+export interface RGBAColor {
+	r: number;
+	g: number;
+	b: number;
+	a: number;
+}

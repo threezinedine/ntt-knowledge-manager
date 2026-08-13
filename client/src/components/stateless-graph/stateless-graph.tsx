@@ -50,6 +50,10 @@ export function Graph({
 
 		const circleNode = new CircleNode();
 		circleNode.Position = { x: 100, y: 100 };
+		circleNode.Radius = 15;
+		circleNode.Color = { r: 255, g: 0, b: 0, a: 1 };
+		circleNode.BorderWidth = 1;
+		circleNode.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
 
 		engine.addNode(circleNode);
 
