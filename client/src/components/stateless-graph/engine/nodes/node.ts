@@ -6,6 +6,7 @@ export class Node {
 	private _serverTags: Set<string> = new Set();
 	private _isHovered: boolean = false;
 	private _draggable: boolean = true;
+	private _isDragging: boolean = false;
 
 	protected position: Point = { x: 0, y: 0 };
 	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
@@ -186,6 +187,14 @@ export class Node {
 
 	set Draggable(value: boolean) {
 		this._draggable = value;
+	}
+
+	get IsDragging(): boolean {
+		return this._isDragging;
+	}
+
+	set IsDragging(value: boolean) {
+		this._isDragging = value;
 	}
 
 	public onHoverEnter?: () => void;

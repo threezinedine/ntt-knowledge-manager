@@ -34,6 +34,7 @@ export class HoveringServer extends Server {
 			const ref = hoverNode.RefNode;
 			if (ref && ref.IsHovered && ref.Draggable) {
 				this._dragTarget = hoverNode;
+				ref.IsDragging = true;
 				const worldPos = ref.WorldPosition;
 				this._dragOffset = {
 					x: pos.x - worldPos.x,
@@ -45,6 +46,9 @@ export class HoveringServer extends Server {
 	};
 
 	private _onMouseUp = () => {
+		if (this._dragTarget?.RefNode) {
+			this._dragTarget.RefNode.IsDragging = false;
+		}
 		this._isMouseDown = false;
 		this._dragTarget = null;
 	};

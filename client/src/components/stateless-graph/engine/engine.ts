@@ -1,4 +1,4 @@
-import { RenderingServer, HoveringServer, LabelServer, ArrowServer, Server } from "./servers";
+import { RenderingServer, HoveringServer, LabelServer, ArrowServer, GravityServer, Server } from "./servers";
 import type { Node } from "./nodes";
 import { TweenManager } from "./tween-manager";
 
@@ -6,10 +6,13 @@ export class Engine {
 	private _canvas: HTMLCanvasElement;
 	private _servers: Server[] = [];
 	private _tweenManager = new TweenManager();
+	private _gravityServer: GravityServer;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this._canvas = canvas;
 
+		this._gravityServer = new GravityServer();
+		this._servers.push(this._gravityServer);
 		this._servers.push(new RenderingServer(this._canvas));
 		this._servers.push(new ArrowServer(this._canvas));
 		this._servers.push(new HoveringServer(this._canvas));
@@ -18,6 +21,10 @@ export class Engine {
 
 	get tweens(): TweenManager {
 		return this._tweenManager;
+	}
+
+	get gravity(): GravityServer {
+		return this._gravityServer;
 	}
 
 	public start(): void {
