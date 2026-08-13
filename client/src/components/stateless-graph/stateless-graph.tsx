@@ -105,7 +105,7 @@ export function Graph({
 			cancelAnimationFrame(frameId);
 			engine.stop();
 		};
-	}, []);
+	}, [items, width, height, onEngine]);
 
 	return (
 		<canvas

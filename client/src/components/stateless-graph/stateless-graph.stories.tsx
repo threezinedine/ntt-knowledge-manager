@@ -73,15 +73,17 @@ export const Small: Story = {
 };
 
 function setupCustomEngine(engine: Engine) {
+	const tweens = engine.tweens;
+
 	const red = new CircleNode();
 	red.Position = { x: 200, y: 150 };
-	red.Radius = 30;
+	red.Radius = 15;
 	red.Color = { r: 220, g: 60, b: 60, a: 1 };
 	red.BorderWidth = 2;
 	red.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
 
 	const redLabel = new LabelNode();
-	redLabel.Position = { x: 0, y: 45 };
+	redLabel.Position = { x: 0, y: 35 };
 	redLabel.Text = "Big Red";
 	redLabel.Color = { r: 0, g: 0, b: 0, a: 1 };
 	redLabel.FontSize = 16;
@@ -89,13 +91,14 @@ function setupCustomEngine(engine: Engine) {
 	const redHover = new HoveringNode();
 	redHover.RefNode = red;
 
+	let redTween: number | null = null;
 	red.onHoverEnter = () => {
-		red.Color = { r: 255, g: 100, b: 100, a: 1 };
-		red.Radius = 35;
+		if (redTween !== null) tweens.stop(redTween);
+		redTween = tweens.start(red, 0.2, { prop: "Radius", to: 25 });
 	};
 	red.onHoverExit = () => {
-		red.Color = { r: 220, g: 60, b: 60, a: 1 };
-		red.Radius = 30;
+		if (redTween !== null) tweens.stop(redTween);
+		redTween = tweens.start(red, 0.2, { prop: "Radius", to: 15 });
 	};
 
 	red.addChild(redLabel);
@@ -108,7 +111,6 @@ function setupCustomEngine(engine: Engine) {
 	blue.Color = { r: 60, g: 60, b: 220, a: 1 };
 	blue.BorderWidth = 1;
 	blue.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
-	blue.Rotation = Math.PI / 6;
 
 	const blueLabel = new LabelNode();
 	blueLabel.Position = { x: 0, y: 32 };
@@ -119,11 +121,24 @@ function setupCustomEngine(engine: Engine) {
 	const blueHover = new HoveringNode();
 	blueHover.RefNode = blue;
 
+	let blueTween: number | null = null;
 	blue.onHoverEnter = () => {
-		blue.Color = { r: 100, g: 100, b: 255, a: 1 };
+		if (blueTween !== null) tweens.stop(blueTween);
+		blueTween = tweens.start(
+			blue,
+			0.3,
+			{ prop: "Radius", to: 28 },
+			{ prop: "Rotation", to: Math.PI / 4 },
+		);
 	};
 	blue.onHoverExit = () => {
-		blue.Color = { r: 60, g: 60, b: 220, a: 1 };
+		if (blueTween !== null) tweens.stop(blueTween);
+		blueTween = tweens.start(
+			blue,
+			0.3,
+			{ prop: "Radius", to: 20 },
+			{ prop: "Rotation", to: 0 },
+		);
 	};
 
 	blue.addChild(blueLabel);
