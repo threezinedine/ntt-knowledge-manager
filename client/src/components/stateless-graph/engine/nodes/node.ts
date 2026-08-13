@@ -5,6 +5,8 @@ export class Node {
 	private parent: Node | null = null;
 	private _serverTags: Set<string> = new Set();
 	private _isHovered: boolean = false;
+	private _draggable: boolean = true;
+	private _isDragging: boolean = false;
 
 	protected position: Point = { x: 0, y: 0 };
 	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
@@ -179,10 +181,48 @@ export class Node {
 		this._isHovered = value;
 	}
 
+	get Draggable(): boolean {
+		return this._draggable;
+	}
+
+	set Draggable(value: boolean) {
+		this._draggable = value;
+	}
+
+	get IsDragging(): boolean {
+		return this._isDragging;
+	}
+
+	set IsDragging(value: boolean) {
+		this._isDragging = value;
+	}
+
 	public onHoverEnter?: () => void;
 	public onHoverExit?: () => void;
+	public onDoubleClick?: () => void;
 
 	public checkHover(_mousePos: Point): void {}
+
+	public hitTest(mousePos: Point): boolean {
+		const worldPos = this.WorldPosition;
+		const worldRot = this.WorldRotation;
+		const cos = Math.cos(-worldRot);
+		const sin = Math.sin(-worldRot);
+
+		const dx = mousePos.x - worldPos.x;
+		const dy = mousePos.y - worldPos.y;
+
+		const localX = dx * cos - dy * sin;
+		const localY = dx * sin + dy * cos;
+
+		const bounds = this.computeBounds();
+		return (
+			localX >= bounds.topLeft.x &&
+			localX <= bounds.bottomRight.x &&
+			localY >= bounds.topLeft.y &&
+			localY <= bounds.bottomRight.y
+		);
+	}
 
 	public connectionRadius(): number {
 		const b = this.computeBounds();
