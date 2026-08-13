@@ -29,6 +29,10 @@ export class CircleNode extends Node {
 		};
 	}
 
+	public connectionRadius(): number {
+		return this.radius;
+	}
+
 	get BorderWidth(): number {
 		return this.borderWidth;
 	}

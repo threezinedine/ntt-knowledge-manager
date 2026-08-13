@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Graph } from "./stateless-graph";
 import type { GraphItem } from "./stateless-graph";
-import { CircleNode, LabelNode, HoveringNode } from "./engine";
+import { CircleNode, LabelNode, HoveringNode, ArrowNode } from "./engine";
 import type { Engine } from "./engine";
 
 const meta = {
@@ -144,10 +144,107 @@ function setupCustomEngine(engine: Engine) {
 	blue.addChild(blueLabel);
 	blue.addChild(blueHover);
 	engine.addNode(blue);
+
+	const arrow = new ArrowNode();
+	arrow.StartNode = red;
+	arrow.EndNode = blue;
+	arrow.Direction = "forward";
+	arrow.Color = { r: 80, g: 80, b: 80, a: 1 };
+	engine.addNode(arrow);
 }
 
 export const CustomEngine: Story = {
 	args: {
 		onEngine: setupCustomEngine,
+	},
+};
+
+function setupArrowsDemo(engine: Engine) {
+	const tweens = engine.tweens;
+
+	function makeCircle(
+		x: number,
+		y: number,
+		label: string,
+		color: { r: number; g: number; b: number },
+	): CircleNode {
+		const circle = new CircleNode();
+		circle.Position = { x, y };
+		circle.Radius = 18;
+		circle.Color = { ...color, a: 1 };
+		circle.BorderWidth = 1;
+		circle.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
+
+		const lbl = new LabelNode();
+		lbl.Position = { x: 0, y: 30 };
+		lbl.Text = label;
+		lbl.Color = { r: 0, g: 0, b: 0, a: 1 };
+		lbl.FontSize = 12;
+
+		const hover = new HoveringNode();
+		hover.RefNode = circle;
+
+		let tween: number | null = null;
+		circle.onHoverEnter = () => {
+			if (tween !== null) tweens.stop(tween);
+			tween = tweens.start(circle, 0.15, { prop: "Radius", to: 24 });
+		};
+		circle.onHoverExit = () => {
+			if (tween !== null) tweens.stop(tween);
+			tween = tweens.start(circle, 0.15, { prop: "Radius", to: 18 });
+		};
+
+		circle.addChild(lbl);
+		circle.addChild(hover);
+		engine.addNode(circle);
+		return circle;
+	}
+
+	const a = makeCircle(150, 120, "A", { r: 220, g: 60, b: 60 });
+	const b = makeCircle(400, 80, "B", { r: 60, g: 60, b: 220 });
+	const c = makeCircle(400, 280, "C", { r: 60, g: 180, b: 60 });
+	const d = makeCircle(650, 180, "D", { r: 180, g: 120, b: 60 });
+
+	const forwardArrow = new ArrowNode();
+	forwardArrow.StartNode = a;
+	forwardArrow.EndNode = b;
+	forwardArrow.Direction = "forward";
+	forwardArrow.Color = { r: 80, g: 80, b: 80, a: 1 };
+	engine.addNode(forwardArrow);
+
+	const biArrow = new ArrowNode();
+	biArrow.StartNode = b;
+	biArrow.EndNode = c;
+	biArrow.Direction = "both";
+	biArrow.Color = { r: 60, g: 120, b: 200, a: 1 };
+	biArrow.ArrowSize = 12;
+	engine.addNode(biArrow);
+
+	const lineArrow = new ArrowNode();
+	lineArrow.StartNode = a;
+	lineArrow.EndNode = c;
+	lineArrow.Direction = "none";
+	lineArrow.Color = { r: 160, g: 160, b: 160, a: 1 };
+	lineArrow.LineWidth = 1;
+	engine.addNode(lineArrow);
+
+	const toD = new ArrowNode();
+	toD.StartNode = c;
+	toD.EndNode = d;
+	toD.Direction = "forward";
+	toD.Color = { r: 80, g: 80, b: 80, a: 1 };
+	engine.addNode(toD);
+
+	const bToD = new ArrowNode();
+	bToD.StartNode = b;
+	bToD.EndNode = d;
+	bToD.Direction = "forward";
+	bToD.Color = { r: 80, g: 80, b: 80, a: 1 };
+	engine.addNode(bToD);
+}
+
+export const Arrows: Story = {
+	args: {
+		onEngine: setupArrowsDemo,
 	},
 };

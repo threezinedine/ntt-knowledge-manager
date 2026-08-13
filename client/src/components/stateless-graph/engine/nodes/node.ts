@@ -184,6 +184,13 @@ export class Node {
 
 	public checkHover(_mousePos: Point): void {}
 
+	public connectionRadius(): number {
+		const b = this.computeBounds();
+		const hw = (b.bottomRight.x - b.topLeft.x) / 2;
+		const hh = (b.bottomRight.y - b.topLeft.y) / 2;
+		return Math.sqrt(hw * hw + hh * hh);
+	}
+
 	public draw(ctx: CanvasRenderingContext2D): void {
 		this.drawImpl(ctx);
 	}

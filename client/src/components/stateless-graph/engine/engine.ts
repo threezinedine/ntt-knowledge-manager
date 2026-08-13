@@ -1,4 +1,4 @@
-import { RenderingServer, HoveringServer, LabelServer, Server } from "./servers";
+import { RenderingServer, HoveringServer, LabelServer, ArrowServer, Server } from "./servers";
 import type { Node } from "./nodes";
 import { TweenManager } from "./tween-manager";
 
@@ -11,6 +11,7 @@ export class Engine {
 		this._canvas = canvas;
 
 		this._servers.push(new RenderingServer(this._canvas));
+		this._servers.push(new ArrowServer(this._canvas));
 		this._servers.push(new HoveringServer(this._canvas));
 		this._servers.push(new LabelServer(this._canvas));
 	}
