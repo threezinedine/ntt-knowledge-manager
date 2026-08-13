@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Engine, CircleNode } from "./engine";
+import { Engine, CircleNode, LabelNode } from "./engine";
 import styles from "./stateless-graph.module.scss";
 
 /** One outgoing relation in a `/nodes/map` item. */
@@ -55,6 +55,14 @@ export function Graph({
 		circleNode.BorderWidth = 1;
 		circleNode.BorderColor = { r: 0, g: 0, b: 0, a: 1 };
 
+		const label = new LabelNode();
+		label.Position = { x: 0, y: 28 };
+		label.Text = "Hello World";
+		label.Color = { r: 0, g: 0, b: 0, a: 1 };
+		label.FontSize = 14;
+		label.FontFamily = "Arial";
+
+		circleNode.addChild(label);
 		engine.addNode(circleNode);
 
 		// drive the engine's update loop

@@ -1,4 +1,4 @@
-import { RenderingServer, HoveringServer, Server } from "./servers";
+import { RenderingServer, HoveringServer, LabelServer, Server } from "./servers";
 import type { Node } from "./nodes";
 
 export class Engine {
@@ -10,6 +10,7 @@ export class Engine {
 
 		this._servers.push(new RenderingServer(this._canvas));
 		this._servers.push(new HoveringServer());
+		this._servers.push(new LabelServer(this._canvas));
 	}
 
 	public start(): void {
