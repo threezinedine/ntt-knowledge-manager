@@ -5,6 +5,7 @@ export class Node {
 	private parent: Node | null = null;
 	private _serverTags: Set<string> = new Set();
 	private _isHovered: boolean = false;
+	private _draggable: boolean = true;
 
 	protected position: Point = { x: 0, y: 0 };
 	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
@@ -177,6 +178,14 @@ export class Node {
 
 	set IsHovered(value: boolean) {
 		this._isHovered = value;
+	}
+
+	get Draggable(): boolean {
+		return this._draggable;
+	}
+
+	set Draggable(value: boolean) {
+		this._draggable = value;
 	}
 
 	public onHoverEnter?: () => void;

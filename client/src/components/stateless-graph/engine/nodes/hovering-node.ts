@@ -26,6 +26,14 @@ export class HoveringNode extends Node {
 		return super.computeBounds();
 	}
 
+	public clearHover(): void {
+		if (this._refNode && this._refNode.IsHovered) {
+			this._refNode.IsHovered = false;
+			this.IsHovered = false;
+			this._refNode.onHoverExit?.();
+		}
+	}
+
 	public checkHover(mousePos: Point): void {
 		if (!this._refNode) return;
 

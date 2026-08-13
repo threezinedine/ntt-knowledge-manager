@@ -16,6 +16,7 @@ export class ArrowNode extends Node {
 	constructor() {
 		super();
 		this.addToServers(ARROW_SERVER_TAG);
+		this.Draggable = false;
 	}
 
 	get StartNode(): Node | null {
