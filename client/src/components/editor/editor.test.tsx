@@ -14,4 +14,10 @@ describe("Editor", () => {
 
 		expect(screen.getByTestId("editor")).toHaveClass("custom");
 	});
+
+	it("renders with default value", () => {
+		render(<Editor defaultValue="Hello world" />);
+
+		expect(screen.getByTestId("editor")).toBeInTheDocument();
+	});
 });
