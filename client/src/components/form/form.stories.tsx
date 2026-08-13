@@ -133,6 +133,57 @@ export const WithNumberField: Story = {
 	),
 };
 
+export const WithSliderField: Story = {
+	args: {
+		title: "Audio Settings",
+		items: [
+			{
+				id: "volume",
+				label: "Volume",
+				type: "slider",
+				min: 0,
+				max: 100,
+				step: 1,
+				defaultValue: 50,
+				hint: "Master volume level.",
+			},
+			{
+				id: "bass",
+				label: "Bass",
+				type: "slider",
+				min: -10,
+				max: 10,
+				step: 1,
+				defaultValue: 0,
+			},
+			{
+				id: "treble",
+				label: "Treble",
+				type: "slider",
+				min: -10,
+				max: 10,
+				step: 1,
+				defaultValue: 0,
+			},
+			{
+				id: "brightness",
+				label: "Brightness",
+				type: "slider",
+				min: 0,
+				max: 100,
+				step: 5,
+				defaultValue: 75,
+				hint: "Screen brightness percentage.",
+			},
+		],
+	},
+	render: (args) => (
+		<Form {...args}>
+			<Button type="submit">Apply</Button>
+		</Form>
+	),
+};
+
 export const WithValidation: Story = {
 	args: {
 		title: "Create account",

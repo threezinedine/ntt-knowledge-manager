@@ -61,6 +61,14 @@ export type NumberFieldDefinition = Omit<FieldProps, "defaultValue" | "validate"
 	validate?: (value: number | undefined) => string | undefined;
 };
 
+export type SliderFieldDefinition = Omit<FieldProps, "defaultValue" | "validate" | "placeholder"> & {
+	type: "slider";
+	min?: number;
+	max?: number;
+	step?: number;
+	defaultValue?: number;
+};
+
 export type SelectFieldDefinition = FieldProps & {
 	type: "select";
 	options: SelectOption[];
@@ -70,4 +78,5 @@ export type FormField =
 	| TextFieldDefinition
 	| TextareaFieldDefinition
 	| NumberFieldDefinition
+	| SliderFieldDefinition
 	| SelectFieldDefinition;
