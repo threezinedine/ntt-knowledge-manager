@@ -29,23 +29,7 @@ export class HoveringNode extends Node {
 	public checkHover(mousePos: Point): void {
 		if (!this._refNode) return;
 
-		const worldPos = this._refNode.WorldPosition;
-		const worldRot = this._refNode.WorldRotation;
-		const cos = Math.cos(-worldRot);
-		const sin = Math.sin(-worldRot);
-
-		const dx = mousePos.x - worldPos.x;
-		const dy = mousePos.y - worldPos.y;
-
-		const localX = dx * cos - dy * sin;
-		const localY = dx * sin + dy * cos;
-
-		const bounds = this._refNode.Bounds;
-		const inside =
-			localX >= bounds.topLeft.x &&
-			localX <= bounds.bottomRight.x &&
-			localY >= bounds.topLeft.y &&
-			localY <= bounds.bottomRight.y;
+		const inside = this._refNode.hitTest(mousePos);
 
 		if (inside && !this._refNode.IsHovered) {
 			this._refNode.IsHovered = true;

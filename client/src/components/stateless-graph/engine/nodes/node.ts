@@ -184,6 +184,27 @@ export class Node {
 
 	public checkHover(_mousePos: Point): void {}
 
+	public hitTest(mousePos: Point): boolean {
+		const worldPos = this.WorldPosition;
+		const worldRot = this.WorldRotation;
+		const cos = Math.cos(-worldRot);
+		const sin = Math.sin(-worldRot);
+
+		const dx = mousePos.x - worldPos.x;
+		const dy = mousePos.y - worldPos.y;
+
+		const localX = dx * cos - dy * sin;
+		const localY = dx * sin + dy * cos;
+
+		const bounds = this.computeBounds();
+		return (
+			localX >= bounds.topLeft.x &&
+			localX <= bounds.bottomRight.x &&
+			localY >= bounds.topLeft.y &&
+			localY <= bounds.bottomRight.y
+		);
+	}
+
 	public connectionRadius(): number {
 		const b = this.computeBounds();
 		const hw = (b.bottomRight.x - b.topLeft.x) / 2;

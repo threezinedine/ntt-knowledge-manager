@@ -1,5 +1,5 @@
 import { Node } from "./node";
-import type { Rectangle } from "../type";
+import type { Point, Rectangle } from "../type";
 
 export const ARROW_SERVER_TAG = "arrow";
 
@@ -84,6 +84,32 @@ export class ArrowNode extends Node {
 		};
 	}
 
+	public hitTest(mousePos: Point): boolean {
+		if (!this._startNode || !this._endNode) return false;
+
+		const s = this._startNode.WorldPosition;
+		const e = this._endNode.WorldPosition;
+
+		const dx = e.x - s.x;
+		const dy = e.y - s.y;
+		const lenSq = dx * dx + dy * dy;
+		if (lenSq === 0) return false;
+
+		const t = Math.max(
+			0,
+			Math.min(1, ((mousePos.x - s.x) * dx + (mousePos.y - s.y) * dy) / lenSq),
+		);
+
+		const projX = s.x + t * dx;
+		const projY = s.y + t * dy;
+		const distSq =
+			(mousePos.x - projX) * (mousePos.x - projX) +
+			(mousePos.y - projY) * (mousePos.y - projY);
+
+		const threshold = this._lineWidth * 3 + 4;
+		return distSq <= threshold * threshold;
+	}
+
 	protected drawImpl(ctx: CanvasRenderingContext2D): void {
 		if (!this._startNode || !this._endNode) return;
 
@@ -108,14 +134,31 @@ export class ArrowNode extends Node {
 		const ex = endPos.x - ux * endOffset;
 		const ey = endPos.y - uy * endOffset;
 
+		const headSize = this._arrowSize * (this._lineWidth / 2);
+
+		let lineStartX = sx;
+		let lineStartY = sy;
+		let lineEndX = ex;
+		let lineEndY = ey;
+
+		if (this._direction === "forward" || this._direction === "both") {
+			lineEndX = ex - ux * headSize;
+			lineEndY = ey - uy * headSize;
+		}
+
+		if (this._direction === "both") {
+			lineStartX = sx + ux * headSize;
+			lineStartY = sy + uy * headSize;
+		}
+
 		const { r, g, b, a } = this.Color;
 		ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
 		ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
 		ctx.lineWidth = this._lineWidth;
 
 		ctx.beginPath();
-		ctx.moveTo(sx, sy);
-		ctx.lineTo(ex, ey);
+		ctx.moveTo(lineStartX, lineStartY);
+		ctx.lineTo(lineEndX, lineEndY);
 		ctx.stroke();
 
 		if (this._direction === "forward" || this._direction === "both") {
@@ -134,20 +177,24 @@ export class ArrowNode extends Node {
 		dirX: number,
 		dirY: number,
 	): void {
-		const size = this._arrowSize;
+		const size = this._arrowSize * (this._lineWidth / 2);
+		const nudge = size * 0.3;
 		const perpX = -dirY;
 		const perpY = dirX;
 		const halfWidth = size * 0.4;
 
+		const tx = tipX + dirX * nudge;
+		const ty = tipY + dirY * nudge;
+
 		ctx.beginPath();
-		ctx.moveTo(tipX, tipY);
+		ctx.moveTo(tx, ty);
 		ctx.lineTo(
-			tipX - dirX * size + perpX * halfWidth,
-			tipY - dirY * size + perpY * halfWidth,
+			tx - dirX * size + perpX * halfWidth,
+			ty - dirY * size + perpY * halfWidth,
 		);
 		ctx.lineTo(
-			tipX - dirX * size - perpX * halfWidth,
-			tipY - dirY * size - perpY * halfWidth,
+			tx - dirX * size - perpX * halfWidth,
+			ty - dirY * size - perpY * halfWidth,
 		);
 		ctx.closePath();
 		ctx.fill();
