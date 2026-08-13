@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Engine, CircleNode, LabelNode } from "./engine";
+import { Engine, CircleNode, LabelNode, HoveringNode } from "./engine";
 import styles from "./stateless-graph.module.scss";
 
 /** One outgoing relation in a `/nodes/map` item. */
@@ -64,7 +64,20 @@ export function Graph({
 
 		circleNode.Rotation = Math.PI / 4;
 
+		const hoveredNode = new HoveringNode();
+		hoveredNode.RefNode = circleNode;
+
+		circleNode.onHoverEnter = () => {
+			circleNode.Color = { r: 0, g: 200, b: 0, a: 1 };
+			circleNode.Radius = 20;
+		};
+		circleNode.onHoverExit = () => {
+			circleNode.Color = { r: 255, g: 0, b: 0, a: 1 };
+			circleNode.Radius = 15;
+		};
+
 		circleNode.addChild(label);
+		circleNode.addChild(hoveredNode);
 		engine.addNode(circleNode);
 
 		// drive the engine's update loop

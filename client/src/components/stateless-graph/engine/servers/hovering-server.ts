@@ -1,20 +1,31 @@
 import { Server } from "./server";
-import type { Node } from "../nodes";
+import type { Point } from "../type";
 
-export const HOVERING_SERVER_TAG = "hovering";
+export { HOVERING_SERVER_TAG } from "../nodes/hovering-node";
 
 export class HoveringServer extends Server {
-	constructor() {
-		super(HOVERING_SERVER_TAG);
+	private _canvas: HTMLCanvasElement;
+	private _mousePos: Point = { x: 0, y: 0 };
+	private _onMouseMove = (e: MouseEvent) => {
+		this._mousePos = { x: e.offsetX, y: e.offsetY };
+	};
+
+	constructor(canvas: HTMLCanvasElement) {
+		super("hovering");
+		this._canvas = canvas;
 	}
 
-	protected startImpl(): void {}
+	protected startImpl(): void {
+		this._canvas.addEventListener("mousemove", this._onMouseMove);
+	}
 
-	protected stopImpl(): void {}
+	protected stopImpl(): void {
+		this._canvas.removeEventListener("mousemove", this._onMouseMove);
+	}
 
-	protected addElementImpl(_element: Node): void {}
-
-	protected removeElementImpl(_element: Node): void {}
-
-	protected updateImpl(_dt: number): void {}
+	protected updateImpl(_dt: number): void {
+		for (const node of this._nodes) {
+			node.checkHover(this._mousePos);
+		}
+	}
 }

@@ -4,6 +4,7 @@ export class Node {
 	private children: Node[] = [];
 	private parent: Node | null = null;
 	private _serverTags: Set<string> = new Set();
+	private _isHovered: boolean = false;
 
 	protected position: Point = { x: 0, y: 0 };
 	protected color: RGBAColor = { r: 0, g: 0, b: 0, a: 1 };
@@ -169,6 +170,19 @@ export class Node {
 	get Children(): Node[] {
 		return this.children;
 	}
+
+	get IsHovered(): boolean {
+		return this._isHovered;
+	}
+
+	set IsHovered(value: boolean) {
+		this._isHovered = value;
+	}
+
+	public onHoverEnter?: () => void;
+	public onHoverExit?: () => void;
+
+	public checkHover(_mousePos: Point): void {}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		this.drawImpl(ctx);

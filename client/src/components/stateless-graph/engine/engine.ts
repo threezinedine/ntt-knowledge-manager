@@ -9,7 +9,7 @@ export class Engine {
 		this._canvas = canvas;
 
 		this._servers.push(new RenderingServer(this._canvas));
-		this._servers.push(new HoveringServer());
+		this._servers.push(new HoveringServer(this._canvas));
 		this._servers.push(new LabelServer(this._canvas));
 	}
 

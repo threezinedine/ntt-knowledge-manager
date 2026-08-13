@@ -1,5 +1,5 @@
 export { Engine } from "./engine";
-export { Node, CircleNode, LabelNode } from "./nodes";
+export { Node, CircleNode, LabelNode, HoveringNode } from "./nodes";
 export {
 	RENDERING_SERVER_TAG,
 	HOVERING_SERVER_TAG,

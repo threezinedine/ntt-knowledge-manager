@@ -120,4 +120,8 @@ export class LabelNode extends Node {
 
 		ctx.restore();
 	}
+
+	public onHoverEnter = () => {
+		console.log("Hover enter on LabelNode");
+	};
 }

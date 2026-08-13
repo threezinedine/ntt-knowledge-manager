@@ -69,11 +69,18 @@ function fakeCanvas(): HTMLCanvasElement {
 		fillRect: vi.fn(),
 		stroke: vi.fn(),
 		closePath: vi.fn(),
+		fillText: vi.fn(),
+		save: vi.fn(),
+		restore: vi.fn(),
+		translate: vi.fn(),
+		rotate: vi.fn(),
 	} as unknown as CanvasRenderingContext2D;
 	return {
 		clientWidth: 800,
 		clientHeight: 600,
 		getContext: vi.fn(() => ctx),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
 	} as unknown as HTMLCanvasElement;
 }
 
