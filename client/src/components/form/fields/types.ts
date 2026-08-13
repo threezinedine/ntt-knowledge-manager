@@ -52,6 +52,15 @@ export type TextareaFieldDefinition = FieldProps & {
 	type: "textarea";
 };
 
+export type NumberFieldDefinition = Omit<FieldProps, "defaultValue" | "validate"> & {
+	type: "number";
+	min?: number;
+	max?: number;
+	step?: number;
+	defaultValue?: number;
+	validate?: (value: number | undefined) => string | undefined;
+};
+
 export type SelectFieldDefinition = FieldProps & {
 	type: "select";
 	options: SelectOption[];
@@ -60,4 +69,5 @@ export type SelectFieldDefinition = FieldProps & {
 export type FormField =
 	| TextFieldDefinition
 	| TextareaFieldDefinition
+	| NumberFieldDefinition
 	| SelectFieldDefinition;

@@ -86,6 +86,53 @@ export const LongForm: Story = {
 	),
 };
 
+export const WithNumberField: Story = {
+	args: {
+		title: "Settings",
+		items: [
+			{
+				id: "name",
+				label: "Name",
+				type: "text",
+				placeholder: "Project name",
+			},
+			{
+				id: "port",
+				label: "Port",
+				type: "number",
+				placeholder: "8080",
+				min: 1,
+				max: 65535,
+				step: 1,
+				defaultValue: 3000,
+				hint: "Between 1 and 65535.",
+			},
+			{
+				id: "maxRetries",
+				label: "Max Retries",
+				type: "number",
+				min: 0,
+				max: 10,
+				defaultValue: 3,
+			},
+			{
+				id: "timeout",
+				label: "Timeout (ms)",
+				type: "number",
+				min: 0,
+				step: 100,
+				defaultValue: 5000,
+				hint: "Request timeout in milliseconds.",
+			},
+		],
+	},
+	render: (args) => (
+		<Form {...args}>
+			<Button type="submit">Save settings</Button>
+		</Form>
+	),
+};
+
 export const WithValidation: Story = {
 	args: {
 		title: "Create account",

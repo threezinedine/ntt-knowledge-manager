@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent, FormHTMLAttributes } from "react";
-import { TextField, TextareaField, SelectField } from "./fields";
+import { TextField, TextareaField, NumberField, SelectField } from "./fields";
 import type { FieldChangeEvent, FormField } from "./fields";
 import styles from "./form.module.scss";
 
@@ -104,6 +104,17 @@ export function Form({
 						const { type: _type, ...rest } = field;
 						return (
 							<TextareaField
+								key={field.id}
+								{...rest}
+								error={errors[field.id]}
+								onChange={handleFieldChange(field)}
+							/>
+						);
+					}
+					case "number": {
+						const { type: _type, ...rest } = field;
+						return (
+							<NumberField
 								key={field.id}
 								{...rest}
 								error={errors[field.id]}
