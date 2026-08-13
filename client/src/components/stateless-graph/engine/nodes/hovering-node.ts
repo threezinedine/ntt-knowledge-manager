@@ -49,9 +49,11 @@ export class HoveringNode extends Node {
 
 		if (inside && !this._refNode.IsHovered) {
 			this._refNode.IsHovered = true;
+			this.IsHovered = true;
 			this._refNode.onHoverEnter?.();
 		} else if (!inside && this._refNode.IsHovered) {
 			this._refNode.IsHovered = false;
+			this.IsHovered = false;
 			this._refNode.onHoverExit?.();
 		}
 	}

@@ -81,6 +81,7 @@ function fakeCanvas(): HTMLCanvasElement {
 		getContext: vi.fn(() => ctx),
 		addEventListener: vi.fn(),
 		removeEventListener: vi.fn(),
+		style: {} as CSSStyleDeclaration,
 	} as unknown as HTMLCanvasElement;
 }
 

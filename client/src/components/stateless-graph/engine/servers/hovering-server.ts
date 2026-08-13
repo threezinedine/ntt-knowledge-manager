@@ -24,8 +24,11 @@ export class HoveringServer extends Server {
 	}
 
 	protected updateImpl(_dt: number): void {
+		let anyHovered = false;
 		for (const node of this._nodes) {
 			node.checkHover(this._mousePos);
+			if (node.IsHovered) anyHovered = true;
 		}
+		this._canvas.style.cursor = anyHovered ? "pointer" : "default";
 	}
 }

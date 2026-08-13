@@ -129,6 +129,71 @@ describe("TweenManager", () => {
 		expect(node.Rotation).toBeCloseTo(0);
 	});
 
+	it("tweens an object property (Color)", () => {
+		const manager = new TweenManager();
+		const node = new Node();
+		node.Color = { r: 0, g: 0, b: 0, a: 1 };
+
+		manager.start(node, 1, {
+			prop: "Color",
+			to: { r: 200, g: 100, b: 50, a: 1 },
+		});
+
+		manager.update(0.5);
+		expect(node.Color.r).toBeCloseTo(100);
+		expect(node.Color.g).toBeCloseTo(50);
+		expect(node.Color.b).toBeCloseTo(25);
+		expect(node.Color.a).toBeCloseTo(1);
+
+		manager.update(0.5);
+		expect(node.Color.r).toBeCloseTo(200);
+		expect(node.Color.g).toBeCloseTo(100);
+		expect(node.Color.b).toBeCloseTo(50);
+	});
+
+	it("tweens scalar and object properties together", () => {
+		const manager = new TweenManager();
+		const node = new CircleNode();
+		node.Radius = 10;
+		node.Color = { r: 255, g: 0, b: 0, a: 1 };
+
+		manager.start(
+			node,
+			1,
+			{ prop: "Radius", to: 30 },
+			{ prop: "Color", to: { r: 0, g: 255, b: 0, a: 1 } },
+		);
+
+		manager.update(0.5);
+		expect(node.Radius).toBeCloseTo(20);
+		expect(node.Color.r).toBeCloseTo(127.5);
+		expect(node.Color.g).toBeCloseTo(127.5);
+		expect(node.Color.b).toBeCloseTo(0);
+
+		manager.update(0.5);
+		expect(node.Radius).toBeCloseTo(30);
+		expect(node.Color.r).toBeCloseTo(0);
+		expect(node.Color.g).toBeCloseTo(255);
+	});
+
+	it("stops an object tween mid-way, freezing at current value", () => {
+		const manager = new TweenManager();
+		const node = new Node();
+		node.Color = { r: 0, g: 0, b: 0, a: 1 };
+
+		const id = manager.start(node, 1, {
+			prop: "Color",
+			to: { r: 200, g: 200, b: 200, a: 1 },
+		});
+
+		manager.update(0.25);
+		expect(node.Color.r).toBeCloseTo(50);
+
+		manager.stop(id);
+		manager.update(0.75);
+		expect(node.Color.r).toBeCloseTo(50);
+	});
+
 	it("handles zero duration by jumping to target immediately", () => {
 		const manager = new TweenManager();
 		const node = new Node();

@@ -2,18 +2,30 @@ import type { Node } from "./nodes";
 
 export interface TweenPropertyConfig {
 	prop: string;
+	to: number | Record<string, number>;
+}
+
+interface ScalarTarget {
+	kind: "scalar";
+	prop: string;
+	from: number;
 	to: number;
 }
+
+interface ObjectTarget {
+	kind: "object";
+	prop: string;
+	from: Record<string, number>;
+	to: Record<string, number>;
+}
+
+type TweenTarget = ScalarTarget | ObjectTarget;
 
 interface TweenEntry {
 	node: Node;
 	duration: number;
 	elapsed: number;
-	targets: Array<{
-		prop: string;
-		from: number;
-		to: number;
-	}>;
+	targets: TweenTarget[];
 }
 
 export class TweenManager {
@@ -26,12 +38,24 @@ export class TweenManager {
 		...configs: TweenPropertyConfig[]
 	): number {
 		const id = this._nextId++;
-		const targets = configs.map((c) => ({
-			prop: c.prop,
+		const targets: TweenTarget[] = configs.map((c) => {
 			// @ts-ignore
-			from: (node as Record<string, unknown>)[c.prop] as number,
-			to: c.to,
-		}));
+			const current = (node as Record<string, unknown>)[c.prop];
+			if (typeof c.to === "number") {
+				return {
+					kind: "scalar",
+					prop: c.prop,
+					from: current as number,
+					to: c.to,
+				};
+			}
+			return {
+				kind: "object",
+				prop: c.prop,
+				from: { ...(current as Record<string, number>) },
+				to: c.to,
+			};
+		});
 		this._tweens.set(id, { node, duration, elapsed: 0, targets });
 		return id;
 	}
@@ -53,9 +77,21 @@ export class TweenManager {
 					: Math.min(tween.elapsed / tween.duration, 1);
 
 			for (const target of tween.targets) {
-				// @ts-ignore
-				(tween.node as Record<string, unknown>)[target.prop] =
-					target.from + (target.to - target.from) * t;
+				if (target.kind === "scalar") {
+					// @ts-ignore
+					(tween.node as Record<string, unknown>)[target.prop] =
+						target.from + (target.to - target.from) * t;
+				} else {
+					const result: Record<string, number> = {};
+					for (const key of Object.keys(target.to)) {
+						result[key] =
+							target.from[key] +
+							(target.to[key] - target.from[key]) * t;
+					}
+					// @ts-ignore
+					(tween.node as Record<string, unknown>)[target.prop] =
+						result;
+				}
 			}
 
 			if (t >= 1) {

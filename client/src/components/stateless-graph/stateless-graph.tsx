@@ -54,6 +54,8 @@ export function Graph({
 		const engine = new Engine(canvas);
 		engine.start();
 
+		const tweens = engine.tweens;
+
 		for (const item of items) {
 			const circle = new CircleNode();
 			circle.Position = {
@@ -75,13 +77,24 @@ export function Graph({
 			const hovering = new HoveringNode();
 			hovering.RefNode = circle;
 
+			let tween: number | null = null;
 			circle.onHoverEnter = () => {
-				circle.Color = { r: 50, g: 180, b: 80, a: 1 };
-				circle.Radius = 20;
+				if (tween !== null) tweens.stop(tween);
+				tween = tweens.start(
+					circle,
+					0.2,
+					{ prop: "Radius", to: 20 },
+					{ prop: "Color", to: { r: 50, g: 180, b: 80, a: 1 } },
+				);
 			};
 			circle.onHoverExit = () => {
-				circle.Color = { r: 100, g: 100, b: 200, a: 1 };
-				circle.Radius = 15;
+				if (tween !== null) tweens.stop(tween);
+				tween = tweens.start(
+					circle,
+					0.2,
+					{ prop: "Radius", to: 15 },
+					{ prop: "Color", to: { r: 100, g: 100, b: 200, a: 1 } },
+				);
 			};
 
 			circle.addChild(label);
