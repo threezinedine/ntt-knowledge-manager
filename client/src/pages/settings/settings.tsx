@@ -1,4 +1,4 @@
-import { Navbar } from "../../features";
+import { Navbar, Setting } from "../../features";
 import styles from "./settings.module.scss";
 
 export function Settings() {
@@ -7,6 +7,7 @@ export function Settings() {
 			<Navbar />
 			<main className={styles.content}>
 				<h1>Settings</h1>
+				<Setting />
 			</main>
 		</div>
 	);

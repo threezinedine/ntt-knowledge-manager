@@ -11,3 +11,5 @@ export type { AuthStatus } from "./auth";
 export { ThemeProvider, useTheme, useThemeStore } from "./theme";
 export type { ThemeName } from "./theme";
 export { Navbar } from "./navbar";
+export { Setting, useSettingsStore } from "./settings";
+export type { SettingsData, SettingsUpdate } from "./settings";
