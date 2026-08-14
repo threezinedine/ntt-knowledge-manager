@@ -10,6 +10,7 @@ export { Dropdown } from "./dropdown";
 export type { DropdownItem } from "./dropdown";
 export { Modal } from "./modal";
 export type { ModalRef } from "./modal";
+export { EpubReader } from "./epub-reader";
 export { Dropdown as StatelessDropdown } from "./stateless-dropdown";
 export { Graph as StatelessGraph } from "./stateless-graph";
 export type { GraphItem, GraphRelation } from "./stateless-graph";
