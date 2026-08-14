@@ -70,12 +70,39 @@ describe("Navbar", () => {
 		expect(window.location.hash).toBe("#/workspace");
 	});
 
-	it("logs out and returns home when Logout is selected", () => {
+	it("opens a confirmation modal when Logout is selected", () => {
 		useAuthStore.setState({ token: "token-1", status: "authenticated" });
 		render(<Navbar />);
 
 		fireEvent.click(screen.getByRole("img", { name: "User avatar" }));
 		fireEvent.click(screen.getByRole("menuitem", { name: "Logout" }));
+
+		expect(screen.getByRole("dialog")).toBeVisible();
+		expect(
+			screen.getByText("Are you sure you want to log out?"),
+		).toBeVisible();
+	});
+
+	it("does not log out when Cancel is clicked in the modal", () => {
+		useAuthStore.setState({ token: "token-1", status: "authenticated" });
+		render(<Navbar />);
+
+		fireEvent.click(screen.getByRole("img", { name: "User avatar" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Logout" }));
+		fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+		expect(useAuthStore.getState().token).toBe("token-1");
+		expect(useAuthStore.getState().status).toBe("authenticated");
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+	});
+
+	it("logs out and returns home when Yes is clicked in the modal", () => {
+		useAuthStore.setState({ token: "token-1", status: "authenticated" });
+		render(<Navbar />);
+
+		fireEvent.click(screen.getByRole("img", { name: "User avatar" }));
+		fireEvent.click(screen.getByRole("menuitem", { name: "Logout" }));
+		fireEvent.click(screen.getByRole("button", { name: "Yes" }));
 
 		expect(useAuthStore.getState().token).toBeNull();
 		expect(useAuthStore.getState().status).toBe("unauthenticated");

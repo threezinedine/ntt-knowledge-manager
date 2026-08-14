@@ -1,6 +1,9 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { User } from "lucide-react";
 import {
+	Button,
+	Modal,
+	type ModalRef,
 	StatelessNavbar,
 	type DropdownItem,
 	type NavbarVariant,
@@ -26,6 +29,7 @@ export function Navbar({
 	const status = useAuthStore((state) => state.status);
 	const verify = useAuthStore((state) => state.verify);
 	const logout = useAuthStore((state) => state.logout);
+	const logoutModalRef = useRef<ModalRef>(null);
 
 	// resolve an unverified stored token so the right control is shown
 	useEffect(() => {
@@ -37,6 +41,12 @@ export function Navbar({
 	// a stored token counts as signed in until verification says otherwise
 	const isAuthenticated =
 		status === "authenticated" || (status === "checking" && token !== null);
+
+	const handleLogoutConfirm = () => {
+		logoutModalRef.current?.close();
+		logout();
+		window.location.hash = "#/";
+	};
 
 	const accountItems: DropdownItem[] = [
 		{
@@ -62,24 +72,44 @@ export function Navbar({
 			icon: "fa-solid fa-right-from-bracket",
 			danger: true,
 			onSelect: () => {
-				logout();
-				window.location.hash = "#/";
+				logoutModalRef.current?.open();
 			},
 		},
 	];
 
 	return (
-		<StatelessNavbar
-			className={className}
-			variant={variant}
-			isAuthenticated={isAuthenticated}
-			avatarAlt={avatarAlt}
-			avatarFallback={avatarFallback}
-			loginLabel={loginLabel}
-			accountItems={accountItems}
-			onLoginClick={() => {
-				window.location.hash = "#/login";
-			}}
-		/>
+		<>
+			<StatelessNavbar
+				className={className}
+				variant={variant}
+				isAuthenticated={isAuthenticated}
+				avatarAlt={avatarAlt}
+				avatarFallback={avatarFallback}
+				loginLabel={loginLabel}
+				accountItems={accountItems}
+				onLoginClick={() => {
+					window.location.hash = "#/login";
+				}}
+			/>
+			<Modal ref={logoutModalRef}>
+				<p>Are you sure you want to log out?</p>
+				<div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => logoutModalRef.current?.close()}
+					>
+						Cancel
+					</Button>
+					<Button
+						variant="danger"
+						size="sm"
+						onClick={handleLogoutConfirm}
+					>
+						Yes
+					</Button>
+				</div>
+			</Modal>
+		</>
 	);
 }
