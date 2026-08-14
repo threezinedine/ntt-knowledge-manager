@@ -5,10 +5,16 @@ const config: StorybookConfig = {
 	stories: ["../src/**/*.stories.@(ts|tsx)"],
 	addons: [],
 	framework: "@storybook/react-vite",
+	core: {
+		disableLazyCompilation: true,
+	},
 	viteFinal: (config) => {
 		config.server = {
 			...config.server,
 			hmr: false,
+			watch: {
+				usePolling: true,
+			},
 		};
 		const nodeModules = path.resolve(import.meta.dirname, "../node_modules");
 		config.resolve = {
