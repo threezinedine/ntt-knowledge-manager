@@ -46,9 +46,7 @@ test("full walkthrough: login, update settings, logout", async ({ page }) => {
 
 	await page.getByRole("img", { name: "User avatar" }).click();
 	await page.getByRole("menuitem", { name: "Settings" }).click();
-	await expect(
-		page.getByRole("heading", { name: "Settings" }),
-	).toBeVisible();
+	await expect(page.locator("h1", { hasText: "Settings" })).toBeVisible();
 
 	await page.getByLabel("Nickname").fill("Walkthrough User");
 	await page.getByRole("button", { name: "Save" }).click();

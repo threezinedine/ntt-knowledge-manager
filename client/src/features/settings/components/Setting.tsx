@@ -59,7 +59,6 @@ export function Setting() {
 			</div>
 			<div className={styles.formCol}>
 				<Form
-					title="Settings"
 					items={fields}
 					onSubmit={async (values) => {
 						try {
