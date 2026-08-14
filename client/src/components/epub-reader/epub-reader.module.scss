@@ -1,2 +1,153 @@
-.epub-reader {
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+
+.container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: $surface;
+}
+
+.toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.375rem 0.75rem;
+	background: color-mix(in srgb, $foreground 4%, $surface);
+	border-bottom: 1px solid $border;
+	flex-shrink: 0;
+}
+
+.toolGroup {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.toolLabel {
+	font-size: 0.6875rem;
+	color: $muted;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	font-weight: 600;
+	margin-right: 0.25rem;
+	user-select: none;
+}
+
+.toolBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: 1px solid $border;
+	border-radius: 4px;
+	background: $surface;
+	color: $foreground;
+	cursor: pointer;
+	transition:
+		background-color 0.1s ease,
+		color 0.1s ease;
+
+	&:hover:not(:disabled) {
+		background: color-mix(in srgb, $foreground 8%, $surface);
+	}
+
+	&:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+}
+
+.toolValue {
+	font-size: 0.75rem;
+	color: $foreground;
+	min-width: 2rem;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+	user-select: none;
+}
+
+.select {
+	font-size: 0.75rem;
+	padding: 0.25rem 0.375rem;
+	border: 1px solid $border;
+	border-radius: 4px;
+	background: $surface;
+	color: $foreground;
+	cursor: pointer;
+	outline: none;
+
+	&:focus-visible {
+		border-color: $accent;
+	}
+}
+
+.separator {
+	width: 1px;
+	height: 20px;
+	background: $border;
+	margin: 0 0.375rem;
+}
+
+.spacer {
+	flex: 1;
+}
+
+.pageInfo {
+	font-size: 0.75rem;
+	color: $muted;
+	min-width: 3.5rem;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+	user-select: none;
+}
+
+.content {
+	flex: 1;
+	overflow: hidden;
+	position: relative;
+}
+
+.flow {
+	column-fill: auto;
+	height: 100%;
+	color: $foreground;
+	transition: transform 0.25s ease;
+}
+
+.section {
+	padding: 2rem;
+	break-inside: auto;
+	break-after: column;
+}
+
+.pageTitle {
+	margin: 0 0 1rem;
+	font-size: 1.5em;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.pageBody {
+	p {
+		margin: 0 0 1em;
+	}
+
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: $muted;
+	font-size: 0.875rem;
 }
