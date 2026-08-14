@@ -14,4 +14,6 @@ export { EpubReader } from "./epub-reader";
 export { Dropdown as StatelessDropdown } from "./stateless-dropdown";
 export { Graph as StatelessGraph } from "./stateless-graph";
 export type { GraphItem, GraphRelation } from "./stateless-graph";
+export { ToastMessage } from "./toast-message";
+export type { ToastVariant, ToastPosition } from "./toast-message";
 export type { Size, Variant } from "./common";
