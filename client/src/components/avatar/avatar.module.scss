@@ -46,6 +46,12 @@ $label-color: var(--color-foreground);
 		height: 3.5rem;
 		font-size: 1.375rem;
 	}
+
+	&--xl {
+		width: 6rem;
+		height: 6rem;
+		font-size: 2rem;
+	}
 }
 
 .image {

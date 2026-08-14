@@ -1,0 +1,16 @@
+.layout {
+	display: flex;
+	gap: 2rem;
+}
+
+.avatarCol {
+	flex: 0 0 33.333%;
+	display: flex;
+	justify-content: center;
+	padding-top: 2rem;
+}
+
+.formCol {
+	flex: 1;
+	min-width: 0;
+}

@@ -6,4 +6,4 @@ export type Variant =
 	| "danger"
 	| "link";
 
-export type Size = "sm" | "md" | "lg";
+export type Size = "sm" | "md" | "lg" | "xl";

@@ -5,6 +5,7 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
 export type SettingsData = {
 	theme: "light" | "dark";
 	nickname: string;
+	avatar: string;
 };
 
 export type SettingsUpdate = Partial<SettingsData>;

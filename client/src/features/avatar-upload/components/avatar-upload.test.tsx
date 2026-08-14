@@ -6,7 +6,7 @@ describe("AvatarUpload", () => {
 	it("renders the avatar", () => {
 		render(<AvatarUpload />);
 
-		expect(screen.getByRole("img", { name: "User avatar" })).toBeVisible();
+		expect(screen.getByRole("img", { name: "Avatar preview" })).toBeVisible();
 	});
 
 	it("renders upload badge button", () => {

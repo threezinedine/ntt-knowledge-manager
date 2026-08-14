@@ -62,23 +62,25 @@ export function AvatarUpload({
 
 	return (
 		<div className={styles.wrapper}>
-			<Avatar
-				size={size}
-				src={src || undefined}
-				alt="User avatar"
-				isLoading={loading}
-				onClick={handleClick}
-			>
-				{!src && !loading ? "?" : null}
-			</Avatar>
-			<button
-				className={styles.badge}
-				onClick={handleClick}
-				aria-label="Upload avatar"
-				type="button"
-			>
-				<CameraIcon />
-			</button>
+			<div className={styles.avatarContainer}>
+				<Avatar
+					size={size}
+					src={src || undefined}
+					alt="Avatar preview"
+					isLoading={loading}
+					onClick={handleClick}
+				>
+					{!src && !loading ? "?" : null}
+				</Avatar>
+				<button
+					className={styles.badge}
+					onClick={handleClick}
+					aria-label="Upload avatar"
+					type="button"
+				>
+					<CameraIcon />
+				</button>
+			</div>
 			{src && onRemove && (
 				<button
 					className={styles.removeBtn}

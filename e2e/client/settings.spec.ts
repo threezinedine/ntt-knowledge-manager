@@ -1,8 +1,13 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 
 test.describe.configure({ mode: "serial" });
 
 const DEV_TOKEN = "dev-fix-token";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const AVATAR_PATH = path.join(__dirname, "..", "fixtures", "avatar.png");
 
 async function resetSettings(page: import("@playwright/test").Page) {
 	const baseURL = page.url().startsWith("http")
@@ -11,6 +16,9 @@ async function resetSettings(page: import("@playwright/test").Page) {
 	await page.request.patch(`${baseURL}/api/settings`, {
 		headers: { Authorization: `Bearer ${DEV_TOKEN}` },
 		data: { theme: "light", nickname: "" },
+	});
+	await page.request.delete(`${baseURL}/api/settings/avatar`, {
+		headers: { Authorization: `Bearer ${DEV_TOKEN}` },
 	});
 }
 
@@ -130,6 +138,101 @@ test("theme persists after page reload", async ({ page }) => {
 
 	await page.reload();
 	await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+
+test("settings page shows avatar upload area", async ({ page }) => {
+	await page.goto("/");
+	await resetSettings(page);
+	await login(page);
+	await goToSettings(page);
+
+	await expect(
+		page.getByRole("button", { name: "Upload avatar" }),
+	).toBeVisible();
+});
+
+test("can upload an avatar image", async ({ page }) => {
+	await page.goto("/");
+	await resetSettings(page);
+	await login(page);
+	await goToSettings(page);
+
+	const fileInput = page.locator('input[type="file"]');
+	await fileInput.setInputFiles(AVATAR_PATH);
+
+	await expect(page.getByAltText("Avatar preview")).toHaveAttribute(
+		"src",
+		/^blob:/,
+	);
+
+	await page.getByRole("button", { name: "Save" }).click();
+	await expect(page.getByText("Settings saved")).toBeVisible();
+});
+
+test("uploaded avatar persists after reload", async ({ page }) => {
+	await page.goto("/");
+	await resetSettings(page);
+	await login(page);
+	await goToSettings(page);
+
+	const fileInput = page.locator('input[type="file"]');
+	await fileInput.setInputFiles(AVATAR_PATH);
+	await page.getByRole("button", { name: "Save" }).click();
+	await expect(page.getByText("Settings saved")).toBeVisible();
+
+	await page.reload();
+	await expect(page.getByAltText("Avatar preview")).toHaveAttribute(
+		"src",
+		/^data:image\/png;base64,/,
+	);
+});
+
+test("can remove an uploaded avatar", async ({ page }) => {
+	await page.goto("/");
+	await resetSettings(page);
+	await login(page);
+	await goToSettings(page);
+
+	const fileInput = page.locator('input[type="file"]');
+	await fileInput.setInputFiles(AVATAR_PATH);
+	await page.getByRole("button", { name: "Save" }).click();
+	await expect(page.getByText("Settings saved")).toBeVisible();
+
+	await page.reload();
+	await expect(
+		page.getByRole("button", { name: "Remove avatar" }),
+	).toBeVisible();
+
+	await page.getByRole("button", { name: "Remove avatar" }).click();
+	await page.getByRole("button", { name: "Save" }).click();
+	await expect(page.getByText("Settings saved")).toBeVisible();
+
+	await page.reload();
+	await expect(
+		page.getByRole("button", { name: "Remove avatar" }),
+	).toBeHidden();
+});
+
+test("can upload avatar and update settings together", async ({ page }) => {
+	await page.goto("/");
+	await resetSettings(page);
+	await login(page);
+	await goToSettings(page);
+
+	const fileInput = page.locator('input[type="file"]');
+	await fileInput.setInputFiles(AVATAR_PATH);
+	await page.getByLabel("Nickname").fill("AvatarUser");
+	await page.getByLabel("Theme").selectOption("dark");
+	await page.getByRole("button", { name: "Save" }).click();
+	await expect(page.getByText("Settings saved")).toBeVisible();
+
+	await page.reload();
+	await expect(page.getByAltText("Avatar preview")).toHaveAttribute(
+		"src",
+		/^data:image\/png;base64,/,
+	);
+	await expect(page.getByLabel("Nickname")).toHaveValue("AvatarUser");
+	await expect(page.getByLabel("Theme")).toHaveValue("dark");
 });
 
 test("settings require authentication", async ({ page }) => {

@@ -49,42 +49,44 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function DefaultDemo() {
+	const [tabs, setTabs] = useState(INITIAL_TABS);
+	const [activeId, setActiveId] = useState("App.tsx");
+
+	const handleClose = (id: string) => {
+		const next = tabs.filter((t) => t.id !== id);
+		if (activeId === id && next.length > 0) {
+			const closedIndex = tabs.findIndex((t) => t.id === id);
+			const newActive =
+				next[Math.min(closedIndex, next.length - 1)];
+			setActiveId(newActive.id);
+		}
+		setTabs(next);
+	};
+
+	return (
+		<div
+			style={{
+				width: 600,
+				height: 300,
+				border: "1px solid var(--color-border)",
+				borderRadius: 8,
+				overflow: "hidden",
+			}}
+		>
+			<TabSpace
+				tabs={tabs}
+				activeId={activeId}
+				onTabChange={setActiveId}
+				onClose={handleClose}
+				onReorder={setTabs}
+			/>
+		</div>
+	);
+}
+
 export const Default: Story = {
-	render: () => {
-		const [tabs, setTabs] = useState(INITIAL_TABS);
-		const [activeId, setActiveId] = useState("App.tsx");
-
-		const handleClose = (id: string) => {
-			const next = tabs.filter((t) => t.id !== id);
-			if (activeId === id && next.length > 0) {
-				const closedIndex = tabs.findIndex((t) => t.id === id);
-				const newActive =
-					next[Math.min(closedIndex, next.length - 1)];
-				setActiveId(newActive.id);
-			}
-			setTabs(next);
-		};
-
-		return (
-			<div
-				style={{
-					width: 600,
-					height: 300,
-					border: "1px solid var(--color-border)",
-					borderRadius: 8,
-					overflow: "hidden",
-				}}
-			>
-				<TabSpace
-					tabs={tabs}
-					activeId={activeId}
-					onTabChange={setActiveId}
-					onClose={handleClose}
-					onReorder={setTabs}
-				/>
-			</div>
-		);
-	},
+	render: () => <DefaultDemo />,
 };
 
 export const SingleTab: Story = {
@@ -113,105 +115,109 @@ export const SingleTab: Story = {
 	},
 };
 
+function ManyTabsDemo() {
+	const files = [
+		"index.tsx",
+		"App.tsx",
+		"main.ts",
+		"router.ts",
+		"config.ts",
+		"utils.ts",
+		"helpers.ts",
+		"constants.ts",
+		"types.d.ts",
+		"vite-env.d.ts",
+	];
+	const [tabs, setTabs] = useState<TabItem[]>(
+		files.map((f) => ({
+			id: f,
+			label: f,
+			children: (
+				<p style={{ padding: "1rem" }}>
+					Content of <code>{f}</code>
+				</p>
+			),
+		})),
+	);
+	const [activeId, setActiveId] = useState("App.tsx");
+
+	const handleClose = (id: string) => {
+		const next = tabs.filter((t) => t.id !== id);
+		if (activeId === id && next.length > 0) {
+			const closedIndex = tabs.findIndex((t) => t.id === id);
+			const newActive =
+				next[Math.min(closedIndex, next.length - 1)];
+			setActiveId(newActive.id);
+		}
+		setTabs(next);
+	};
+
+	return (
+		<div
+			style={{
+				width: 600,
+				height: 250,
+				border: "1px solid var(--color-border)",
+				borderRadius: 8,
+				overflow: "hidden",
+			}}
+		>
+			<TabSpace
+				tabs={tabs}
+				activeId={activeId}
+				onTabChange={setActiveId}
+				onClose={handleClose}
+				onReorder={setTabs}
+			/>
+		</div>
+	);
+}
+
 export const ManyTabs: Story = {
-	render: () => {
-		const files = [
-			"index.tsx",
-			"App.tsx",
-			"main.ts",
-			"router.ts",
-			"config.ts",
-			"utils.ts",
-			"helpers.ts",
-			"constants.ts",
-			"types.d.ts",
-			"vite-env.d.ts",
-		];
-		const [tabs, setTabs] = useState<TabItem[]>(
-			files.map((f) => ({
-				id: f,
-				label: f,
-				children: (
-					<p style={{ padding: "1rem" }}>
-						Content of <code>{f}</code>
-					</p>
-				),
-			})),
-		);
-		const [activeId, setActiveId] = useState("App.tsx");
-
-		const handleClose = (id: string) => {
-			const next = tabs.filter((t) => t.id !== id);
-			if (activeId === id && next.length > 0) {
-				const closedIndex = tabs.findIndex((t) => t.id === id);
-				const newActive =
-					next[Math.min(closedIndex, next.length - 1)];
-				setActiveId(newActive.id);
-			}
-			setTabs(next);
-		};
-
-		return (
-			<div
-				style={{
-					width: 600,
-					height: 250,
-					border: "1px solid var(--color-border)",
-					borderRadius: 8,
-					overflow: "hidden",
-				}}
-			>
-				<TabSpace
-					tabs={tabs}
-					activeId={activeId}
-					onTabChange={setActiveId}
-					onClose={handleClose}
-					onReorder={setTabs}
-				/>
-			</div>
-		);
-	},
+	render: () => <ManyTabsDemo />,
 };
 
-export const WithDisabledTab: Story = {
-	render: () => {
-		const tabs: TabItem[] = [
-			{
-				id: "editable",
-				label: "editable.ts",
-				children: <p style={{ padding: "1rem" }}>Editable content.</p>,
-			},
-			{
-				id: "locked",
-				label: "locked.ts",
-				children: <p style={{ padding: "1rem" }}>Locked content.</p>,
-				disabled: true,
-			},
-			{
-				id: "another",
-				label: "another.ts",
-				children: <p style={{ padding: "1rem" }}>Another file.</p>,
-			},
-		];
-		const [activeId, setActiveId] = useState("editable");
+function WithDisabledTabDemo() {
+	const tabs: TabItem[] = [
+		{
+			id: "editable",
+			label: "editable.ts",
+			children: <p style={{ padding: "1rem" }}>Editable content.</p>,
+		},
+		{
+			id: "locked",
+			label: "locked.ts",
+			children: <p style={{ padding: "1rem" }}>Locked content.</p>,
+			disabled: true,
+		},
+		{
+			id: "another",
+			label: "another.ts",
+			children: <p style={{ padding: "1rem" }}>Another file.</p>,
+		},
+	];
+	const [activeId, setActiveId] = useState("editable");
 
-		return (
-			<div
-				style={{
-					width: 600,
-					height: 200,
-					border: "1px solid var(--color-border)",
-					borderRadius: 8,
-					overflow: "hidden",
-				}}
-			>
-				<TabSpace
-					tabs={tabs}
-					activeId={activeId}
-					onTabChange={setActiveId}
-					onClose={() => {}}
-				/>
-			</div>
-		);
-	},
+	return (
+		<div
+			style={{
+				width: 600,
+				height: 200,
+				border: "1px solid var(--color-border)",
+				borderRadius: 8,
+				overflow: "hidden",
+			}}
+		>
+			<TabSpace
+				tabs={tabs}
+				activeId={activeId}
+				onTabChange={setActiveId}
+				onClose={() => {}}
+			/>
+		</div>
+	);
+}
+
+export const WithDisabledTab: Story = {
+	render: () => <WithDisabledTabDemo />,
 };

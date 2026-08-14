@@ -120,66 +120,70 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-	render: () => {
-		const [page, setPage] = useState(0);
-		const [config, setConfig] = useState<EpubReaderConfig>({
-			fontSize: 16,
-			fontFamily: "serif",
-			lineHeight: 1.8,
-		});
+function DefaultDemo() {
+	const [page, setPage] = useState(0);
+	const [config, setConfig] = useState<EpubReaderConfig>({
+		fontSize: 16,
+		fontFamily: "serif",
+		lineHeight: 1.8,
+	});
 
-		return (
-			<div
-				style={{
-					width: 800,
-					height: 500,
-					border: "1px solid var(--color-border)",
-					borderRadius: 8,
-					overflow: "hidden",
-				}}
-			>
-				<EpubReader
-					pages={SAMPLE_PAGES}
-					currentPage={page}
-					onPageChange={setPage}
-					config={config}
-					onConfigChange={setConfig}
-				/>
-			</div>
-		);
-	},
+	return (
+		<div
+			style={{
+				width: 800,
+				height: 500,
+				border: "1px solid var(--color-border)",
+				borderRadius: 8,
+				overflow: "hidden",
+			}}
+		>
+			<EpubReader
+				pages={SAMPLE_PAGES}
+				currentPage={page}
+				onPageChange={setPage}
+				config={config}
+				onConfigChange={setConfig}
+			/>
+		</div>
+	);
+}
+
+export const Default: Story = {
+	render: () => <DefaultDemo />,
 };
 
-export const SansSerif: Story = {
-	render: () => {
-		const [page, setPage] = useState(0);
-		const [config, setConfig] = useState<EpubReaderConfig>({
-			fontSize: 14,
-			fontFamily: "sans-serif",
-			lineHeight: 1.6,
-		});
+function SansSerifDemo() {
+	const [page, setPage] = useState(0);
+	const [config, setConfig] = useState<EpubReaderConfig>({
+		fontSize: 14,
+		fontFamily: "sans-serif",
+		lineHeight: 1.6,
+	});
 
-		return (
-			<div
-				style={{
-					width: 800,
-					height: 500,
-					border: "1px solid var(--color-border)",
-					borderRadius: 8,
-					overflow: "hidden",
-				}}
-			>
-				<EpubReader
-					pages={SAMPLE_PAGES}
-					currentPage={page}
-					onPageChange={setPage}
-					config={config}
-					onConfigChange={setConfig}
-				/>
-			</div>
-		);
-	},
+	return (
+		<div
+			style={{
+				width: 800,
+				height: 500,
+				border: "1px solid var(--color-border)",
+				borderRadius: 8,
+				overflow: "hidden",
+			}}
+		>
+			<EpubReader
+				pages={SAMPLE_PAGES}
+				currentPage={page}
+				onPageChange={setPage}
+				config={config}
+				onConfigChange={setConfig}
+			/>
+		</div>
+	);
+}
+
+export const SansSerif: Story = {
+	render: () => <SansSerifDemo />,
 };
 
 export const SinglePage: Story = {

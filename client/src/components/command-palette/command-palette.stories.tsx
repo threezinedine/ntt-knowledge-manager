@@ -86,70 +86,76 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-	render: () => {
-		const [open, setOpen] = useState(true);
+function DefaultDemo() {
+	const [open, setOpen] = useState(true);
 
-		return (
-			<div>
-				<button onClick={() => setOpen(true)}>
-					Open Command Palette (Ctrl+Shift+P)
-				</button>
-				<CommandPalette
-					commands={COMMANDS}
-					open={open}
-					onClose={() => setOpen(false)}
-				/>
-			</div>
-		);
-	},
+	return (
+		<div>
+			<button onClick={() => setOpen(true)}>
+				Open Command Palette (Ctrl+Shift+P)
+			</button>
+			<CommandPalette
+				commands={COMMANDS}
+				open={open}
+				onClose={() => setOpen(false)}
+			/>
+		</div>
+	);
+}
+
+export const Default: Story = {
+	render: () => <DefaultDemo />,
 };
+
+function FewCommandsDemo() {
+	const [open, setOpen] = useState(true);
+	const commands: CommandItem[] = [
+		{
+			id: "run",
+			label: "Run Task",
+			shortcut: "Ctrl+Shift+B",
+			onSelect: () => alert("Run"),
+		},
+		{
+			id: "debug",
+			label: "Start Debugging",
+			shortcut: "F5",
+			onSelect: () => alert("Debug"),
+		},
+	];
+
+	return (
+		<div>
+			<button onClick={() => setOpen(true)}>Open</button>
+			<CommandPalette
+				commands={commands}
+				open={open}
+				onClose={() => setOpen(false)}
+			/>
+		</div>
+	);
+}
 
 export const FewCommands: Story = {
-	render: () => {
-		const [open, setOpen] = useState(true);
-		const commands: CommandItem[] = [
-			{
-				id: "run",
-				label: "Run Task",
-				shortcut: "Ctrl+Shift+B",
-				onSelect: () => alert("Run"),
-			},
-			{
-				id: "debug",
-				label: "Start Debugging",
-				shortcut: "F5",
-				onSelect: () => alert("Debug"),
-			},
-		];
-
-		return (
-			<div>
-				<button onClick={() => setOpen(true)}>Open</button>
-				<CommandPalette
-					commands={commands}
-					open={open}
-					onClose={() => setOpen(false)}
-				/>
-			</div>
-		);
-	},
+	render: () => <FewCommandsDemo />,
 };
 
-export const WithGroups: Story = {
-	render: () => {
-		const [open, setOpen] = useState(true);
+function WithGroupsDemo() {
+	const [open, setOpen] = useState(true);
 
-		return (
-			<div>
-				<button onClick={() => setOpen(true)}>Open</button>
-				<CommandPalette
-					commands={COMMANDS}
-					open={open}
-					onClose={() => setOpen(false)}
-					placeholder="> Type a command..."
-				/>
-			</div>
-		);
-	},
+	return (
+		<div>
+			<button onClick={() => setOpen(true)}>Open</button>
+			<CommandPalette
+				commands={COMMANDS}
+				open={open}
+				onClose={() => setOpen(false)}
+				placeholder="> Type a command..."
+			/>
+		</div>
+	);
+}
+
+export const WithGroups: Story = {
+	render: () => <WithGroupsDemo />,
 };
