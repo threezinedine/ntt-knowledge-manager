@@ -1,0 +1,61 @@
+$accent: var(--color-accent);
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+
+.wrapper {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	position: relative;
+}
+
+.badge {
+	position: absolute;
+	bottom: 1.25rem;
+	right: -0.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	border: 2px solid $surface;
+	background: $accent;
+	color: white;
+	cursor: pointer;
+	padding: 0;
+	transition:
+		transform 0.1s ease,
+		background-color 0.1s ease;
+
+	&:hover {
+		transform: scale(1.1);
+	}
+}
+
+.removeBtn {
+	font-size: 0.75rem;
+	color: $muted;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	text-decoration: underline;
+	transition: color 0.1s ease;
+
+	&:hover {
+		color: $foreground;
+	}
+}
+
+.hiddenInput {
+	position: absolute;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	opacity: 0;
+	pointer-events: none;
+}

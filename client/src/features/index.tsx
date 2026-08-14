@@ -15,3 +15,4 @@ export { Setting, useSettingsStore } from "./settings";
 export type { SettingsData, SettingsUpdate } from "./settings";
 export { ToastContainer, useToastStore } from "./toast";
 export type { ToastOptions, ToastEntry } from "./toast";
+export { AvatarUpload, useAvatarStore } from "./avatar-upload";
