@@ -12,7 +12,7 @@ export default defineConfig({
 	},
 	// bind-mounted volumes in Docker don't reliably emit inotify events
 	server: {
-		allowedHosts: ["dev.ntt-space.org"],
+		allowedHosts: ["dev.ntt-space.org", "nginx-local"],
 		watch: {
 			usePolling: true,
 			interval: 300,
