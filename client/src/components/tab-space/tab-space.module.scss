@@ -1,0 +1,170 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+
+$tab-bg: color-mix(in srgb, $surface, transparent 100%);
+$tab-bg-active: $surface;
+$tab-bg-hover: color-mix(in srgb, $foreground 6%, $surface);
+
+.container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.header {
+	display: flex;
+	background: color-mix(in srgb, $foreground 4%, $surface);
+	border-bottom: 1px solid $border;
+	flex-shrink: 0;
+}
+
+.bar {
+	display: flex;
+	overflow-x: auto;
+	scrollbar-width: none;
+	flex: 1;
+	min-width: 0;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.scrollBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	flex-shrink: 0;
+	padding: 0;
+	border: none;
+	background: color-mix(in srgb, $foreground 4%, $surface);
+	color: $muted;
+	cursor: pointer;
+	transition:
+		background-color 0.1s ease,
+		color 0.1s ease;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 10%, $surface);
+		color: $foreground;
+	}
+}
+
+.scrollBtn--disabled {
+	opacity: 0.3;
+	cursor: default;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 4%, $surface);
+		color: $muted;
+	}
+}
+
+.tab {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.5rem 0.5rem 1rem;
+	width: 160px;
+	flex-shrink: 0;
+	background: $tab-bg;
+	border: none;
+	border-right: 1px solid $border;
+	color: $muted;
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.8125rem;
+	user-select: none;
+	position: relative;
+	white-space: nowrap;
+	transition:
+		background-color 0.1s ease,
+		color 0.1s ease;
+
+	&:hover {
+		background: $tab-bg-hover;
+		color: $foreground;
+
+		.close {
+			opacity: 1;
+		}
+	}
+}
+
+.tab--active {
+	background: $tab-bg-active;
+	color: $foreground;
+
+	&::after {
+		content: "";
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: $tab-bg-active;
+	}
+
+	.close {
+		opacity: 1;
+	}
+}
+
+.tab--disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+
+	&:hover {
+		background: $tab-bg;
+		color: $muted;
+	}
+}
+
+.tab--dragging {
+	opacity: 0.4;
+}
+
+.tab--drop-target {
+	box-shadow: -2px 0 0 0 $accent inset;
+}
+
+.label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex: 1;
+	min-width: 0;
+}
+
+.close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background: transparent;
+	color: $muted;
+	cursor: pointer;
+	opacity: 0;
+	flex-shrink: 0;
+	transition:
+		background-color 0.1s ease,
+		color 0.1s ease,
+		opacity 0.1s ease;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 12%, transparent);
+		color: $foreground;
+	}
+}
+
+.panel {
+	flex: 1;
+	overflow: auto;
+}
