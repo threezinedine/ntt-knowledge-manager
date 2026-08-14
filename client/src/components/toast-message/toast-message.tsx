@@ -1,4 +1,4 @@
-import type { ComponentType, HTMLAttributes, SVGAttributes } from "react";
+import { useEffect, useRef, type ComponentType, type HTMLAttributes, type SVGAttributes } from "react";
 import { InfoIcon, SuccessIcon, WarnIcon, ErrorIcon } from "../../icons";
 import styles from "./toast-message.module.scss";
 
@@ -21,6 +21,8 @@ type ToastMessageProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
 	description?: string;
 	variant?: ToastVariant;
 	position?: ToastPosition;
+	/** Auto-dismiss duration in milliseconds. When set, a progress bar shrinks and onClose fires at the end. */
+	duration?: number;
 	onClose?: () => void;
 };
 
@@ -30,9 +32,22 @@ export function ToastMessage({
 	description,
 	variant = "info",
 	position = "bottom-right",
+	duration,
 	onClose,
 	...props
 }: ToastMessageProps) {
+	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	useEffect(() => {
+		if (duration == null || !onClose) return;
+
+		timerRef.current = setTimeout(onClose, duration);
+
+		return () => {
+			if (timerRef.current) clearTimeout(timerRef.current);
+		};
+	}, [duration, onClose]);
+
 	const classes = [
 		styles.toast,
 		styles[`toast--${variant}`],
@@ -62,6 +77,13 @@ export function ToastMessage({
 				>
 					&times;
 				</button>
+			)}
+			{duration != null && (
+				<div
+					className={styles.progress}
+					style={{ animationDuration: `${duration}ms` }}
+					data-testid="toast-progress"
+				/>
 			)}
 		</div>
 	);

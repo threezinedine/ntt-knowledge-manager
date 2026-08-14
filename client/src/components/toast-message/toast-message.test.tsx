@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastMessage } from "./toast-message";
 
 describe("ToastMessage", () => {
@@ -106,4 +106,57 @@ describe("ToastMessage", () => {
 			expect(icon).not.toBeNull();
 		},
 	);
+
+	describe("progress bar", () => {
+		beforeEach(() => {
+			vi.useFakeTimers();
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
+		it("renders a progress bar when duration is set", () => {
+			render(<ToastMessage title="Saved" duration={3000} onClose={() => {}} />);
+
+			expect(screen.getByTestId("toast-progress")).toBeInTheDocument();
+		});
+
+		it("does not render a progress bar when duration is omitted", () => {
+			render(<ToastMessage title="Saved" onClose={() => {}} />);
+
+			expect(screen.queryByTestId("toast-progress")).not.toBeInTheDocument();
+		});
+
+		it("sets animation duration from the duration prop", () => {
+			render(<ToastMessage title="Saved" duration={5000} onClose={() => {}} />);
+
+			const bar = screen.getByTestId("toast-progress");
+			expect(bar.style.animationDuration).toBe("5000ms");
+		});
+
+		it("calls onClose after the duration elapses", () => {
+			const handleClose = vi.fn();
+			render(<ToastMessage title="Saved" duration={3000} onClose={handleClose} />);
+
+			expect(handleClose).not.toHaveBeenCalled();
+
+			act(() => {
+				vi.advanceTimersByTime(3000);
+			});
+
+			expect(handleClose).toHaveBeenCalledOnce();
+		});
+
+		it("does not call onClose before the duration elapses", () => {
+			const handleClose = vi.fn();
+			render(<ToastMessage title="Saved" duration={3000} onClose={handleClose} />);
+
+			act(() => {
+				vi.advanceTimersByTime(2000);
+			});
+
+			expect(handleClose).not.toHaveBeenCalled();
+		});
+	});
 });
