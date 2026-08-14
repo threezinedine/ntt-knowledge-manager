@@ -52,15 +52,7 @@ $accent: var(--color-accent);
 	flex-shrink: 0;
 }
 
-.icon {
-	color: $muted;
-	font-size: 0.875rem;
-	flex-shrink: 0;
-}
-
-.label {
+.content {
 	flex: 1;
-	font-size: 0.875rem;
-	line-height: 1.4;
-	overflow-wrap: anywhere;
+	min-width: 0;
 }

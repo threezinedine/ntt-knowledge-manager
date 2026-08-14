@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import { List, type ListItem } from "./list";
 
 const ITEMS: ListItem[] = [
-	{ id: "1", label: "First" },
-	{ id: "2", label: "Second" },
-	{ id: "3", label: "Third" },
+	{ id: "1", children: <span>First</span> },
+	{ id: "2", children: <span>Second</span> },
+	{ id: "3", children: <span>Third</span> },
 ];
 
 function renderList(props = {}) {
@@ -16,71 +16,63 @@ describe("List", () => {
 	it("renders all items", () => {
 		renderList();
 
-		expect(screen.getByRole("option", { name: /First/ })).toBeVisible();
-		expect(screen.getByRole("option", { name: /Second/ })).toBeVisible();
-		expect(screen.getByRole("option", { name: /Third/ })).toBeVisible();
+		expect(screen.getByText("First")).toBeVisible();
+		expect(screen.getByText("Second")).toBeVisible();
+		expect(screen.getByText("Third")).toBeVisible();
 	});
 
-	it("renders items with icons", () => {
-		const items = [
-			{ id: "1", label: "Notes", icon: "fa-solid fa-note-sticky" },
+	it("renders custom children inside items", () => {
+		const items: ListItem[] = [
+			{
+				id: "1",
+				children: (
+					<div>
+						<strong>Title</strong>
+						<p>Description</p>
+					</div>
+				),
+			},
 		];
 		render(<List items={items} />);
 
-		expect(screen.getByRole("option", { name: /Notes/ })).toBeVisible();
+		expect(screen.getByText("Title")).toBeVisible();
+		expect(screen.getByText("Description")).toBeVisible();
 	});
 
 	it("marks items as draggable", () => {
 		renderList();
 
-		const options = screen.getAllByRole("option");
-		for (const option of options) {
-			expect(option).toHaveAttribute("draggable", "true");
+		const items = screen.getAllByRole("listitem");
+		for (const item of items) {
+			expect(item).toHaveAttribute("draggable", "true");
 		}
 	});
 
 	it("does not make disabled items draggable", () => {
-		const items = [{ id: "1", label: "Locked", disabled: true }];
+		const items: ListItem[] = [
+			{ id: "1", children: <span>Locked</span>, disabled: true },
+		];
 		render(<List items={items} />);
 
-		const option = screen.getByRole("option", { name: /Locked/ });
-		expect(option).toHaveAttribute("draggable", "false");
-		expect(option).toHaveAttribute("aria-disabled", "true");
-	});
-
-	it("calls onItemSelect when an item is clicked", () => {
-		const handleSelect = vi.fn();
-		renderList({ onItemSelect: handleSelect });
-
-		fireEvent.click(screen.getByRole("option", { name: /Second/ }));
-
-		expect(handleSelect).toHaveBeenCalledWith(ITEMS[1]);
-	});
-
-	it("does not call onItemSelect for disabled items", () => {
-		const handleSelect = vi.fn();
-		const items = [{ id: "1", label: "Locked", disabled: true }];
-		render(<List items={items} onItemSelect={handleSelect} />);
-
-		fireEvent.click(screen.getByRole("option", { name: /Locked/ }));
-
-		expect(handleSelect).not.toHaveBeenCalled();
+		const item = screen.getByRole("listitem");
+		expect(item).toHaveAttribute("draggable", "false");
+		expect(item).toHaveAttribute("aria-disabled", "true");
 	});
 
 	it("calls onReorder after a drag-and-drop", () => {
 		const handleReorder = vi.fn();
 		renderList({ onReorder: handleReorder });
 
-		const options = screen.getAllByRole("option");
+		const items = screen.getAllByRole("listitem");
 
-		fireEvent.dragStart(options[0], {
+		fireEvent.dragStart(items[0], {
 			dataTransfer: { effectAllowed: "", setData: vi.fn() },
 		});
-		fireEvent.dragOver(options[2], {
+		fireEvent.dragOver(items[2], {
 			dataTransfer: { dropEffect: "" },
 			preventDefault: vi.fn(),
 		});
-		fireEvent.drop(options[2], {
+		fireEvent.drop(items[2], {
 			dataTransfer: { dropEffect: "" },
 			preventDefault: vi.fn(),
 		});
@@ -92,21 +84,26 @@ describe("List", () => {
 		]);
 	});
 
-	it("supports custom renderItem", () => {
-		render(
-			<List
-				items={ITEMS}
-				renderItem={(item) => <strong>{item.label.toUpperCase()}</strong>}
-			/>,
-		);
+	it("does not call onReorder when dropped on same position", () => {
+		const handleReorder = vi.fn();
+		renderList({ onReorder: handleReorder });
 
-		expect(screen.getByText("FIRST")).toBeVisible();
-		expect(screen.getByText("SECOND")).toBeVisible();
+		const items = screen.getAllByRole("listitem");
+
+		fireEvent.dragStart(items[1], {
+			dataTransfer: { effectAllowed: "", setData: vi.fn() },
+		});
+		fireEvent.drop(items[1], {
+			dataTransfer: { dropEffect: "" },
+			preventDefault: vi.fn(),
+		});
+
+		expect(handleReorder).not.toHaveBeenCalled();
 	});
 
-	it("has listbox role", () => {
+	it("has list role", () => {
 		renderList();
 
-		expect(screen.getByRole("listbox")).toBeVisible();
+		expect(screen.getByRole("list")).toBeVisible();
 	});
 });

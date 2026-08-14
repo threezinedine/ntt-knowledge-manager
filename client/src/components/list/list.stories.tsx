@@ -3,11 +3,46 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { List, type ListItem } from "./list";
 
 const ITEMS: ListItem[] = [
-	{ id: "1", label: "Introduction", icon: "fa-solid fa-file-lines" },
-	{ id: "2", label: "Getting Started", icon: "fa-solid fa-rocket" },
-	{ id: "3", label: "Configuration", icon: "fa-solid fa-gear" },
-	{ id: "4", label: "API Reference", icon: "fa-solid fa-code" },
-	{ id: "5", label: "Troubleshooting", icon: "fa-solid fa-wrench" },
+	{
+		id: "1",
+		children: (
+			<span>
+				<i className="fa-solid fa-file-lines" /> Introduction
+			</span>
+		),
+	},
+	{
+		id: "2",
+		children: (
+			<span>
+				<i className="fa-solid fa-rocket" /> Getting Started
+			</span>
+		),
+	},
+	{
+		id: "3",
+		children: (
+			<span>
+				<i className="fa-solid fa-gear" /> Configuration
+			</span>
+		),
+	},
+	{
+		id: "4",
+		children: (
+			<span>
+				<i className="fa-solid fa-code" /> API Reference
+			</span>
+		),
+	},
+	{
+		id: "5",
+		children: (
+			<span>
+				<i className="fa-solid fa-wrench" /> Troubleshooting
+			</span>
+		),
+	},
 ];
 
 const meta = {
@@ -24,11 +59,7 @@ export const Default: Story = {
 
 		return (
 			<div style={{ maxWidth: 320, padding: "2rem" }}>
-				<List
-					items={items}
-					onReorder={setItems}
-					onItemSelect={(item) => console.log("selected", item)}
-				/>
+				<List items={items} onReorder={setItems} />
 			</div>
 		);
 	},
@@ -36,12 +67,15 @@ export const Default: Story = {
 
 export const WithDisabledItem: Story = {
 	render: () => {
-		const itemsWithDisabled: ListItem[] = [
-			{ id: "1", label: "Editable item" },
-			{ id: "2", label: "Locked item", disabled: true },
-			{ id: "3", label: "Another editable item" },
-		];
-		const [items, setItems] = useState(itemsWithDisabled);
+		const [items, setItems] = useState<ListItem[]>([
+			{ id: "1", children: <span>Editable item</span> },
+			{
+				id: "2",
+				children: <span>Locked item</span>,
+				disabled: true,
+			},
+			{ id: "3", children: <span>Another editable item</span> },
+		]);
 
 		return (
 			<div style={{ maxWidth: 320, padding: "2rem" }}>
@@ -51,22 +85,47 @@ export const WithDisabledItem: Story = {
 	},
 };
 
-export const CustomRender: Story = {
+export const RichContent: Story = {
 	render: () => {
-		const [items, setItems] = useState(ITEMS);
+		const [items, setItems] = useState<ListItem[]>([
+			{
+				id: "1",
+				children: (
+					<div>
+						<strong>Chapter 1</strong>
+						<p style={{ margin: 0, fontSize: "0.75rem", opacity: 0.6 }}>
+							The beginning of it all
+						</p>
+					</div>
+				),
+			},
+			{
+				id: "2",
+				children: (
+					<div>
+						<strong>Chapter 2</strong>
+						<p style={{ margin: 0, fontSize: "0.75rem", opacity: 0.6 }}>
+							Rising action and conflict
+						</p>
+					</div>
+				),
+			},
+			{
+				id: "3",
+				children: (
+					<div>
+						<strong>Chapter 3</strong>
+						<p style={{ margin: 0, fontSize: "0.75rem", opacity: 0.6 }}>
+							The grand finale
+						</p>
+					</div>
+				),
+			},
+		]);
 
 		return (
 			<div style={{ maxWidth: 320, padding: "2rem" }}>
-				<List
-					items={items}
-					onReorder={setItems}
-					renderItem={(item) => (
-						<div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1 }}>
-							{item.icon && <i className={item.icon} />}
-							<strong>{item.label}</strong>
-						</div>
-					)}
-				/>
+				<List items={items} onReorder={setItems} />
 			</div>
 		);
 	},

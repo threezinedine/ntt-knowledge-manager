@@ -4,20 +4,17 @@ import styles from "./list.module.scss";
 
 export type ListItem = {
 	id: string;
-	label: string;
-	icon?: string;
+	children: ReactNode;
 	disabled?: boolean;
 };
 
 type ListProps = Omit<HTMLAttributes<HTMLUListElement>, "children"> & {
 	items: ListItem[];
 	onReorder?: (items: ListItem[]) => void;
-	onItemSelect?: (item: ListItem) => void;
-	renderItem?: (item: ListItem) => ReactNode;
 };
 
 function Item({
-	item,
+	disabled,
 	isDragging,
 	isDropTarget,
 	onDragStart,
@@ -25,10 +22,9 @@ function Item({
 	onDragLeave,
 	onDrop,
 	onDragEnd,
-	onSelect,
 	children,
 }: {
-	item: ListItem;
+	disabled?: boolean;
 	isDragging: boolean;
 	isDropTarget: boolean;
 	onDragStart: (e: DragEvent) => void;
@@ -36,14 +32,13 @@ function Item({
 	onDragLeave: () => void;
 	onDrop: (e: DragEvent) => void;
 	onDragEnd: () => void;
-	onSelect: () => void;
-	children?: ReactNode;
+	children: ReactNode;
 }) {
 	const classes = [
 		styles.item,
 		isDragging && styles["item--dragging"],
 		isDropTarget && styles["item--drop-target"],
-		item.disabled && styles["item--disabled"],
+		disabled && styles["item--disabled"],
 	]
 		.filter(Boolean)
 		.join(" ");
@@ -51,28 +46,19 @@ function Item({
 	return (
 		<li
 			className={classes}
-			draggable={!item.disabled}
+			draggable={!disabled}
 			onDragStart={onDragStart}
 			onDragOver={onDragOver}
 			onDragLeave={onDragLeave}
 			onDrop={onDrop}
 			onDragEnd={onDragEnd}
-			onClick={item.disabled ? undefined : onSelect}
-			role="option"
-			aria-disabled={item.disabled || undefined}
-			aria-selected={false}
+			role="listitem"
+			aria-disabled={disabled || undefined}
 		>
 			<span className={styles.grip} aria-hidden="true">
 				<i className="fa-solid fa-grip-vertical" />
 			</span>
-			{children ?? (
-				<>
-					{item.icon && (
-						<i className={`${item.icon} ${styles.icon}`} aria-hidden="true" />
-					)}
-					<span className={styles.label}>{item.label}</span>
-				</>
-			)}
+			<div className={styles.content}>{children}</div>
 		</li>
 	);
 }
@@ -80,8 +66,6 @@ function Item({
 export function List({
 	items,
 	onReorder,
-	onItemSelect,
-	renderItem,
 	className,
 	...props
 }: ListProps) {
@@ -141,11 +125,11 @@ export function List({
 	const classes = [styles.list, className].filter(Boolean).join(" ");
 
 	return (
-		<ul className={classes} role="listbox" {...props}>
+		<ul className={classes} role="list" {...props}>
 			{items.map((item, index) => (
 				<Item
 					key={item.id}
-					item={item}
+					disabled={item.disabled}
 					isDragging={dragIndex === index}
 					isDropTarget={dropIndex === index}
 					onDragStart={(e) => handleDragStart(index, e)}
@@ -153,9 +137,8 @@ export function List({
 					onDragLeave={() => handleDragLeave(index)}
 					onDrop={(e) => handleDrop(index, e)}
 					onDragEnd={handleDragEnd}
-					onSelect={() => onItemSelect?.(item)}
 				>
-					{renderItem?.(item)}
+					{item.children}
 				</Item>
 			))}
 		</ul>
