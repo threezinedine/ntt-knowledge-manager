@@ -1,0 +1,66 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+	background: $surface;
+	color: $foreground;
+	cursor: grab;
+	user-select: none;
+	transition:
+		background-color 0.15s ease,
+		opacity 0.15s ease,
+		box-shadow 0.15s ease;
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.04);
+	}
+}
+
+.item--dragging {
+	opacity: 0.4;
+}
+
+.item--drop-target {
+	box-shadow: 0 -2px 0 0 $accent;
+}
+
+.item--disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.grip {
+	color: $muted;
+	font-size: 0.75rem;
+	flex-shrink: 0;
+}
+
+.icon {
+	color: $muted;
+	font-size: 0.875rem;
+	flex-shrink: 0;
+}
+
+.label {
+	flex: 1;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}

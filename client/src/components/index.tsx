@@ -8,6 +8,8 @@ export { Navbar as StatelessNavbar } from "./stateless-navbar";
 export type { NavbarVariant } from "./stateless-navbar";
 export { Dropdown } from "./dropdown";
 export type { DropdownItem } from "./dropdown";
+export { List } from "./list";
+export type { ListItem } from "./list";
 export { Modal } from "./modal";
 export type { ModalRef } from "./modal";
 export { EpubReader } from "./epub-reader";
