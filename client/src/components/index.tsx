@@ -1,4 +1,6 @@
 export { Button } from "./button";
+export { CommandPalette } from "./command-palette";
+export type { CommandItem } from "./command-palette";
 export { Avatar } from "./avatar";
 export { Card } from "./card";
 export { Form } from "./form";
