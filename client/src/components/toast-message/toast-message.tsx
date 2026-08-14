@@ -1,4 +1,5 @@
-import type { HTMLAttributes } from "react";
+import type { ComponentType, HTMLAttributes, SVGAttributes } from "react";
+import { InfoIcon, SuccessIcon, WarnIcon, ErrorIcon } from "../../icons";
 import styles from "./toast-message.module.scss";
 
 export type ToastVariant = "info" | "success" | "warn" | "error";
@@ -8,11 +9,11 @@ export type ToastPosition =
 	| "bottom-left"
 	| "bottom-right";
 
-const VARIANT_ICONS: Record<ToastVariant, string> = {
-	info: "fa-solid fa-circle-info",
-	success: "fa-solid fa-circle-check",
-	warn: "fa-solid fa-triangle-exclamation",
-	error: "fa-solid fa-circle-xmark",
+const VARIANT_ICONS: Record<ToastVariant, ComponentType<SVGAttributes<SVGSVGElement>>> = {
+	info: InfoIcon,
+	success: SuccessIcon,
+	warn: WarnIcon,
+	error: ErrorIcon,
 };
 
 type ToastMessageProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
@@ -41,9 +42,11 @@ export function ToastMessage({
 		.filter(Boolean)
 		.join(" ");
 
+	const Icon = VARIANT_ICONS[variant];
+
 	return (
 		<div className={classes} role="alert" {...props}>
-			<i className={`${VARIANT_ICONS[variant]} ${styles.icon}`} aria-hidden="true" />
+			<Icon className={styles.icon} aria-hidden="true" />
 			<div className={styles.body}>
 				<p className={styles.title}>{title}</p>
 				{description && (

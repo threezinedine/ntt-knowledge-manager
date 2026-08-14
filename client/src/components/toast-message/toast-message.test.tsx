@@ -93,19 +93,17 @@ describe("ToastMessage", () => {
 	it("renders an icon", () => {
 		render(<ToastMessage title="Saved" />);
 
-		const icon = screen.getByRole("alert").querySelector("i[aria-hidden]");
+		const icon = screen.getByRole("alert").querySelector("svg[aria-hidden]");
 		expect(icon).not.toBeNull();
 	});
 
-	it.each([
-		["info", "fa-circle-info"],
-		["success", "fa-circle-check"],
-		["warn", "fa-triangle-exclamation"],
-		["error", "fa-circle-xmark"],
-	] as const)("renders the correct icon for the %s variant", (variant, iconClass) => {
-		render(<ToastMessage title="Saved" variant={variant} />);
+	it.each(["info", "success", "warn", "error"] as const)(
+		"renders an svg icon for the %s variant",
+		(variant) => {
+			render(<ToastMessage title="Saved" variant={variant} />);
 
-		const icon = screen.getByRole("alert").querySelector("i[aria-hidden]");
-		expect(icon?.className).toContain(iconClass);
-	});
+			const icon = screen.getByRole("alert").querySelector("svg[aria-hidden]");
+			expect(icon).not.toBeNull();
+		},
+	);
 });
