@@ -12,6 +12,7 @@ from server.database import get_db, initialize_database
 from server.features.login.login import router as login_router
 from server.features.login.middleware import require_login
 from server.features.node.node import router as nodes_router
+from server.features.settings.settings import router as settings_router
 
 
 @asynccontextmanager
@@ -55,6 +56,7 @@ async def secure_health(db: Session = Depends(get_db)) -> dict[str, str]:
 
 api.include_router(login_router)
 api.include_router(nodes_router)
+api.include_router(settings_router)
 app.include_router(api)
 app.mount(
     "/",
