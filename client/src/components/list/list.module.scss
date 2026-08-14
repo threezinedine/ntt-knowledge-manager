@@ -56,3 +56,10 @@ $accent: var(--color-accent);
 	flex: 1;
 	min-width: 0;
 }
+
+.list--drop-zone {
+	outline: 2px dashed $accent;
+	outline-offset: -2px;
+	border-radius: 6px;
+	min-height: 3rem;
+}

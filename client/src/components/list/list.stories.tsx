@@ -85,6 +85,67 @@ export const WithDisabledItem: Story = {
 	},
 };
 
+export const CrossListTransfer: Story = {
+	render: () => {
+		const [left, setLeft] = useState<ListItem[]>([
+			{ id: "a1", children: <span>Apple</span> },
+			{ id: "a2", children: <span>Banana</span> },
+			{ id: "a3", children: <span>Cherry</span> },
+		]);
+		const [right, setRight] = useState<ListItem[]>([
+			{ id: "b1", children: <span>Dog</span> },
+			{ id: "b2", children: <span>Cat</span> },
+		]);
+
+		const allItems = [...left, ...right];
+
+		const handleReceiveLeft = (item: ListItem, atIndex: number) => {
+			const full = allItems.find((i) => i.id === item.id);
+			if (!full) return;
+			setRight((prev) => prev.filter((i) => i.id !== item.id));
+			setLeft((prev) => {
+				const next = [...prev];
+				next.splice(atIndex, 0, full);
+				return next;
+			});
+		};
+
+		const handleReceiveRight = (item: ListItem, atIndex: number) => {
+			const full = allItems.find((i) => i.id === item.id);
+			if (!full) return;
+			setLeft((prev) => prev.filter((i) => i.id !== item.id));
+			setRight((prev) => {
+				const next = [...prev];
+				next.splice(atIndex, 0, full);
+				return next;
+			});
+		};
+
+		return (
+			<div style={{ display: "flex", gap: "2rem", padding: "2rem" }}>
+				<div style={{ flex: 1 }}>
+					<h4>Fruits</h4>
+					<List
+						items={left}
+						onReorder={setLeft}
+						groupId="transfer"
+						onReceive={handleReceiveLeft}
+					/>
+				</div>
+				<div style={{ flex: 1 }}>
+					<h4>Animals</h4>
+					<List
+						items={right}
+						onReorder={setRight}
+						groupId="transfer"
+						onReceive={handleReceiveRight}
+					/>
+				</div>
+			</div>
+		);
+	},
+};
+
 export const RichContent: Story = {
 	render: () => {
 		const [items, setItems] = useState<ListItem[]>([

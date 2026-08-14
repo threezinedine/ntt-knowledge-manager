@@ -106,4 +106,35 @@ describe("List", () => {
 
 		expect(screen.getByRole("list")).toBeVisible();
 	});
+
+	it("accepts groupId, onReceive, and onRemove props without error", () => {
+		const onReceive = vi.fn();
+		const onRemove = vi.fn();
+		render(
+			<List
+				items={ITEMS}
+				groupId="test-group"
+				onReceive={onReceive}
+				onRemove={onRemove}
+			/>,
+		);
+
+		expect(screen.getAllByRole("listitem")).toHaveLength(3);
+	});
+
+	it("sets transfer data on dragStart when groupId is set", () => {
+		const setData = vi.fn();
+		render(<List items={ITEMS} groupId="my-group" />);
+
+		const items = screen.getAllByRole("listitem");
+		fireEvent.dragStart(items[0], {
+			dataTransfer: { effectAllowed: "", setData },
+		});
+
+		expect(setData).toHaveBeenCalledWith("text/plain", "0");
+		expect(setData).toHaveBeenCalledWith(
+			"application/x-list-transfer",
+			expect.stringContaining('"groupId":"my-group"'),
+		);
+	});
 });
