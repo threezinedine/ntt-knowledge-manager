@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends
+import base64
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -10,7 +13,11 @@ from server.features.settings.schemas import SettingsRead, SettingsUpdate, Theme
 DEFAULTS: dict[str, str] = {
     "theme": ThemeValue.light.value,
     "nickname": "",
+    "avatar": "",
 }
+
+ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+MAX_AVATAR_SIZE = 2 * 1024 * 1024  # 2 MB
 
 router = APIRouter(
     prefix="/settings",
@@ -55,3 +62,52 @@ def update_settings(
 
     db.commit()
     return _read_all(db)
+
+
+@router.post("/avatar", response_model=SettingsRead)
+async def upload_avatar(
+    file: UploadFile, db: Session = Depends(get_db)
+) -> dict[str, str]:
+    if file.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported image type. Allowed: {', '.join(sorted(ALLOWED_MIME_TYPES))}",
+        )
+
+    data = await file.read()
+    if len(data) > MAX_AVATAR_SIZE:
+        raise HTTPException(status_code=400, detail="Avatar must be under 2 MB")
+
+    encoded = base64.b64encode(data).decode("ascii")
+    value = f"data:{file.content_type};base64,{encoded}"
+
+    row = _get_or_create(db, "avatar")
+    row.value = value
+    db.commit()
+
+    return _read_all(db)
+
+
+@router.delete("/avatar", response_model=SettingsRead)
+def delete_avatar(db: Session = Depends(get_db)) -> dict[str, str]:
+    row = _get_or_create(db, "avatar")
+    row.value = ""
+    db.commit()
+    return _read_all(db)
+
+
+@router.get("/avatar")
+def get_avatar(db: Session = Depends(get_db)) -> Response:
+    data = _read_all(db)
+    avatar = data.get("avatar", "")
+    if not avatar:
+        raise HTTPException(status_code=404, detail="No avatar set")
+
+    # Parse data URI: data:<mime>;base64,<data>
+    header, _, b64data = avatar.partition(",")
+    mime = header.replace("data:", "").replace(";base64", "")
+
+    return Response(
+        content=base64.b64decode(b64data),
+        media_type=mime,
+    )

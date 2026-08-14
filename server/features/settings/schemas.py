@@ -11,6 +11,7 @@ class ThemeValue(str, Enum):
 class SettingsRead(BaseModel):
     theme: ThemeValue
     nickname: str
+    avatar: str
 
 
 class SettingsUpdate(BaseModel):

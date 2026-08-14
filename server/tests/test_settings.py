@@ -1,3 +1,5 @@
+import base64
+import io
 import os
 
 from fastapi.testclient import TestClient
@@ -14,6 +16,7 @@ def test_get_settings_returns_defaults(client: TestClient) -> None:
     data = response.json()
     assert data["theme"] == "light"
     assert data["nickname"] == ""
+    assert data["avatar"] == ""
 
 
 def test_update_theme_to_dark(client: TestClient) -> None:
@@ -105,3 +108,83 @@ def test_get_settings_reflects_nickname_update(client: TestClient) -> None:
 
     assert response.status_code == 200
     assert response.json()["nickname"] == "Bob"
+
+
+def _png_1x1() -> bytes:
+    """Minimal valid 1x1 PNG."""
+    return base64.b64decode(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQI12NgAAIABQAB"
+        "Nl7BcQAAAABJRU5ErkJggg=="
+    )
+
+
+def test_upload_avatar(client: TestClient) -> None:
+    data = _png_1x1()
+    response = client.post(
+        "/api/settings/avatar",
+        files={"file": ("avatar.png", io.BytesIO(data), "image/png")},
+        headers=auth_header(),
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["avatar"].startswith("data:image/png;base64,")
+
+
+def test_get_avatar_returns_image(client: TestClient) -> None:
+    data = _png_1x1()
+    client.post(
+        "/api/settings/avatar",
+        files={"file": ("avatar.png", io.BytesIO(data), "image/png")},
+        headers=auth_header(),
+    )
+
+    response = client.get("/api/settings/avatar", headers=auth_header())
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content == data
+
+
+def test_get_avatar_returns_404_when_not_set(client: TestClient) -> None:
+    response = client.get("/api/settings/avatar", headers=auth_header())
+
+    assert response.status_code == 404
+
+
+def test_delete_avatar(client: TestClient) -> None:
+    data = _png_1x1()
+    client.post(
+        "/api/settings/avatar",
+        files={"file": ("avatar.png", io.BytesIO(data), "image/png")},
+        headers=auth_header(),
+    )
+
+    response = client.delete("/api/settings/avatar", headers=auth_header())
+
+    assert response.status_code == 200
+    assert response.json()["avatar"] == ""
+
+
+def test_upload_avatar_rejects_invalid_type(client: TestClient) -> None:
+    response = client.post(
+        "/api/settings/avatar",
+        files={"file": ("file.txt", io.BytesIO(b"hello"), "text/plain")},
+        headers=auth_header(),
+    )
+
+    assert response.status_code == 400
+
+
+def test_settings_avatar_in_get(client: TestClient) -> None:
+    data = _png_1x1()
+    client.post(
+        "/api/settings/avatar",
+        files={"file": ("avatar.png", io.BytesIO(data), "image/png")},
+        headers=auth_header(),
+    )
+
+    response = client.get("/api/settings", headers=auth_header())
+
+    assert response.status_code == 200
+    assert response.json()["avatar"].startswith("data:image/png;base64,")
