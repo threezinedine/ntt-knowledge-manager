@@ -37,11 +37,21 @@ describe("Navbar", () => {
 		expect(window.location.hash).toBe("#/login");
 	});
 
+	it("navigates to home when the brand is clicked", () => {
+		render(<Navbar />);
+
+		fireEvent.click(screen.getByRole("button", { name: "Knowledge" }));
+
+		expect(window.location.hash).toBe("#/");
+	});
+
 	it("renders only the brand in brand variant", () => {
 		render(<Navbar variant="brand" />);
 
 		expect(screen.getByText("Knowledge")).toBeVisible();
-		expect(screen.queryByRole("button")).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole("button", { name: "Log in" }),
+		).not.toBeInTheDocument();
 		expect(screen.queryByRole("img")).not.toBeInTheDocument();
 	});
 

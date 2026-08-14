@@ -87,6 +87,9 @@ export function Navbar({
 				avatarFallback={avatarFallback}
 				loginLabel={loginLabel}
 				accountItems={accountItems}
+				onBrandClick={() => {
+					window.location.hash = "#/";
+				}}
 				onLoginClick={() => {
 					window.location.hash = "#/login";
 				}}

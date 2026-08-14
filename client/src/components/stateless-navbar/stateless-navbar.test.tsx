@@ -94,11 +94,23 @@ describe("Navbar", () => {
 		expect(screen.getByRole("button", { name: "Sign in" })).toBeVisible();
 	});
 
+	it("calls onBrandClick when the brand is clicked", () => {
+		const handleBrandClick = vi.fn();
+		render(
+			<Navbar isAuthenticated={false} onBrandClick={handleBrandClick} />,
+		);
+
+		fireEvent.click(screen.getByRole("button", { name: "Knowledge" }));
+		expect(handleBrandClick).toHaveBeenCalledOnce();
+	});
+
 	it("renders only the brand when variant is brand", () => {
 		render(<Navbar variant="brand" isAuthenticated={false} />);
 
 		expect(screen.getByText("Knowledge")).toBeVisible();
-		expect(screen.queryByRole("button")).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole("button", { name: "Log in" }),
+		).not.toBeInTheDocument();
 		expect(screen.queryByRole("img")).not.toBeInTheDocument();
 	});
 

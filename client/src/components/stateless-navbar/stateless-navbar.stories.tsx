@@ -33,6 +33,7 @@ const meta = {
 		isAuthenticated: false,
 		onLoginClick: () => {},
 		onAvatarClick: () => {},
+		onBrandClick: () => alert("Brand clicked!"),
 	},
 	argTypes: {
 		isAuthenticated: {

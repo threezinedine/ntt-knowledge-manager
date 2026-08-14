@@ -16,6 +16,7 @@ type NavbarProps = {
 	avatarFallback?: ReactNode;
 	onAvatarClick?: () => void;
 	onLoginClick?: () => void;
+	onBrandClick?: () => void;
 	loginLabel?: string;
 	// account menu
 	accountItems?: DropdownItem[];
@@ -30,6 +31,7 @@ export function Navbar({
 	avatarFallback,
 	onAvatarClick,
 	onLoginClick,
+	onBrandClick,
 	loginLabel = "Log in",
 	accountItems = [],
 }: NavbarProps) {
@@ -37,10 +39,14 @@ export function Navbar({
 
 	return (
 		<header className={classes}>
-			<div className={styles.brand}>
+			<button
+				type="button"
+				className={styles.brand}
+				onClick={onBrandClick}
+			>
 				<BookOpen aria-hidden="true" size={20} />
 				<span>Knowledge</span>
-			</div>
+			</button>
 			{variant === "default" && (
 				<div className={styles.actions}>
 					{isAuthenticated ? (
