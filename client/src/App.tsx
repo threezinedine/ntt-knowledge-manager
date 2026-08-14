@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ProtectedRoute, ThemeProvider } from "./features";
+import { ProtectedRoute, ThemeProvider, ToastContainer } from "./features";
 import { Home, Login, NotFound, Settings, Workspace } from "./pages";
 
 function getRoute(): string {
@@ -52,6 +52,7 @@ function App() {
 	return (
 		<ThemeProvider>
 			<AppContent />
+			<ToastContainer />
 		</ThemeProvider>
 	);
 }
