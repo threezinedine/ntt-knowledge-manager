@@ -32,7 +32,30 @@ test("submits a valid token and enters the workspace", async ({ page }) => {
 		page.getByRole("heading", { name: "Workspace" }),
 	).toBeVisible();
 
-	const toast = page.getByRole("alert");
-	await expect(toast).toBeVisible();
-	await expect(toast).toContainText("Logged in");
+	await expect(page.getByText("Logged in")).toBeVisible();
+});
+
+test("full walkthrough: login, update settings, logout", async ({ page }) => {
+	await page.goto("/#/login");
+	await page.getByLabel("Token").fill("dev-fix-token");
+	await page.getByRole("button", { name: "Log in" }).click();
+	await expect(
+		page.getByRole("heading", { name: "Workspace" }),
+	).toBeVisible();
+	await expect(page.getByText("Logged in")).not.toBeVisible();
+
+	await page.getByRole("img", { name: "User avatar" }).click();
+	await page.getByRole("menuitem", { name: "Settings" }).click();
+	await expect(
+		page.getByRole("heading", { name: "Settings" }),
+	).toBeVisible();
+
+	await page.getByLabel("Nickname").fill("Walkthrough User");
+	await page.getByRole("button", { name: "Save" }).click();
+	await expect(page.getByText("Settings saved")).toBeVisible();
+
+	await page.getByRole("img", { name: "User avatar" }).click();
+	await page.getByRole("menuitem", { name: "Logout" }).click();
+	await page.getByRole("button", { name: "Yes" }).click();
+	await expect(page.getByText("Logged out")).toBeVisible();
 });

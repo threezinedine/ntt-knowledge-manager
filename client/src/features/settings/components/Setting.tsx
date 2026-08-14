@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { Button } from "../../../components/button";
 import { Form } from "../../../components/form";
 import type { FormField } from "../../../components/form";
+import { useToastStore } from "../../toast";
 import { useSettingsStore } from "../store";
 
 export function Setting() {
@@ -34,14 +36,19 @@ export function Setting() {
 		<Form
 			title="Settings"
 			items={fields}
-			onSubmit={(values) =>
-				update({
-					theme: values.theme as "light" | "dark",
-					nickname: values.nickname,
-				})
-			}
+			onSubmit={async (values) => {
+				try {
+					await update({
+						theme: values.theme as "light" | "dark",
+						nickname: values.nickname,
+					});
+					useToastStore.getState().success("Settings saved");
+				} catch {
+					useToastStore.getState().error("Failed to save settings");
+				}
+			}}
 		>
-			<button type="submit">Save</button>
+			<Button type="submit">Save</Button>
 		</Form>
 	);
 }

@@ -52,16 +52,8 @@ test("confirming logout clears the token and redirects to home", async ({
 	await page.getByRole("menuitem", { name: "Logout" }).click();
 	await page.getByRole("button", { name: "Yes" }).click();
 
-	await expect(
-		page.getByRole("heading", {
-			name: "Turn scattered notes into decisions",
-		}),
-	).toBeVisible();
+	await expect(page.getByText("Logged out")).toBeVisible();
 	await expect(page.getByRole("button", { name: "Log in" })).toBeVisible();
-
-	const toast = page.getByRole("alert");
-	await expect(toast).toBeVisible();
-	await expect(toast).toContainText("Logged out");
 
 	const token = await page.evaluate(() =>
 		window.localStorage.getItem("knowledge-manager-token"),

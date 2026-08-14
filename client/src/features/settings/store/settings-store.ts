@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useThemeStore } from "../../theme";
 import {
 	fetchSettings,
 	updateSettings,
@@ -18,11 +19,24 @@ export const useSettingsStore = create<SettingsState>((set) => ({
 	loading: false,
 	load: async () => {
 		set({ loading: true });
-		const settings = await fetchSettings();
-		set({ settings, loading: false });
+		try {
+			const settings = await fetchSettings();
+			set({ settings, loading: false });
+			useThemeStore.getState().setTheme(settings.theme);
+		} catch {
+			set({ loading: false });
+			throw new Error("Failed to load settings");
+		}
 	},
 	update: async (data) => {
-		const settings = await updateSettings(data);
-		set({ settings });
+		try {
+			const settings = await updateSettings(data);
+			set({ settings });
+			if (data.theme) {
+				useThemeStore.getState().setTheme(data.theme);
+			}
+		} catch {
+			throw new Error("Failed to update settings");
+		}
 	},
 }));
