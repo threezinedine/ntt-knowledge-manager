@@ -15,16 +15,18 @@ var report = process.argv[3];
 var lines = raw.split('\n');
 var tests = [];
 lines.forEach(function(l) {
-  var m = l.match(/^\s*[✓✗×·]\s+\d+\s+(.+?)(?:\s+\(\d+|$)/);
+  var m = l.match(/^\s*[✓✗×·✘\-]\s+\d+\s+(.+?)(?:\s+\(\d+|$)/);
   if (m) {
     var ok = l.indexOf('✓') !== -1 || l.indexOf('·') !== -1;
-    tests.push({ ok: ok, name: m[1].trim() });
+    var skipped = l.trimStart().charAt(0) === '-';
+    tests.push({ ok: ok, skipped: skipped, name: m[1].trim() });
   }
 });
 
 var passed = tests.filter(function(t) { return t.ok; }).length;
-var failed = tests.filter(function(t) { return !t.ok; }).length;
-var total = passed + failed;
+var failed = tests.filter(function(t) { return !t.ok && !t.skipped; }).length;
+var skipped = tests.filter(function(t) { return t.skipped; }).length;
+var total = passed + failed + skipped;
 
 var status, color, icon;
 if (failed > 0) { status = 'FAILED'; color = '#ef4444'; icon = '&#x2717;'; }
@@ -33,7 +35,8 @@ else { status = 'ERROR'; color = '#f59e0b'; icon = '&#x26A0;'; }
 
 var esc = function(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
 var items = tests.map(function(t) {
-  return '<li class=\"' + (t.ok ? 'ok' : 'ko') + '\">' + esc(t.name) + '</li>';
+  var cls = t.ok ? 'ok' : (t.skipped ? 'skip' : 'ko');
+  return '<li class=\"' + cls + '\">' + esc(t.name) + '</li>';
 }).join('\n');
 
 var html = '<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><style>' +
@@ -44,10 +47,11 @@ var html = '<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><style>' +
   'ul{list-style:none;padding:0;margin:0}li{padding:2px 0}' +
   'li.ok::before{content:\"\\\\2713 \";color:#4ade80}' +
   'li.ko::before{content:\"\\\\2717 \";color:#ef4444}' +
+  'li.skip::before{content:\"\\\\2013 \";color:#f59e0b}li.skip{color:#8b949e}' +
   '</style></head><body>' +
   '<div class=\"s\">' + icon + ' E2E Tests: ' + status + '</div>' +
   '<div class=\"t\">Last run: ' + timestamp + '</div>' +
-  '<div class=\"summary\">' + passed + '/' + total + ' passed' + (failed ? ', ' + failed + ' failed' : '') + '</div>' +
+  '<div class=\"summary\">' + passed + '/' + total + ' passed' + (failed ? ', ' + failed + ' failed' : '') + (skipped ? ', ' + skipped + ' skipped' : '') + '</div>' +
   '<ul>' + items + '</ul></body></html>';
 
 fs.writeFileSync(report, html);

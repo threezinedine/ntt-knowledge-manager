@@ -2,7 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
 	testDir: "./client",
-	fullyParallel: true,
+	fullyParallel: false,
+	workers: 1,
 	reporter: "list",
 	use: {
 		browserName: "chromium",
