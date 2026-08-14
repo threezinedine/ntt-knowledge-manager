@@ -31,4 +31,8 @@ test("submits a valid token and enters the workspace", async ({ page }) => {
 	await expect(
 		page.getByRole("heading", { name: "Workspace" }),
 	).toBeVisible();
+
+	const toast = page.getByRole("alert");
+	await expect(toast).toBeVisible();
+	await expect(toast).toContainText("Logged in");
 });

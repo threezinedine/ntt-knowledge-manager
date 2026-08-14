@@ -1,6 +1,7 @@
 import { Button, Form } from "../../components";
 import { Navbar } from "../../features";
 import { useAuthStore } from "../../features/auth";
+import { useToastStore } from "../../features/toast";
 import styles from "./login.module.scss";
 
 export function Login() {
@@ -13,6 +14,7 @@ export function Login() {
 					title="Log in"
 					onSubmit={(values) => {
 						useAuthStore.getState().login(values.token);
+						useToastStore.getState().success("Logged in", "Welcome back!");
 						window.location.hash = "#/workspace";
 					}}
 					items={[

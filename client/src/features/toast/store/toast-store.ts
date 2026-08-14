@@ -23,13 +23,16 @@ type ToastState = {
 	error: (title: string, description?: string) => void;
 };
 
+const DEFAULT_DURATION = 3000;
+
 let nextId = 0;
 
 export const useToastStore = create<ToastState>((set, get) => ({
 	toasts: [],
 	show: (options) => {
 		const id = nextId++;
-		set((state) => ({ toasts: [...state.toasts, { ...options, id }] }));
+		const duration = options.duration ?? DEFAULT_DURATION;
+		set((state) => ({ toasts: [...state.toasts, { ...options, duration, id }] }));
 	},
 	dismiss: (id) => {
 		set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));

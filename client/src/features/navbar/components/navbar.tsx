@@ -9,6 +9,7 @@ import {
 	type NavbarVariant,
 } from "../../../components";
 import { useAuthStore } from "../../auth";
+import { useToastStore } from "../../toast";
 
 type NavbarProps = {
 	className?: string;
@@ -45,6 +46,7 @@ export function Navbar({
 	const handleLogoutConfirm = () => {
 		logoutModalRef.current?.close();
 		logout();
+		useToastStore.getState().success("Logged out", "See you next time!");
 		window.location.hash = "#/";
 	};
 
