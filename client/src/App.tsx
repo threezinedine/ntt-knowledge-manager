@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProtectedRoute, ThemeProvider } from "./features";
-import { Home, Login, NotFound, Workspace } from "./pages";
+import { Home, Login, NotFound, Settings, Workspace } from "./pages";
 
 function getRoute(): string {
 	return window.location.hash.replace(/^#\/?/, "");
@@ -23,6 +23,14 @@ function AppContent() {
 
 	if (route === "login") {
 		return <Login />;
+	}
+
+	if (route === "settings") {
+		return (
+			<ProtectedRoute>
+				<Settings />
+			</ProtectedRoute>
+		);
 	}
 
 	if (route === "workspace") {
