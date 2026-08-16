@@ -74,6 +74,7 @@ $accent: var(--color-accent);
 .content {
 	flex: 1;
 	min-height: 0;
+	overflow-y: auto;
 }
 
 .tabs {
@@ -131,7 +132,7 @@ $accent: var(--color-accent);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 100%;
+	padding: 2rem 1rem;
 	color: var(--color-error, #e53e3e);
 	font-size: 0.875rem;
 }
@@ -236,4 +237,47 @@ $accent: var(--color-accent);
 	line-height: 1.5;
 	color: $muted;
 	font-style: italic;
+}
+
+.similarWords {
+	margin-top: 1.25rem;
+	padding: 1rem 1rem 0;
+	border-top: 1px solid $border;
+}
+
+.tabPanel .similarWords {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.similarWordsLabel {
+	font-size: 0.8125rem;
+	color: $muted;
+	margin-bottom: 0.5rem;
+}
+
+.similarWordsList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+}
+
+.similarWordChip {
+	display: inline-block;
+	padding: 0.25rem 0.625rem;
+	border: 1px solid $border;
+	border-radius: 999px;
+	background: $surface;
+	color: $foreground;
+	font: inherit;
+	font-size: 0.8125rem;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover {
+		border-color: $accent;
+		background: color-mix(in srgb, $accent 8%, $surface);
+	}
 }

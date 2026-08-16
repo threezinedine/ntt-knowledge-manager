@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { StatelessDictionary } from "../../../components";
+import { StatelessDictionary, type DictionarySuggestion } from "../../../components";
 import { useDictionaryStore } from "../store/dictionary-store";
 
 type DictionaryProps = {
@@ -7,7 +7,7 @@ type DictionaryProps = {
 };
 
 export function Dictionary({ className }: DictionaryProps) {
-	const { query, entry, loading, error, setQuery, lookup } =
+	const { query, entry, similarWords, suggestions, loading, error, setQuery, lookup } =
 		useDictionaryStore();
 
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -40,6 +40,19 @@ export function Dictionary({ className }: DictionaryProps) {
 		[lookup],
 	);
 
+	const handleSuggestionClick = useCallback(
+		(suggestion: DictionarySuggestion) => {
+			handleSubmit(suggestion.word);
+		},
+		[handleSubmit],
+	);
+
+	const mappedSuggestions: DictionarySuggestion[] = suggestions.map((s, i) => ({
+		id: i,
+		word: s.word,
+		phonetic: "",
+	}));
+
 	const mappedEntry = entry
 		? {
 				word: entry.word,
@@ -54,13 +67,14 @@ export function Dictionary({ className }: DictionaryProps) {
 		<StatelessDictionary
 			className={className}
 			query={query}
-			suggestions={[]}
+			suggestions={mappedSuggestions}
+			similarWords={similarWords}
 			entry={mappedEntry}
 			loading={loading}
 			error={error}
 			onQueryChange={setQuery}
 			onSubmit={handleSubmit}
-			onSuggestionClick={() => {}}
+			onSuggestionClick={handleSuggestionClick}
 			onPlayAudio={() => playAudio()}
 		/>
 	);

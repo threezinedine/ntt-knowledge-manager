@@ -177,4 +177,61 @@ describe("StatelessDictionary", () => {
 
 		expect(screen.getByText("No examples available.")).toBeVisible();
 	});
+
+	it("shows similar words when provided with entry", () => {
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				entry={MOCK_ENTRY}
+				similarWords={["testing", "taste", "text"]}
+			/>,
+		);
+
+		expect(screen.getByText("Similar words:")).toBeVisible();
+		expect(screen.getByText("testing")).toBeVisible();
+		expect(screen.getByText("taste")).toBeVisible();
+		expect(screen.getByText("text")).toBeVisible();
+	});
+
+	it("calls onSubmit when clicking a similar word", () => {
+		const onSubmit = vi.fn();
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				entry={MOCK_ENTRY}
+				similarWords={["testing"]}
+				onSubmit={onSubmit}
+			/>,
+		);
+
+		fireEvent.click(screen.getByText("testing"));
+
+		expect(onSubmit).toHaveBeenCalledWith("testing");
+	});
+
+	it("shows similar words on error state", () => {
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				error='Could not find "xyz"'
+				similarWords={["xylophone", "xyz"]}
+			/>,
+		);
+
+		expect(screen.getByText('Could not find "xyz"')).toBeVisible();
+		expect(screen.getByText("Similar words:")).toBeVisible();
+		expect(screen.getByText("xylophone")).toBeVisible();
+	});
+
+	it("does not show similar words section when list is empty", () => {
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				entry={MOCK_ENTRY}
+				similarWords={[]}
+			/>,
+		);
+
+		expect(screen.queryByText("Similar words:")).toBeNull();
+	});
 });

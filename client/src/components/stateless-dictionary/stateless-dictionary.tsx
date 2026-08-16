@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { SpeakerIcon } from "../../icons";
 import styles from "./stateless-dictionary.module.scss";
 
@@ -26,10 +26,15 @@ export type DictionarySuggestion = {
 	phonetic: string;
 };
 
+export type StatelessDictionaryHandle = {
+	focus: () => void;
+};
+
 type StatelessDictionaryProps = {
 	className?: string;
 	query: string;
 	suggestions: DictionarySuggestion[];
+	similarWords?: string[];
 	entry: DictionaryEntry | null;
 	loading: boolean;
 	error: string | null;
@@ -128,10 +133,11 @@ function ExamplesTab({ entry }: { entry: DictionaryEntry }) {
 	);
 }
 
-export function StatelessDictionary({
+export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, StatelessDictionaryProps>(function StatelessDictionary({
 	className,
 	query,
 	suggestions,
+	similarWords = [],
 	entry,
 	loading,
 	error,
@@ -139,9 +145,14 @@ export function StatelessDictionary({
 	onSubmit,
 	onSuggestionClick,
 	onPlayAudio,
-}: StatelessDictionaryProps) {
+}, ref) {
+	const inputRef = useRef<HTMLInputElement>(null);
 	const [activeTab, setActiveTab] = useState<string>("english");
 	const classes = [styles.dictionary, className].filter(Boolean).join(" ");
+
+	useImperativeHandle(ref, () => ({
+		focus: () => inputRef.current?.focus(),
+	}));
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter" && query.trim()) {
@@ -159,6 +170,7 @@ export function StatelessDictionary({
 		<div className={classes} data-testid="dictionary">
 			<div className={styles.searchArea}>
 				<input
+					ref={inputRef}
 					className={styles.searchInput}
 					type="text"
 					placeholder="Search for a word..."
@@ -204,7 +216,26 @@ export function StatelessDictionary({
 					<div className={styles.loading}>Looking up...</div>
 				)}
 				{error && !loading && (
-					<div className={styles.error}>{error}</div>
+					<>
+						<div className={styles.error}>{error}</div>
+						{similarWords.length > 0 && (
+							<div className={styles.similarWords}>
+								<div className={styles.similarWordsLabel}>Similar words:</div>
+								<div className={styles.similarWordsList}>
+									{similarWords.map((w) => (
+										<button
+											key={w}
+											type="button"
+											className={styles.similarWordChip}
+											onClick={() => onSubmit(w)}
+										>
+											{w}
+										</button>
+									))}
+								</div>
+							</div>
+						)}
+					</>
 				)}
 				{!entry && !loading && !error && (
 					<div className={styles.empty}>
@@ -238,10 +269,27 @@ export function StatelessDictionary({
 							{activeTab === "examples" && (
 								<ExamplesTab entry={entry} />
 							)}
+							{similarWords.length > 0 && (
+								<div className={styles.similarWords}>
+									<div className={styles.similarWordsLabel}>Similar words:</div>
+									<div className={styles.similarWordsList}>
+										{similarWords.map((w) => (
+											<button
+												key={w}
+												type="button"
+												className={styles.similarWordChip}
+												onClick={() => onSubmit(w)}
+											>
+												{w}
+											</button>
+										))}
+									</div>
+								</div>
+							)}
 						</div>
 					</>
 				)}
 			</div>
 		</div>
 	);
-}
+});

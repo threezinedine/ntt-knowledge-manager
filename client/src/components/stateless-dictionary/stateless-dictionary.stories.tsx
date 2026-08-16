@@ -86,6 +86,7 @@ export const Error: Story = {
 	args: {
 		query: "xyznotaword",
 		error: 'Could not find "xyznotaword"',
+		similarWords: ["xylophone"],
 	},
 };
 
@@ -93,6 +94,7 @@ export const EnglishTab: Story = {
 	args: {
 		query: "abandon",
 		entry: MOCK_ENTRY,
+		similarWords: ["abandonment", "abandoned", "abolish", "abscond", "abstain"],
 	},
 };
 
