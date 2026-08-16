@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SpeakerIcon } from "../../icons";
 import styles from "./stateless-dictionary.module.scss";
 
@@ -44,33 +44,47 @@ const TABS = [
 	{ id: "examples", label: "Examples" },
 ] as const;
 
-function EnglishTab({ entry }: { entry: DictionaryEntry }) {
+function useAudioPlayer(url: string) {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const currentUrl = useRef("");
 
-	const playAudio = () => {
-		if (!entry.audio_url) return;
-		if (!audioRef.current) {
-			audioRef.current = new Audio(entry.audio_url);
+	const play = useCallback(() => {
+		if (!url) return;
+		if (currentUrl.current !== url) {
+			audioRef.current = new Audio(url);
+			currentUrl.current = url;
 		}
-		audioRef.current.currentTime = 0;
-		audioRef.current.play();
-	};
+		audioRef.current!.currentTime = 0;
+		audioRef.current!.play();
+	}, [url]);
 
+	return play;
+}
+
+function EnglishTab({
+	entry,
+	onPlay,
+}: {
+	entry: DictionaryEntry;
+	onPlay: () => void;
+}) {
 	return (
 		<div>
-			<div className={styles.word}>{entry.word}</div>
+			<div className={styles.wordRow}>
+				<div className={styles.word}>{entry.word}</div>
+				{entry.audio_url && (
+					<button
+						type="button"
+						className={styles.audioBtn}
+						onClick={onPlay}
+						aria-label="Play pronunciation"
+					>
+						<SpeakerIcon width={16} height={16} />
+					</button>
+				)}
+			</div>
 			{entry.phonetic && (
 				<div className={styles.phonetic}>{entry.phonetic}</div>
-			)}
-			{entry.audio_url && (
-				<button
-					type="button"
-					className={styles.audioBtn}
-					onClick={playAudio}
-					aria-label="Play pronunciation"
-				>
-					<SpeakerIcon width={16} height={16} />
-				</button>
 			)}
 			{entry.meanings.map((m) => (
 				<div key={m.partOfSpeech}>
@@ -143,6 +157,21 @@ export function StatelessDictionary({
 }: StatelessDictionaryProps) {
 	const [activeTab, setActiveTab] = useState<string>("english");
 	const classes = [styles.dictionary, className].filter(Boolean).join(" ");
+	const playAudio = useAudioPlayer(entry?.audio_url ?? "");
+	const prevWord = useRef<string>("");
+
+	useEffect(() => {
+		if (entry && entry.audio_url && entry.word !== prevWord.current) {
+			prevWord.current = entry.word;
+			playAudio();
+		}
+	}, [entry, playAudio]);
+
+	useEffect(() => {
+		if (entry?.audio_url) {
+			playAudio();
+		}
+	}, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter" && query.trim()) {
@@ -223,7 +252,7 @@ export function StatelessDictionary({
 						</div>
 						<div className={styles.tabPanel}>
 							{activeTab === "english" && (
-								<EnglishTab entry={entry} />
+								<EnglishTab entry={entry} onPlay={playAudio} />
 							)}
 							{activeTab === "vietnamese" && (
 								<VietnameseTab entry={entry} />

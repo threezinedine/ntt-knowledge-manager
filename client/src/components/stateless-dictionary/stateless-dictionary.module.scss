@@ -145,26 +145,33 @@ $accent: var(--color-accent);
 .audioBtn {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.375rem;
-	padding: 0.375rem 0.75rem;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
 	border: 1px solid $border;
-	border-radius: 6px;
+	border-radius: 50%;
 	background: $surface;
-	color: $foreground;
+	color: $muted;
 	cursor: pointer;
-	font: inherit;
-	font-size: 0.8125rem;
-	margin-bottom: 1rem;
+	flex-shrink: 0;
 
 	&:hover {
 		background: color-mix(in srgb, $foreground 6%, $surface);
+		color: $foreground;
 	}
+}
+
+.wordRow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.25rem;
 }
 
 .word {
 	font-size: 1.5rem;
 	font-weight: 600;
-	margin-bottom: 0.25rem;
 }
 
 .partOfSpeech {

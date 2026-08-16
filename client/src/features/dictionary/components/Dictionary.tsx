@@ -7,7 +7,7 @@ type DictionaryProps = {
 };
 
 export function Dictionary({ className }: DictionaryProps) {
-	const { query, entry, loading, error, setQuery, lookup } =
+	const { query, entry, loading, error, setQuery, lookup, silentLookup } =
 		useDictionaryStore();
 
 	const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -17,10 +17,10 @@ export function Dictionary({ className }: DictionaryProps) {
 			setQuery(value);
 			if (debounceRef.current) clearTimeout(debounceRef.current);
 			debounceRef.current = setTimeout(() => {
-				if (value.trim()) lookup(value.trim());
+				if (value.trim()) silentLookup(value.trim());
 			}, 500);
 		},
-		[setQuery, lookup],
+		[setQuery, silentLookup],
 	);
 
 	const handleSubmit = useCallback(
