@@ -1,6 +1,7 @@
 import type { DictionaryProvider, DictionaryResult, MeaningItem, SuggestionItem } from "./dictionary-provider";
 
 const WIKTIONARY_API = "https://en.wiktionary.org/api/rest_v1/page/definition";
+const WIKTIONARY_PARSE_API = "https://en.wiktionary.org/w/api.php";
 const WIKTIONARY_MEDIA_API = "https://commons.wikimedia.org/w/api.php";
 
 function stripHtml(html: string): string {
@@ -26,6 +27,28 @@ function parseMeanings(
 			example: d.examples?.[0] ? stripHtml(d.examples[0]) : "",
 		})),
 	}));
+}
+
+async function fetchIpa(word: string): Promise<string> {
+	const params = new URLSearchParams({
+		action: "parse",
+		page: word,
+		prop: "wikitext",
+		format: "json",
+		origin: "*",
+	});
+	try {
+		const res = await fetch(`${WIKTIONARY_PARSE_API}?${params}`);
+		if (!res.ok) return "";
+		const data = await res.json();
+		const wikitext: string = data?.parse?.wikitext?.["*"] ?? "";
+		const match = /\{\{IPA\|en\|([^}]+)\}\}/.exec(wikitext);
+		if (!match) return "";
+		const ipaParts = match[1].split("|");
+		return ipaParts[0] ?? "";
+	} catch {
+		return "";
+	}
 }
 
 async function findAudioUrl(word: string): Promise<string> {
@@ -76,11 +99,14 @@ export class WiktionaryProvider implements DictionaryProvider {
 			throw new Error(`No English definitions for: ${word}`);
 		}
 
-		const audio_url = await findAudioUrl(word.toLowerCase());
+		const [audio_url, phonetic] = await Promise.all([
+			findAudioUrl(word.toLowerCase()),
+			fetchIpa(word.toLowerCase()),
+		]);
 
 		return {
 			word: word.toLowerCase(),
-			phonetic: "",
+			phonetic,
 			audio_url,
 			meanings,
 			source_url: `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}`,

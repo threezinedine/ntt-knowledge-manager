@@ -26,6 +26,10 @@ vi.mock("../apis/vocabulary-api", () => ({
 	]),
 }));
 
+vi.mock("../apis/translate", () => ({
+	translateToVietnamese: vi.fn().mockResolvedValue("kiểm tra: thủ tục đánh giá"),
+}));
+
 beforeEach(() => {
 	vi.useFakeTimers();
 	useDictionaryStore.getState().clear();

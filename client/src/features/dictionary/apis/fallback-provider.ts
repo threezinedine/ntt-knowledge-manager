@@ -11,38 +11,36 @@ export class FallbackProvider implements DictionaryProvider {
 
 	async lookupWord(word: string): Promise<DictionaryResult> {
 		let lastError: Error | null = null;
-		let partialResult: DictionaryResult | null = null;
+		const results: DictionaryResult[] = [];
 
 		for (const provider of this.providers) {
 			try {
 				const result = await provider.lookupWord(word);
-				if (result.audio_url && result.meanings.length > 0) {
+				if (result.audio_url && result.phonetic && result.meanings.length > 0) {
 					return result;
 				}
-				if (!partialResult || result.meanings.length > partialResult.meanings.length) {
-					partialResult = result;
-				}
+				results.push(result);
 			} catch (e) {
 				lastError = e as Error;
 			}
 		}
 
-		if (partialResult) {
-			if (!partialResult.audio_url) {
-				for (const provider of this.providers) {
-					try {
-						const fallback = await provider.lookupWord(word);
-						if (fallback.audio_url) {
-							partialResult.audio_url = fallback.audio_url;
-							break;
-						}
-					} catch { /* skip */ }
-				}
-			}
-			return partialResult;
+		if (results.length === 0) {
+			throw lastError ?? new Error(`Word not found: ${word}`);
 		}
 
-		throw lastError ?? new Error(`Word not found: ${word}`);
+		const best = results.reduce((a, b) =>
+			b.meanings.length > a.meanings.length ? b : a,
+		);
+
+		if (!best.phonetic) {
+			best.phonetic = results.find((r) => r.phonetic)?.phonetic ?? "";
+		}
+		if (!best.audio_url) {
+			best.audio_url = results.find((r) => r.audio_url)?.audio_url ?? "";
+		}
+
+		return best;
 	}
 
 	async getSuggestions(prefix: string): Promise<SuggestionItem[]> {

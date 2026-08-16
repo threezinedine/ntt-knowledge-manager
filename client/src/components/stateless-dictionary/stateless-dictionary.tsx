@@ -64,16 +64,14 @@ function EnglishTab({
 		<div>
 			<div className={styles.wordRow}>
 				<div className={styles.word}>{entry.word}</div>
-				{entry.audio_url && (
-					<button
-						type="button"
-						className={styles.audioBtn}
-						onClick={onPlay}
-						aria-label="Play pronunciation"
-					>
-						<SpeakerIcon width={16} height={16} />
-					</button>
-				)}
+				<button
+					type="button"
+					className={styles.audioBtn}
+					onClick={onPlay}
+					aria-label="Play pronunciation"
+				>
+					<SpeakerIcon width={16} height={16} />
+				</button>
 			</div>
 			{entry.phonetic && (
 				<div className={styles.phonetic}>{entry.phonetic}</div>

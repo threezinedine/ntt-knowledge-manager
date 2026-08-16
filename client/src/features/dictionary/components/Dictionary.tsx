@@ -7,22 +7,29 @@ type DictionaryProps = {
 };
 
 export function Dictionary({ className }: DictionaryProps) {
-	const { query, entry, similarWords, suggestions, loading, error, setQuery, lookup } =
+	const { query, entry, vietnameseMeaning, similarWords, suggestions, loading, error, setQuery, lookup } =
 		useDictionaryStore();
 
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const audioUrlRef = useRef("");
 
-	const playAudio = useCallback((url?: string) => {
-		const targetUrl = url ?? audioUrlRef.current;
-		if (!targetUrl) return;
-		if (audioUrlRef.current !== targetUrl || !audioRef.current) {
-			audioRef.current = new Audio(targetUrl);
-			audioUrlRef.current = targetUrl;
-		}
-		audioRef.current.currentTime = 0;
-		audioRef.current.play().catch(() => {});
+	const speakWord = useCallback((word: string) => {
+		if (!window.speechSynthesis) return;
+		window.speechSynthesis.cancel();
+		const utterance = new SpeechSynthesisUtterance(word);
+		utterance.lang = "en-US";
+		window.speechSynthesis.speak(utterance);
 	}, []);
+
+	const playAudio = useCallback(() => {
+		if (audioUrlRef.current && audioRef.current) {
+			audioRef.current.currentTime = 0;
+			audioRef.current.play().catch(() => {});
+			return;
+		}
+		const word = useDictionaryStore.getState().entry?.word;
+		if (word) speakWord(word);
+	}, [speakWord]);
 
 	const handleSubmit = useCallback(
 		(word: string) => {
@@ -36,10 +43,12 @@ export function Dictionary({ className }: DictionaryProps) {
 					audioRef.current = pendingAudio;
 					audioUrlRef.current = result.audio_url;
 					pendingAudio.play().catch(() => {});
+				} else if (result) {
+					speakWord(result.word);
 				}
 			});
 		},
-		[lookup],
+		[lookup, speakWord],
 	);
 
 	const handleSuggestionClick = useCallback(
@@ -61,7 +70,7 @@ export function Dictionary({ className }: DictionaryProps) {
 				phonetic: entry.phonetic,
 				audio_url: entry.audio_url,
 				meanings: entry.meanings,
-				vietnamese_meaning: "",
+				vietnamese_meaning: vietnameseMeaning,
 			}
 		: null;
 
