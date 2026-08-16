@@ -1,9 +1,14 @@
 import type { DictionaryProvider } from "./dictionary-provider";
+import { FallbackProvider } from "./fallback-provider";
 import { FreeDictionaryProvider } from "./free-dictionary-provider";
+import { WiktionaryProvider } from "./wiktionary-provider";
 
 export type { DictionaryResult, MeaningItem, DefinitionItem, DictionaryProvider, SuggestionItem } from "./dictionary-provider";
 
-let activeProvider: DictionaryProvider = new FreeDictionaryProvider();
+let activeProvider: DictionaryProvider = new FallbackProvider([
+	new FreeDictionaryProvider(),
+	new WiktionaryProvider(),
+]);
 
 export function setDictionaryProvider(provider: DictionaryProvider): void {
 	activeProvider = provider;
