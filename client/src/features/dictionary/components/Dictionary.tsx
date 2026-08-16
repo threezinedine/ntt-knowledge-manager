@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { StatelessDictionary } from "../../../components";
 import { useDictionaryStore } from "../store/dictionary-store";
 
@@ -7,35 +7,38 @@ type DictionaryProps = {
 };
 
 export function Dictionary({ className }: DictionaryProps) {
-	const { query, entry, loading, error, setQuery, lookup, silentLookup } =
+	const { query, entry, loading, error, setQuery, lookup } =
 		useDictionaryStore();
 
-	const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const audioUrlRef = useRef("");
 
-	const handleQueryChange = useCallback(
-		(value: string) => {
-			setQuery(value);
-			if (debounceRef.current) clearTimeout(debounceRef.current);
-			debounceRef.current = setTimeout(() => {
-				if (value.trim()) silentLookup(value.trim());
-			}, 500);
-		},
-		[setQuery, silentLookup],
-	);
+	const playAudio = useCallback((url?: string) => {
+		const targetUrl = url ?? audioUrlRef.current;
+		if (!targetUrl) return;
+		if (audioUrlRef.current !== targetUrl || !audioRef.current) {
+			audioRef.current = new Audio(targetUrl);
+			audioUrlRef.current = targetUrl;
+		}
+		audioRef.current.currentTime = 0;
+		audioRef.current.play().catch(() => {});
+	}, []);
 
 	const handleSubmit = useCallback(
 		(word: string) => {
-			if (debounceRef.current) clearTimeout(debounceRef.current);
-			lookup(word);
+			const pendingAudio = new Audio();
+			lookup(word).then(() => {
+				const result = useDictionaryStore.getState().entry;
+				if (result?.audio_url) {
+					pendingAudio.src = result.audio_url;
+					audioRef.current = pendingAudio;
+					audioUrlRef.current = result.audio_url;
+					pendingAudio.play().catch(() => {});
+				}
+			});
 		},
 		[lookup],
 	);
-
-	useEffect(() => {
-		return () => {
-			if (debounceRef.current) clearTimeout(debounceRef.current);
-		};
-	}, []);
 
 	const mappedEntry = entry
 		? {
@@ -55,9 +58,10 @@ export function Dictionary({ className }: DictionaryProps) {
 			entry={mappedEntry}
 			loading={loading}
 			error={error}
-			onQueryChange={handleQueryChange}
+			onQueryChange={setQuery}
 			onSubmit={handleSubmit}
 			onSuggestionClick={() => {}}
+			onPlayAudio={() => playAudio()}
 		/>
 	);
 }
