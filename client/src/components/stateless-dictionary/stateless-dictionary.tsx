@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { SpeakerIcon } from "../../icons";
+import { AddIcon, SpeakerIcon } from "../../icons";
 import styles from "./stateless-dictionary.module.scss";
 
 export type DefinitionItem = {
@@ -28,7 +28,9 @@ export type DictionarySuggestion = {
 
 export type StatelessDictionaryHandle = {
 	focus: () => void;
+	triggerAdd: () => void;
 };
+
 
 type StatelessDictionaryProps = {
 	className?: string;
@@ -42,6 +44,7 @@ type StatelessDictionaryProps = {
 	onSubmit: (word: string) => void;
 	onSuggestionClick: (suggestion: DictionarySuggestion) => void;
 	onPlayAudio?: () => void;
+	onAdd?: (word: string) => void;
 };
 
 const TABS = [
@@ -145,6 +148,7 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 	onSubmit,
 	onSuggestionClick,
 	onPlayAudio,
+	onAdd,
 }, ref) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [activeTab, setActiveTab] = useState<string>("english");
@@ -157,6 +161,7 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 
 	useImperativeHandle(ref, () => ({
 		focus: () => inputRef.current?.focus(),
+		triggerAdd: () => { if (entry) onAdd?.(entry.word); },
 	}));
 
 	const prevQueryRef = useRef(query);
@@ -277,6 +282,14 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 				)}
 				{entry && !loading && (
 					<>
+						<button
+							type="button"
+							className={styles.addBtn}
+							onClick={() => onAdd?.(entry.word)}
+							aria-label="Add word"
+						>
+							<AddIcon width={20} height={20} />
+						</button>
 						<div className={styles.tabs}>
 							{TABS.map((t) => (
 								<button

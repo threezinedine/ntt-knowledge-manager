@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { AddIcon } from "./add-icon";
 import { InfoIcon } from "./info-icon";
 import { SuccessIcon } from "./success-icon";
 import { WarnIcon } from "./warn-icon";
@@ -6,6 +7,7 @@ import { ErrorIcon } from "./error-icon";
 import { SpeakerIcon } from "./speaker-icon";
 
 const ICONS = [
+	{ name: "AddIcon", component: AddIcon, color: "#2563eb" },
 	{ name: "InfoIcon", component: InfoIcon, color: "#1e40af" },
 	{ name: "SuccessIcon", component: SuccessIcon, color: "#166534" },
 	{ name: "WarnIcon", component: WarnIcon, color: "#854d0e" },

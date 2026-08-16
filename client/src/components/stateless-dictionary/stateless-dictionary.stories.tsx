@@ -54,6 +54,7 @@ const meta = {
 		onSubmit: () => {},
 		onSuggestionClick: () => {},
 		onPlayAudio: () => {},
+		onAdd: (word: string) => alert(`Add: ${word}`),
 	},
 	decorators: [
 		(Story) => (
@@ -119,6 +120,7 @@ export const Interactive: Story = {
 				onQueryChange={(q) => { setQuery(q); if (entry) setEntry(null); }}
 				onSubmit={handleSubmit}
 				onSuggestionClick={handleSuggestionClick}
+				onAdd={(word) => alert(`Add: ${word}`)}
 			/>
 		);
 	},
