@@ -22,4 +22,6 @@ export { TabSpace } from "./tab-space";
 export type { TabItem } from "./tab-space";
 export { ToastMessage } from "./toast-message";
 export type { ToastVariant, ToastPosition } from "./toast-message";
+export { StatelessDictionary } from "./stateless-dictionary";
+export type { DictionaryEntry, DictionarySuggestion } from "./stateless-dictionary";
 export type { Size, Variant } from "./common";

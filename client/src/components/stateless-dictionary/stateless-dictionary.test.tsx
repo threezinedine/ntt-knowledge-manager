@@ -1,0 +1,180 @@
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { StatelessDictionary, type DictionaryEntry } from "./stateless-dictionary";
+
+const MOCK_ENTRY: DictionaryEntry = {
+	word: "test",
+	phonetic: "/tɛst/",
+	audio_url: "https://example.com/test.mp3",
+	meanings: [
+		{
+			partOfSpeech: "noun",
+			definitions: [
+				{ definition: "A procedure for assessment", example: "Take a test" },
+				{ definition: "A trial", example: "" },
+			],
+		},
+		{
+			partOfSpeech: "verb",
+			definitions: [
+				{ definition: "To put to the proof", example: "Test the theory" },
+			],
+		},
+	],
+	vietnamese_meaning: "kiểm tra, thử nghiệm",
+};
+
+const defaultProps = {
+	query: "",
+	suggestions: [],
+	entry: null,
+	loading: false,
+	error: null,
+	onQueryChange: vi.fn(),
+	onSubmit: vi.fn(),
+	onSuggestionClick: vi.fn(),
+};
+
+describe("StatelessDictionary", () => {
+	it("renders search input", () => {
+		render(<StatelessDictionary {...defaultProps} />);
+
+		expect(screen.getByLabelText("Search word")).toBeVisible();
+	});
+
+	it("shows empty state when no entry", () => {
+		render(<StatelessDictionary {...defaultProps} />);
+
+		expect(screen.getByText("Type a word to look it up.")).toBeVisible();
+	});
+
+	it("calls onQueryChange when typing", () => {
+		const onQueryChange = vi.fn();
+		render(<StatelessDictionary {...defaultProps} onQueryChange={onQueryChange} />);
+
+		fireEvent.change(screen.getByLabelText("Search word"), {
+			target: { value: "hello" },
+		});
+
+		expect(onQueryChange).toHaveBeenCalledWith("hello");
+	});
+
+	it("calls onSubmit on Enter", () => {
+		const onSubmit = vi.fn();
+		render(<StatelessDictionary {...defaultProps} query="test" onSubmit={onSubmit} />);
+
+		fireEvent.keyDown(screen.getByLabelText("Search word"), { key: "Enter" });
+
+		expect(onSubmit).toHaveBeenCalledWith("test");
+	});
+
+	it("shows suggestions dropdown", () => {
+		const suggestions = [
+			{ id: 1, word: "test", phonetic: "/tɛst/" },
+			{ id: 2, word: "testing", phonetic: "" },
+		];
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				query="tes"
+				suggestions={suggestions}
+			/>,
+		);
+
+		expect(screen.getByText("test")).toBeVisible();
+		expect(screen.getByText("testing")).toBeVisible();
+		expect(screen.getByText("/tɛst/")).toBeVisible();
+	});
+
+	it("calls onSuggestionClick when clicking a suggestion", () => {
+		const onSuggestionClick = vi.fn();
+		const suggestions = [{ id: 1, word: "test", phonetic: "/tɛst/" }];
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				query="tes"
+				suggestions={suggestions}
+				onSuggestionClick={onSuggestionClick}
+			/>,
+		);
+
+		fireEvent.click(screen.getByText("test"));
+
+		expect(onSuggestionClick).toHaveBeenCalledWith(suggestions[0]);
+	});
+
+	it("shows lookup prompt when no suggestions and query is set", () => {
+		render(<StatelessDictionary {...defaultProps} query="xyz" />);
+
+		expect(screen.getByText(/Look up/)).toBeVisible();
+		expect(screen.getByText("xyz")).toBeVisible();
+	});
+
+	it("shows loading state", () => {
+		render(<StatelessDictionary {...defaultProps} loading />);
+
+		expect(screen.getByText("Looking up...")).toBeVisible();
+	});
+
+	it("shows error state", () => {
+		render(
+			<StatelessDictionary {...defaultProps} error='Could not find "xyz"' />,
+		);
+
+		expect(screen.getByText('Could not find "xyz"')).toBeVisible();
+	});
+
+	it("shows English tab with word, phonetic, and meanings", () => {
+		render(<StatelessDictionary {...defaultProps} entry={MOCK_ENTRY} />);
+
+		expect(screen.getByText("test")).toBeVisible();
+		expect(screen.getByText("/tɛst/")).toBeVisible();
+		expect(screen.getByText("noun")).toBeVisible();
+		expect(screen.getByText("verb")).toBeVisible();
+		expect(screen.getByText("A procedure for assessment")).toBeVisible();
+		expect(screen.getByLabelText("Play pronunciation")).toBeVisible();
+	});
+
+	it("switches to Vietnamese tab", () => {
+		render(<StatelessDictionary {...defaultProps} entry={MOCK_ENTRY} />);
+
+		fireEvent.click(screen.getByText("Vietnamese"));
+
+		expect(screen.getByText("kiểm tra, thử nghiệm")).toBeVisible();
+	});
+
+	it("shows placeholder when no Vietnamese meaning", () => {
+		const entry = { ...MOCK_ENTRY, vietnamese_meaning: "" };
+		render(<StatelessDictionary {...defaultProps} entry={entry} />);
+
+		fireEvent.click(screen.getByText("Vietnamese"));
+
+		expect(screen.getByText("No Vietnamese meaning added yet.")).toBeVisible();
+	});
+
+	it("switches to Examples tab", () => {
+		render(<StatelessDictionary {...defaultProps} entry={MOCK_ENTRY} />);
+
+		fireEvent.click(screen.getByText("Examples"));
+
+		expect(screen.getByText(/"Take a test"/)).toBeVisible();
+		expect(screen.getByText(/"Test the theory"/)).toBeVisible();
+	});
+
+	it("shows no examples message when none available", () => {
+		const entry: DictionaryEntry = {
+			...MOCK_ENTRY,
+			meanings: [
+				{
+					partOfSpeech: "noun",
+					definitions: [{ definition: "Something", example: "" }],
+				},
+			],
+		};
+		render(<StatelessDictionary {...defaultProps} entry={entry} />);
+
+		fireEvent.click(screen.getByText("Examples"));
+
+		expect(screen.getByText("No examples available.")).toBeVisible();
+	});
+});

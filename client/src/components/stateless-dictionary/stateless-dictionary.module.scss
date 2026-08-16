@@ -1,0 +1,232 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+
+.dictionary {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.searchArea {
+	padding: 1rem;
+	border-bottom: 1px solid $border;
+	position: relative;
+}
+
+.searchInput {
+	width: 100%;
+	padding: 0.625rem 0.75rem;
+	border: 1px solid $border;
+	border-radius: 6px;
+	background: $surface;
+	color: $foreground;
+	font: inherit;
+	font-size: 0.9375rem;
+	outline: none;
+	box-sizing: border-box;
+
+	&:focus {
+		border-color: $accent;
+	}
+
+	&::placeholder {
+		color: $muted;
+	}
+}
+
+.suggestions {
+	position: absolute;
+	left: 1rem;
+	right: 1rem;
+	top: 100%;
+	background: $surface;
+	border: 1px solid $border;
+	border-radius: 6px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	z-index: 10;
+	max-height: 200px;
+	overflow-y: auto;
+	list-style: none;
+	margin: 0;
+	padding: 0.25rem 0;
+}
+
+.suggestionItem {
+	padding: 0.5rem 0.75rem;
+	cursor: pointer;
+	color: $foreground;
+	font-size: 0.875rem;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 6%, $surface);
+	}
+}
+
+.suggestionPhonetic {
+	color: $muted;
+	margin-left: 0.5rem;
+	font-size: 0.8125rem;
+}
+
+.content {
+	flex: 1;
+	min-height: 0;
+}
+
+.tabs {
+	display: flex;
+	border-bottom: 1px solid $border;
+}
+
+.tab {
+	padding: 0.5rem 1rem;
+	border: none;
+	background: none;
+	color: $muted;
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.875rem;
+	border-bottom: 2px solid transparent;
+	transition:
+		color 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover {
+		color: $foreground;
+	}
+}
+
+.tabActive {
+	color: $foreground;
+	border-bottom-color: $accent;
+}
+
+.tabPanel {
+	padding: 1rem;
+	overflow-y: auto;
+	height: calc(100% - 2.5rem);
+}
+
+.empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: $muted;
+	font-size: 0.875rem;
+}
+
+.loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: $muted;
+}
+
+.error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: var(--color-error, #e53e3e);
+	font-size: 0.875rem;
+}
+
+.phonetic {
+	font-size: 1.125rem;
+	color: $muted;
+	margin-bottom: 0.5rem;
+}
+
+.audioBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0.375rem 0.75rem;
+	border: 1px solid $border;
+	border-radius: 6px;
+	background: $surface;
+	color: $foreground;
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.8125rem;
+	margin-bottom: 1rem;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 6%, $surface);
+	}
+}
+
+.word {
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+.partOfSpeech {
+	font-style: italic;
+	color: $accent;
+	font-size: 0.9375rem;
+	margin: 1rem 0 0.5rem;
+
+	&:first-child {
+		margin-top: 0;
+	}
+}
+
+.definitionList {
+	list-style: decimal;
+	padding-left: 1.25rem;
+	margin: 0;
+}
+
+.definitionItem {
+	margin-bottom: 0.5rem;
+	line-height: 1.5;
+}
+
+.example {
+	color: $muted;
+	font-style: italic;
+	margin-top: 0.125rem;
+	font-size: 0.875rem;
+}
+
+.vietnameseText {
+	font-size: 1.125rem;
+	line-height: 1.6;
+	white-space: pre-wrap;
+}
+
+.vietnameseEmpty {
+	color: $muted;
+	font-style: italic;
+}
+
+.exampleBlock {
+	margin-bottom: 1rem;
+}
+
+.examplePartOfSpeech {
+	font-style: italic;
+	color: $accent;
+	font-size: 0.9375rem;
+	margin-bottom: 0.5rem;
+}
+
+.exampleList {
+	list-style: disc;
+	padding-left: 1.25rem;
+	margin: 0;
+}
+
+.exampleListItem {
+	margin-bottom: 0.375rem;
+	line-height: 1.5;
+	color: $muted;
+	font-style: italic;
+}

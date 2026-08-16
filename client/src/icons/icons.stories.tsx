@@ -3,12 +3,14 @@ import { InfoIcon } from "./info-icon";
 import { SuccessIcon } from "./success-icon";
 import { WarnIcon } from "./warn-icon";
 import { ErrorIcon } from "./error-icon";
+import { SpeakerIcon } from "./speaker-icon";
 
 const ICONS = [
 	{ name: "InfoIcon", component: InfoIcon, color: "#1e40af" },
 	{ name: "SuccessIcon", component: SuccessIcon, color: "#166534" },
 	{ name: "WarnIcon", component: WarnIcon, color: "#854d0e" },
 	{ name: "ErrorIcon", component: ErrorIcon, color: "#991b1b" },
+	{ name: "SpeakerIcon", component: SpeakerIcon, color: "#4a5568" },
 ];
 
 const meta = {
