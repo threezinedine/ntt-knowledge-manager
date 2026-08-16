@@ -65,6 +65,10 @@ $accent: var(--color-accent);
 	}
 }
 
+.suggestionHighlighted {
+	background: color-mix(in srgb, $foreground 10%, $surface);
+}
+
 .suggestionPhonetic {
 	color: $muted;
 	margin-left: 0.5rem;

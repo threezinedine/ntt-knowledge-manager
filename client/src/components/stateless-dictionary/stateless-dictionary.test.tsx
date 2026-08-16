@@ -234,4 +234,99 @@ describe("StatelessDictionary", () => {
 
 		expect(screen.queryByText("Similar words:")).toBeNull();
 	});
+
+	it("highlights suggestions with arrow keys", () => {
+		const suggestions = [
+			{ id: 1, word: "test", phonetic: "" },
+			{ id: 2, word: "testing", phonetic: "" },
+		];
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				query="tes"
+				suggestions={suggestions}
+			/>,
+		);
+
+		const input = screen.getByLabelText("Search word");
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+
+		const options = screen.getAllByRole("option");
+		expect(options[0]).toHaveAttribute("aria-selected", "true");
+		expect(options[1]).toHaveAttribute("aria-selected", "false");
+
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+		expect(options[0]).toHaveAttribute("aria-selected", "false");
+		expect(options[1]).toHaveAttribute("aria-selected", "true");
+
+		fireEvent.keyDown(input, { key: "ArrowUp" });
+		expect(options[0]).toHaveAttribute("aria-selected", "true");
+	});
+
+	it("selects highlighted suggestion with Enter", () => {
+		const onSuggestionClick = vi.fn();
+		const suggestions = [
+			{ id: 1, word: "test", phonetic: "" },
+			{ id: 2, word: "testing", phonetic: "" },
+		];
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				query="tes"
+				suggestions={suggestions}
+				onSuggestionClick={onSuggestionClick}
+			/>,
+		);
+
+		const input = screen.getByLabelText("Search word");
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+		fireEvent.keyDown(input, { key: "Enter" });
+
+		expect(onSuggestionClick).toHaveBeenCalledWith(suggestions[1]);
+	});
+
+	it("wraps highlight around when reaching the end", () => {
+		const suggestions = [
+			{ id: 1, word: "test", phonetic: "" },
+			{ id: 2, word: "testing", phonetic: "" },
+		];
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				query="tes"
+				suggestions={suggestions}
+			/>,
+		);
+
+		const input = screen.getByLabelText("Search word");
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+
+		const options = screen.getAllByRole("option");
+		expect(options[0]).toHaveAttribute("aria-selected", "true");
+	});
+
+	it("clears highlight on Escape", () => {
+		const suggestions = [
+			{ id: 1, word: "test", phonetic: "" },
+		];
+		render(
+			<StatelessDictionary
+				{...defaultProps}
+				query="tes"
+				suggestions={suggestions}
+			/>,
+		);
+
+		const input = screen.getByLabelText("Search word");
+		fireEvent.keyDown(input, { key: "ArrowDown" });
+
+		const option = screen.getByRole("option");
+		expect(option).toHaveAttribute("aria-selected", "true");
+
+		fireEvent.keyDown(input, { key: "Escape" });
+		expect(option).toHaveAttribute("aria-selected", "false");
+	});
 });

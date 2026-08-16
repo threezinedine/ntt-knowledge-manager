@@ -148,16 +148,46 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 }, ref) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [activeTab, setActiveTab] = useState<string>("english");
+	const [highlightIndex, setHighlightIndex] = useState(-1);
 	const classes = [styles.dictionary, className].filter(Boolean).join(" ");
+
+	const showSuggestions = suggestions.length > 0 && !entry;
+	const showLookupPrompt = !!(query.trim() && !entry && suggestions.length === 0 && !loading);
+	const listLength = showSuggestions ? suggestions.length : showLookupPrompt ? 1 : 0;
 
 	useImperativeHandle(ref, () => ({
 		focus: () => inputRef.current?.focus(),
 	}));
 
+	const prevQueryRef = useRef(query);
+	if (prevQueryRef.current !== query) {
+		prevQueryRef.current = query;
+		if (highlightIndex !== -1) setHighlightIndex(-1);
+	}
+
 	const handleKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === "Enter" && query.trim()) {
+		if (e.key === "ArrowDown" && listLength > 0) {
 			e.preventDefault();
-			onSubmit(query.trim());
+			setHighlightIndex((i) => (i + 1) % listLength);
+			return;
+		}
+		if (e.key === "ArrowUp" && listLength > 0) {
+			e.preventDefault();
+			setHighlightIndex((i) => (i <= 0 ? listLength - 1 : i - 1));
+			return;
+		}
+		if (e.key === "Escape") {
+			setHighlightIndex(-1);
+			return;
+		}
+		if (e.key === "Enter") {
+			e.preventDefault();
+			if (showSuggestions && highlightIndex >= 0 && highlightIndex < suggestions.length) {
+				onSuggestionClick(suggestions[highlightIndex]);
+				setHighlightIndex(-1);
+			} else if (query.trim()) {
+				onSubmit(query.trim());
+			}
 		}
 	};
 
@@ -179,15 +209,18 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 					onKeyDown={handleKeyDown}
 					aria-label="Search word"
 				/>
-				{suggestions.length > 0 && !entry && (
+				{showSuggestions && (
 					<ul className={styles.suggestions} role="listbox">
-						{suggestions.map((s) => (
+						{suggestions.map((s, i) => (
 							<li
 								key={s.id}
-								className={styles.suggestionItem}
+								className={`${styles.suggestionItem} ${i === highlightIndex ? styles.suggestionHighlighted : ""}`}
 								role="option"
-								aria-selected={false}
-								onClick={() => onSuggestionClick(s)}
+								aria-selected={i === highlightIndex}
+								onClick={() => {
+									onSuggestionClick(s);
+									setHighlightIndex(-1);
+								}}
 							>
 								{s.word}
 								{s.phonetic && (
@@ -199,10 +232,10 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 						))}
 					</ul>
 				)}
-				{query.trim() && !entry && suggestions.length === 0 && !loading && (
+				{showLookupPrompt && (
 					<ul className={styles.suggestions}>
 						<li
-							className={styles.suggestionItem}
+							className={`${styles.suggestionItem} ${highlightIndex === 0 ? styles.suggestionHighlighted : ""}`}
 							onClick={() => onSubmit(query.trim())}
 						>
 							Look up "<strong>{query.trim()}</strong>"
