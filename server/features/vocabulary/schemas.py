@@ -1,35 +1,45 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
-class VocabularyCreate(BaseModel):
+class DefinitionItem(BaseModel):
+    definition: str
+    example: str = ""
+
+
+class MeaningItem(BaseModel):
+    partOfSpeech: str
+    definitions: list[DefinitionItem]
+
+
+class VocabularyAdd(BaseModel):
     word: str
-    word_type: str
-    english_meaning: str = ""
-    vietnamese_meaning: str = ""
-    examples: list[str] = Field(default_factory=list)
-    oald_link: str = ""
 
 
 class VocabularyUpdate(BaseModel):
-    word: str | None = None
-    word_type: str | None = None
-    english_meaning: str | None = None
     vietnamese_meaning: str | None = None
-    examples: list[str] | None = None
+    meanings: list[MeaningItem] | None = None
+    phonetic: str | None = None
+    audio_url: str | None = None
     oald_link: str | None = None
+
+
+class SearchLogRead(BaseModel):
+    id: int
+    searched_at: datetime
 
 
 class VocabularyRead(BaseModel):
     id: int
     word: str
-    word_type: str
-    english_meaning: str
-    vietnamese_meaning: str
-    examples: list[str]
+    phonetic: str
+    audio_url: str
+    meanings: list[MeaningItem]
     oald_link: str
+    vietnamese_meaning: str
     search_times: int
+    search_history: list[SearchLogRead]
     created_at: datetime
     updated_at: datetime
 
