@@ -31,7 +31,7 @@ export const useDictionaryStore = create<DictionaryState>((set, get) => ({
 	error: null,
 
 	setQuery: (query) => {
-		set({ query });
+		set({ query, entry: null, error: null, similarWords: [] });
 		get().fetchSuggestions(query);
 	},
 

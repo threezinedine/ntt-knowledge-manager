@@ -151,7 +151,7 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 	const [highlightIndex, setHighlightIndex] = useState(-1);
 	const classes = [styles.dictionary, className].filter(Boolean).join(" ");
 
-	const showSuggestions = suggestions.length > 0 && !entry;
+	const showSuggestions = suggestions.length > 0 && !entry && !loading;
 	const showLookupPrompt = !!(query.trim() && !entry && suggestions.length === 0 && !loading);
 	const listLength = showSuggestions ? suggestions.length : showLookupPrompt ? 1 : 0;
 

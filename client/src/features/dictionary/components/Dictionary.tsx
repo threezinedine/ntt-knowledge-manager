@@ -26,6 +26,8 @@ export function Dictionary({ className }: DictionaryProps) {
 
 	const handleSubmit = useCallback(
 		(word: string) => {
+			audioRef.current = null;
+			audioUrlRef.current = "";
 			const pendingAudio = new Audio();
 			lookup(word).then(() => {
 				const result = useDictionaryStore.getState().entry;
