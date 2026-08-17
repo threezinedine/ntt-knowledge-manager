@@ -1,9 +1,41 @@
 $surface: var(--color-surface);
 $border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
 
 .epub {
 	position: relative;
 	height: 100%;
+	overflow: hidden;
+}
+
+.contextMenu {
+	position: absolute;
+	z-index: 20;
+	min-width: 160px;
+	background: $surface;
+	border: 1px solid $border;
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+	padding: 0.25rem 0;
+	transform: translateX(-50%);
+}
+
+.contextMenuItem {
+	display: block;
+	width: 100%;
+	padding: 0.5rem 0.75rem;
+	border: none;
+	background: none;
+	color: $foreground;
+	font: inherit;
+	font-size: 0.875rem;
+	text-align: left;
+	cursor: pointer;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 6%, $surface);
+	}
 }
 
 .popup {

@@ -1,21 +1,49 @@
 import { create } from "zustand";
 
+type EpubView = "context-menu" | "dictionary";
+
 type EpubState = {
-	selectedWord: string | null;
+	selectedText: string | null;
+	view: EpubView | null;
 	popupPosition: { x: number; y: number } | null;
-	selectWord: (word: string, position: { x: number; y: number }) => void;
+	wordTop: number;
+	containerWidth: number;
+	containerHeight: number;
+	showContextMenu: (
+		text: string,
+		position: { x: number; y: number },
+		wordTop: number,
+		containerWidth: number,
+		containerHeight: number,
+	) => void;
+	showDictionary: () => void;
 	clearSelection: () => void;
 };
 
 export const useEpubStore = create<EpubState>((set) => ({
-	selectedWord: null,
+	selectedText: null,
+	view: null,
 	popupPosition: null,
+	wordTop: 0,
+	containerWidth: 0,
+	containerHeight: 0,
 
-	selectWord: (word, position) => {
-		set({ selectedWord: word.trim().toLowerCase(), popupPosition: position });
+	showContextMenu: (text, position, wordTop, containerWidth, containerHeight) => {
+		set({
+			selectedText: text.trim().toLowerCase(),
+			view: "context-menu",
+			popupPosition: position,
+			wordTop,
+			containerWidth,
+			containerHeight,
+		});
+	},
+
+	showDictionary: () => {
+		set({ view: "dictionary" });
 	},
 
 	clearSelection: () => {
-		set({ selectedWord: null, popupPosition: null });
+		set({ selectedText: null, view: null, popupPosition: null });
 	},
 }));

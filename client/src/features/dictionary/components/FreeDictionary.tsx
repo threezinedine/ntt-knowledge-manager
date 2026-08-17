@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StatelessDictionary } from "../../../components";
-import { useDictionaryStore } from "../store/dictionary-store";
+import { lookupWord, getSimilarWords, type DictionaryResult } from "../apis/vocabulary-api";
+import { translateToVietnamese } from "../apis/translate";
 
 type FreeDictionaryProps = {
 	word: string;
@@ -8,8 +9,11 @@ type FreeDictionaryProps = {
 };
 
 export function FreeDictionary({ word, className }: FreeDictionaryProps) {
-	const { entry, vietnameseMeaning, similarWords, loading, error, lookup } =
-		useDictionaryStore();
+	const [entry, setEntry] = useState<DictionaryResult | null>(null);
+	const [vietnameseMeaning, setVietnameseMeaning] = useState("");
+	const [similarWords, setSimilarWords] = useState<string[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const audioUrlRef = useRef("");
@@ -28,30 +32,55 @@ export function FreeDictionary({ word, className }: FreeDictionaryProps) {
 			audioRef.current.play().catch(() => {});
 			return;
 		}
-		const w = useDictionaryStore.getState().entry?.word;
-		if (w) speakWord(w);
-	}, [speakWord]);
+		if (entry?.word) speakWord(entry.word);
+	}, [speakWord, entry]);
 
 	const handleLookup = useCallback(
 		(w: string) => {
 			const trimmed = w.trim();
 			if (!trimmed) return;
+
 			audioRef.current = null;
 			audioUrlRef.current = "";
+			setLoading(true);
+			setError(null);
+			setSimilarWords([]);
+			setVietnameseMeaning("");
+
+			getSimilarWords(trimmed)
+				.then((similar) => setSimilarWords(similar))
+				.catch(() => {});
+
 			const pendingAudio = new Audio();
-			lookup(trimmed).then(() => {
-				const result = useDictionaryStore.getState().entry;
-				if (result?.audio_url) {
-					pendingAudio.src = result.audio_url;
-					audioRef.current = pendingAudio;
-					audioUrlRef.current = result.audio_url;
-					pendingAudio.play().catch(() => {});
-				} else if (result) {
-					speakWord(result.word);
-				}
-			});
+			lookupWord(trimmed)
+				.then((result) => {
+					setEntry(result);
+					setLoading(false);
+
+					if (result.audio_url) {
+						pendingAudio.src = result.audio_url;
+						audioRef.current = pendingAudio;
+						audioUrlRef.current = result.audio_url;
+						pendingAudio.play().catch(() => {});
+					} else {
+						speakWord(result.word);
+					}
+
+					const primaryDef = result.meanings[0]?.definitions[0]?.definition ?? "";
+					const textToTranslate = primaryDef
+						? `${result.word}: ${primaryDef}`
+						: result.word;
+					translateToVietnamese(textToTranslate)
+						.then((translated) => setVietnameseMeaning(translated))
+						.catch(() => {});
+				})
+				.catch(() => {
+					setLoading(false);
+					setError(`Could not find "${trimmed}"`);
+					setEntry(null);
+				});
 		},
-		[lookup, speakWord],
+		[speakWord],
 	);
 
 	useEffect(() => {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { EpubReader, type EpubPage, type EpubReaderConfig } from "../../../components";
 import { FreeDictionary } from "../../dictionary";
 import { useEpubStore } from "../store/epub-store";
@@ -13,17 +13,31 @@ type EpubProps = {
 	className?: string;
 };
 
-function getWordAtPoint(node: Node, offset: number): string {
-	const text = node.textContent ?? "";
-	if (!text) return "";
+const POPUP_WIDTH = 380;
+const POPUP_MAX_HEIGHT = 350;
+const POPUP_GAP = 4;
+const CONTEXT_MENU_WIDTH = 160;
+const CONTEXT_MENU_HEIGHT = 80;
 
-	let start = offset;
-	let end = offset;
+function clampPopup(
+	rawX: number,
+	wordBottom: number,
+	wordTop: number,
+	containerW: number,
+	containerH: number,
+	popupW: number,
+	popupH: number,
+): { left: number; top: number } {
+	const halfW = popupW / 2;
+	const left = Math.max(halfW, Math.min(rawX, containerW - halfW));
 
-	while (start > 0 && /\w/.test(text[start - 1])) start--;
-	while (end < text.length && /\w/.test(text[end])) end++;
+	let top = wordBottom + POPUP_GAP;
+	if (top + popupH > containerH) {
+		top = wordTop - POPUP_GAP - popupH;
+	}
+	if (top < 0) top = POPUP_GAP;
 
-	return text.slice(start, end);
+	return { left, top };
 }
 
 export function Epub({
@@ -34,62 +48,134 @@ export function Epub({
 	onConfigChange,
 	className,
 }: EpubProps) {
-	const { selectedWord, popupPosition, selectWord, clearSelection } = useEpubStore();
+	const {
+		selectedText,
+		view,
+		popupPosition,
+		wordTop: storedWordTop,
+		containerWidth: storedContainerW,
+		containerHeight: storedContainerH,
+		showContextMenu,
+		showDictionary,
+		clearSelection,
+	} = useEpubStore();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const popupRef = useRef<HTMLDivElement>(null);
 
-	const handleDoubleClick = useCallback(
+	const handleMouseUp = useCallback(
 		(e: MouseEvent) => {
+			if (popupRef.current?.contains(e.target as Node)) return;
+
 			const selection = window.getSelection();
 			if (!selection || selection.isCollapsed) return;
 
+			const text = selection.toString().trim();
+			if (!text) return;
+
 			const range = selection.getRangeAt(0);
-			const word =
-				selection.toString().trim() ||
-				getWordAtPoint(range.startContainer, range.startOffset);
-
-			if (!word || !/^[a-zA-Z]+$/.test(word)) return;
-
 			const rect = range.getBoundingClientRect();
-			const containerRect = containerRef.current?.getBoundingClientRect();
-			if (!containerRect) return;
+			const container = containerRef.current;
+			if (!container) return;
+			const containerRect = container.getBoundingClientRect();
 
-			selectWord(word, {
-				x: rect.left - containerRect.left + rect.width / 2,
-				y: rect.bottom - containerRect.top + 4,
-			});
+			const rawX = rect.left - containerRect.left + rect.width / 2;
+			const wordBottom = rect.bottom - containerRect.top;
+			const wTop = rect.top - containerRect.top;
+
+			showContextMenu(text, { x: rawX, y: wordBottom }, wTop, containerRect.width, containerRect.height);
 		},
-		[selectWord],
+		[showContextMenu],
 	);
 
 	useEffect(() => {
 		const container = containerRef.current;
 		if (!container) return;
-		container.addEventListener("dblclick", handleDoubleClick);
-		return () => container.removeEventListener("dblclick", handleDoubleClick);
-	}, [handleDoubleClick]);
+		container.addEventListener("mouseup", handleMouseUp);
+		return () => container.removeEventListener("mouseup", handleMouseUp);
+	}, [handleMouseUp]);
+
+	const dismiss = useCallback(() => {
+		clearSelection();
+	}, [clearSelection]);
 
 	useEffect(() => {
-		if (!selectedWord) return;
+		if (!selectedText) return;
 		const handleClickOutside = (e: MouseEvent) => {
 			if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-				clearSelection();
+				dismiss();
 			}
 		};
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, [selectedWord, clearSelection]);
+	}, [selectedText, dismiss]);
 
 	useEffect(() => {
-		if (!selectedWord) return;
+		if (!selectedText) return;
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "Escape") clearSelection();
+			if (e.key === "Escape") dismiss();
 		};
 		document.addEventListener("keydown", handleKeyDown);
 		return () => document.removeEventListener("keydown", handleKeyDown);
-	}, [selectedWord, clearSelection]);
+	}, [selectedText, dismiss]);
 
 	const classes = [styles.epub, className].filter(Boolean).join(" ");
+
+	let popupContent = null;
+
+	if (selectedText && popupPosition && view === "context-menu") {
+		const pos = clampPopup(
+			popupPosition.x,
+			popupPosition.y,
+			storedWordTop,
+			storedContainerW,
+			storedContainerH,
+			CONTEXT_MENU_WIDTH,
+			CONTEXT_MENU_HEIGHT,
+		);
+		popupContent = (
+			<div
+				ref={popupRef}
+				className={styles.contextMenu}
+				style={{ left: pos.left, top: pos.top }}
+			>
+				<button
+					type="button"
+					className={styles.contextMenuItem}
+					onClick={() => showDictionary()}
+				>
+					Dictionary
+				</button>
+				<button
+					type="button"
+					className={styles.contextMenuItem}
+					onClick={() => {}}
+				>
+					Translate
+				</button>
+			</div>
+		);
+	}
+
+	if (selectedText && popupPosition && view === "dictionary") {
+		const pos = clampPopup(
+			popupPosition.x,
+			popupPosition.y,
+			storedWordTop,
+			storedContainerW,
+			storedContainerH,
+			POPUP_WIDTH,
+			POPUP_MAX_HEIGHT,
+		);
+		popupContent = (
+			<div
+				ref={popupRef}
+				className={styles.popup}
+				style={{ left: pos.left, top: pos.top }}
+			>
+				<FreeDictionary word={selectedText} className={styles.popupContent} />
+			</div>
+		);
+	}
 
 	return (
 		<div className={classes} ref={containerRef}>
@@ -100,18 +186,7 @@ export function Epub({
 				config={config}
 				onConfigChange={onConfigChange}
 			/>
-			{selectedWord && popupPosition && (
-				<div
-					ref={popupRef}
-					className={styles.popup}
-					style={{
-						left: popupPosition.x,
-						top: popupPosition.y,
-					}}
-				>
-					<FreeDictionary word={selectedWord} className={styles.popupContent} />
-				</div>
-			)}
+			{popupContent}
 		</div>
 	);
 }
