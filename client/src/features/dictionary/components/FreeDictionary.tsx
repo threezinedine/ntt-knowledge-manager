@@ -1,22 +1,23 @@
-import { useCallback, useRef } from "react";
-import { StatelessDictionarySearch, type DictionarySuggestion } from "../../../components";
+import { useCallback, useEffect, useRef } from "react";
+import { StatelessDictionary } from "../../../components";
 import { useDictionaryStore } from "../store/dictionary-store";
 
-type DictionaryProps = {
+type FreeDictionaryProps = {
+	word: string;
 	className?: string;
 };
 
-export function Dictionary({ className }: DictionaryProps) {
-	const { query, entry, vietnameseMeaning, similarWords, suggestions, loading, error, setQuery, lookup } =
+export function FreeDictionary({ word, className }: FreeDictionaryProps) {
+	const { entry, vietnameseMeaning, similarWords, loading, error, lookup } =
 		useDictionaryStore();
 
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const audioUrlRef = useRef("");
 
-	const speakWord = useCallback((word: string) => {
+	const speakWord = useCallback((w: string) => {
 		if (!window.speechSynthesis) return;
 		window.speechSynthesis.cancel();
-		const utterance = new SpeechSynthesisUtterance(word);
+		const utterance = new SpeechSynthesisUtterance(w);
 		utterance.lang = "en-US";
 		window.speechSynthesis.speak(utterance);
 	}, []);
@@ -27,16 +28,18 @@ export function Dictionary({ className }: DictionaryProps) {
 			audioRef.current.play().catch(() => {});
 			return;
 		}
-		const word = useDictionaryStore.getState().entry?.word;
-		if (word) speakWord(word);
+		const w = useDictionaryStore.getState().entry?.word;
+		if (w) speakWord(w);
 	}, [speakWord]);
 
-	const handleSubmit = useCallback(
-		(word: string) => {
+	const handleLookup = useCallback(
+		(w: string) => {
+			const trimmed = w.trim();
+			if (!trimmed) return;
 			audioRef.current = null;
 			audioUrlRef.current = "";
 			const pendingAudio = new Audio();
-			lookup(word).then(() => {
+			lookup(trimmed).then(() => {
 				const result = useDictionaryStore.getState().entry;
 				if (result?.audio_url) {
 					pendingAudio.src = result.audio_url;
@@ -51,18 +54,11 @@ export function Dictionary({ className }: DictionaryProps) {
 		[lookup, speakWord],
 	);
 
-	const handleSuggestionClick = useCallback(
-		(suggestion: DictionarySuggestion) => {
-			handleSubmit(suggestion.word);
-		},
-		[handleSubmit],
-	);
-
-	const mappedSuggestions: DictionarySuggestion[] = suggestions.map((s, i) => ({
-		id: i,
-		word: s.word,
-		phonetic: "",
-	}));
+	useEffect(() => {
+		if (word.trim()) {
+			handleLookup(word);
+		}
+	}, [word, handleLookup]);
 
 	const mappedEntry = entry
 		? {
@@ -75,17 +71,13 @@ export function Dictionary({ className }: DictionaryProps) {
 		: null;
 
 	return (
-		<StatelessDictionarySearch
+		<StatelessDictionary
 			className={className}
-			query={query}
-			suggestions={mappedSuggestions}
-			similarWords={similarWords}
 			entry={mappedEntry}
 			loading={loading}
 			error={error}
-			onQueryChange={setQuery}
-			onSubmit={handleSubmit}
-			onSuggestionClick={handleSuggestionClick}
+			similarWords={similarWords}
+			onSubmit={handleLookup}
 			onPlayAudio={() => playAudio()}
 		/>
 	);

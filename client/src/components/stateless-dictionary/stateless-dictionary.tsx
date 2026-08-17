@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useState } from "react";
 import { AddIcon, SpeakerIcon } from "../../icons";
 import styles from "./stateless-dictionary.module.scss";
 
@@ -20,29 +20,13 @@ export type DictionaryEntry = {
 	vietnamese_meaning: string;
 };
 
-export type DictionarySuggestion = {
-	id: number;
-	word: string;
-	phonetic: string;
-};
-
-export type StatelessDictionaryHandle = {
-	focus: () => void;
-	triggerAdd: () => void;
-};
-
-
 type StatelessDictionaryProps = {
 	className?: string;
-	query: string;
-	suggestions: DictionarySuggestion[];
-	similarWords?: string[];
 	entry: DictionaryEntry | null;
 	loading: boolean;
 	error: string | null;
-	onQueryChange: (query: string) => void;
+	similarWords?: string[];
 	onSubmit: (word: string) => void;
-	onSuggestionClick: (suggestion: DictionarySuggestion) => void;
 	onPlayAudio?: () => void;
 	onAdd?: (word: string) => void;
 };
@@ -134,65 +118,18 @@ function ExamplesTab({ entry }: { entry: DictionaryEntry }) {
 	);
 }
 
-export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, StatelessDictionaryProps>(function StatelessDictionary({
+export function StatelessDictionary({
 	className,
-	query,
-	suggestions,
-	similarWords = [],
 	entry,
 	loading,
 	error,
-	onQueryChange,
+	similarWords = [],
 	onSubmit,
-	onSuggestionClick,
 	onPlayAudio,
 	onAdd,
-}, ref) {
-	const inputRef = useRef<HTMLInputElement>(null);
+}: StatelessDictionaryProps) {
 	const [activeTab, setActiveTab] = useState<string>("english");
-	const [highlightIndex, setHighlightIndex] = useState(-1);
-	const classes = [styles.dictionary, className].filter(Boolean).join(" ");
-
-	const showSuggestions = suggestions.length > 0 && !entry && !loading;
-	const showLookupPrompt = !!(query.trim() && !entry && suggestions.length === 0 && !loading);
-	const listLength = showSuggestions ? suggestions.length : showLookupPrompt ? 1 : 0;
-
-	useImperativeHandle(ref, () => ({
-		focus: () => inputRef.current?.focus(),
-		triggerAdd: () => { if (entry) onAdd?.(entry.word); },
-	}));
-
-	const prevQueryRef = useRef(query);
-	if (prevQueryRef.current !== query) {
-		prevQueryRef.current = query;
-		if (highlightIndex !== -1) setHighlightIndex(-1);
-	}
-
-	const handleKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === "ArrowDown" && listLength > 0) {
-			e.preventDefault();
-			setHighlightIndex((i) => (i + 1) % listLength);
-			return;
-		}
-		if (e.key === "ArrowUp" && listLength > 0) {
-			e.preventDefault();
-			setHighlightIndex((i) => (i <= 0 ? listLength - 1 : i - 1));
-			return;
-		}
-		if (e.key === "Escape") {
-			setHighlightIndex(-1);
-			return;
-		}
-		if (e.key === "Enter") {
-			e.preventDefault();
-			if (showSuggestions && highlightIndex >= 0 && highlightIndex < suggestions.length) {
-				onSuggestionClick(suggestions[highlightIndex]);
-				setHighlightIndex(-1);
-			} else if (query.trim()) {
-				onSubmit(query.trim());
-			}
-		}
-	};
+	const classes = [styles.content, className].filter(Boolean).join(" ");
 
 	const handleTabClick = (tabId: string) => {
 		setActiveTab(tabId);
@@ -200,60 +137,72 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 	};
 
 	return (
-		<div className={classes} data-testid="dictionary">
-			<div className={styles.searchArea}>
-				<input
-					ref={inputRef}
-					className={styles.searchInput}
-					type="text"
-					placeholder="Search for a word..."
-					value={query}
-					onChange={(e) => onQueryChange(e.target.value)}
-					onKeyDown={handleKeyDown}
-					aria-label="Search word"
-				/>
-				{showSuggestions && (
-					<ul className={styles.suggestions} role="listbox">
-						{suggestions.map((s, i) => (
-							<li
-								key={s.id}
-								className={`${styles.suggestionItem} ${i === highlightIndex ? styles.suggestionHighlighted : ""}`}
-								role="option"
-								aria-selected={i === highlightIndex}
-								onClick={() => {
-									onSuggestionClick(s);
-									setHighlightIndex(-1);
-								}}
+		<div className={classes} data-testid="dictionary-content">
+			{loading && (
+				<div className={styles.loading}>Looking up...</div>
+			)}
+			{error && !loading && (
+				<>
+					<div className={styles.error}>{error}</div>
+					{similarWords.length > 0 && (
+						<div className={styles.similarWords}>
+							<div className={styles.similarWordsLabel}>Similar words:</div>
+							<div className={styles.similarWordsList}>
+								{similarWords.map((w) => (
+									<button
+										key={w}
+										type="button"
+										className={styles.similarWordChip}
+										onClick={() => onSubmit(w)}
+									>
+										{w}
+									</button>
+								))}
+							</div>
+						</div>
+					)}
+				</>
+			)}
+			{!entry && !loading && !error && (
+				<div className={styles.empty}>
+					Type a word to look it up.
+				</div>
+			)}
+			{entry && !loading && (
+				<>
+					<button
+						type="button"
+						className={styles.addBtn}
+						onClick={() => onAdd?.(entry.word)}
+						aria-label="Add word"
+					>
+						<AddIcon width={20} height={20} />
+					</button>
+					<div className={styles.tabs}>
+						{TABS.map((t) => (
+							<button
+								key={t.id}
+								type="button"
+								className={`${styles.tab} ${activeTab === t.id ? styles.tabActive : ""}`}
+								onClick={() => handleTabClick(t.id)}
 							>
-								{s.word}
-								{s.phonetic && (
-									<span className={styles.suggestionPhonetic}>
-										{s.phonetic}
-									</span>
-								)}
-							</li>
+								{t.label}
+							</button>
 						))}
-					</ul>
-				)}
-				{showLookupPrompt && (
-					<ul className={styles.suggestions}>
-						<li
-							className={`${styles.suggestionItem} ${highlightIndex === 0 ? styles.suggestionHighlighted : ""}`}
-							onClick={() => onSubmit(query.trim())}
-						>
-							Look up "<strong>{query.trim()}</strong>"
-						</li>
-					</ul>
-				)}
-			</div>
-
-			<div className={styles.content}>
-				{loading && (
-					<div className={styles.loading}>Looking up...</div>
-				)}
-				{error && !loading && (
-					<>
-						<div className={styles.error}>{error}</div>
+					</div>
+					<div className={styles.tabPanel}>
+						{activeTab === "english" && (
+							<EnglishTab
+								entry={entry}
+								onPlay={() => onPlayAudio?.()}
+							/>
+						)}
+						{activeTab === "vietnamese" && (
+							<VietnameseTab entry={entry} />
+						)}
+						{activeTab === "examples" && (
+							<ExamplesTab entry={entry} />
+						)}
 						{similarWords.length > 0 && (
 							<div className={styles.similarWords}>
 								<div className={styles.similarWordsLabel}>Similar words:</div>
@@ -271,69 +220,9 @@ export const StatelessDictionary = forwardRef<StatelessDictionaryHandle, Statele
 								</div>
 							</div>
 						)}
-					</>
-				)}
-				{!entry && !loading && !error && (
-					<div className={styles.empty}>
-						Type a word to look it up.
 					</div>
-				)}
-				{entry && !loading && (
-					<>
-						<button
-							type="button"
-							className={styles.addBtn}
-							onClick={() => onAdd?.(entry.word)}
-							aria-label="Add word"
-						>
-							<AddIcon width={20} height={20} />
-						</button>
-						<div className={styles.tabs}>
-							{TABS.map((t) => (
-								<button
-									key={t.id}
-									type="button"
-									className={`${styles.tab} ${activeTab === t.id ? styles.tabActive : ""}`}
-									onClick={() => handleTabClick(t.id)}
-								>
-									{t.label}
-								</button>
-							))}
-						</div>
-						<div className={styles.tabPanel}>
-							{activeTab === "english" && (
-								<EnglishTab
-									entry={entry}
-									onPlay={() => onPlayAudio?.()}
-								/>
-							)}
-							{activeTab === "vietnamese" && (
-								<VietnameseTab entry={entry} />
-							)}
-							{activeTab === "examples" && (
-								<ExamplesTab entry={entry} />
-							)}
-							{similarWords.length > 0 && (
-								<div className={styles.similarWords}>
-									<div className={styles.similarWordsLabel}>Similar words:</div>
-									<div className={styles.similarWordsList}>
-										{similarWords.map((w) => (
-											<button
-												key={w}
-												type="button"
-												className={styles.similarWordChip}
-												onClick={() => onSubmit(w)}
-											>
-												{w}
-											</button>
-										))}
-									</div>
-								</div>
-							)}
-						</div>
-					</>
-				)}
-			</div>
+				</>
+			)}
 		</div>
 	);
-});
+}

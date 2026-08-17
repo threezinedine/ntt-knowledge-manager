@@ -25,89 +25,17 @@ const MOCK_ENTRY: DictionaryEntry = {
 };
 
 const defaultProps = {
-	query: "",
-	suggestions: [],
 	entry: null,
 	loading: false,
 	error: null,
-	onQueryChange: vi.fn(),
 	onSubmit: vi.fn(),
-	onSuggestionClick: vi.fn(),
 };
 
 describe("StatelessDictionary", () => {
-	it("renders search input", () => {
-		render(<StatelessDictionary {...defaultProps} />);
-
-		expect(screen.getByLabelText("Search word")).toBeVisible();
-	});
-
 	it("shows empty state when no entry", () => {
 		render(<StatelessDictionary {...defaultProps} />);
 
 		expect(screen.getByText("Type a word to look it up.")).toBeVisible();
-	});
-
-	it("calls onQueryChange when typing", () => {
-		const onQueryChange = vi.fn();
-		render(<StatelessDictionary {...defaultProps} onQueryChange={onQueryChange} />);
-
-		fireEvent.change(screen.getByLabelText("Search word"), {
-			target: { value: "hello" },
-		});
-
-		expect(onQueryChange).toHaveBeenCalledWith("hello");
-	});
-
-	it("calls onSubmit on Enter", () => {
-		const onSubmit = vi.fn();
-		render(<StatelessDictionary {...defaultProps} query="test" onSubmit={onSubmit} />);
-
-		fireEvent.keyDown(screen.getByLabelText("Search word"), { key: "Enter" });
-
-		expect(onSubmit).toHaveBeenCalledWith("test");
-	});
-
-	it("shows suggestions dropdown", () => {
-		const suggestions = [
-			{ id: 1, word: "test", phonetic: "/tɛst/" },
-			{ id: 2, word: "testing", phonetic: "" },
-		];
-		render(
-			<StatelessDictionary
-				{...defaultProps}
-				query="tes"
-				suggestions={suggestions}
-			/>,
-		);
-
-		expect(screen.getByText("test")).toBeVisible();
-		expect(screen.getByText("testing")).toBeVisible();
-		expect(screen.getByText("/tɛst/")).toBeVisible();
-	});
-
-	it("calls onSuggestionClick when clicking a suggestion", () => {
-		const onSuggestionClick = vi.fn();
-		const suggestions = [{ id: 1, word: "test", phonetic: "/tɛst/" }];
-		render(
-			<StatelessDictionary
-				{...defaultProps}
-				query="tes"
-				suggestions={suggestions}
-				onSuggestionClick={onSuggestionClick}
-			/>,
-		);
-
-		fireEvent.click(screen.getByText("test"));
-
-		expect(onSuggestionClick).toHaveBeenCalledWith(suggestions[0]);
-	});
-
-	it("shows lookup prompt when no suggestions and query is set", () => {
-		render(<StatelessDictionary {...defaultProps} query="xyz" />);
-
-		expect(screen.getByText(/Look up/)).toBeVisible();
-		expect(screen.getByText("xyz")).toBeVisible();
 	});
 
 	it("shows loading state", () => {
@@ -233,100 +161,5 @@ describe("StatelessDictionary", () => {
 		);
 
 		expect(screen.queryByText("Similar words:")).toBeNull();
-	});
-
-	it("highlights suggestions with arrow keys", () => {
-		const suggestions = [
-			{ id: 1, word: "test", phonetic: "" },
-			{ id: 2, word: "testing", phonetic: "" },
-		];
-		render(
-			<StatelessDictionary
-				{...defaultProps}
-				query="tes"
-				suggestions={suggestions}
-			/>,
-		);
-
-		const input = screen.getByLabelText("Search word");
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-
-		const options = screen.getAllByRole("option");
-		expect(options[0]).toHaveAttribute("aria-selected", "true");
-		expect(options[1]).toHaveAttribute("aria-selected", "false");
-
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-		expect(options[0]).toHaveAttribute("aria-selected", "false");
-		expect(options[1]).toHaveAttribute("aria-selected", "true");
-
-		fireEvent.keyDown(input, { key: "ArrowUp" });
-		expect(options[0]).toHaveAttribute("aria-selected", "true");
-	});
-
-	it("selects highlighted suggestion with Enter", () => {
-		const onSuggestionClick = vi.fn();
-		const suggestions = [
-			{ id: 1, word: "test", phonetic: "" },
-			{ id: 2, word: "testing", phonetic: "" },
-		];
-		render(
-			<StatelessDictionary
-				{...defaultProps}
-				query="tes"
-				suggestions={suggestions}
-				onSuggestionClick={onSuggestionClick}
-			/>,
-		);
-
-		const input = screen.getByLabelText("Search word");
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-		fireEvent.keyDown(input, { key: "Enter" });
-
-		expect(onSuggestionClick).toHaveBeenCalledWith(suggestions[1]);
-	});
-
-	it("wraps highlight around when reaching the end", () => {
-		const suggestions = [
-			{ id: 1, word: "test", phonetic: "" },
-			{ id: 2, word: "testing", phonetic: "" },
-		];
-		render(
-			<StatelessDictionary
-				{...defaultProps}
-				query="tes"
-				suggestions={suggestions}
-			/>,
-		);
-
-		const input = screen.getByLabelText("Search word");
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-
-		const options = screen.getAllByRole("option");
-		expect(options[0]).toHaveAttribute("aria-selected", "true");
-	});
-
-	it("clears highlight on Escape", () => {
-		const suggestions = [
-			{ id: 1, word: "test", phonetic: "" },
-		];
-		render(
-			<StatelessDictionary
-				{...defaultProps}
-				query="tes"
-				suggestions={suggestions}
-			/>,
-		);
-
-		const input = screen.getByLabelText("Search word");
-		fireEvent.keyDown(input, { key: "ArrowDown" });
-
-		const option = screen.getByRole("option");
-		expect(option).toHaveAttribute("aria-selected", "true");
-
-		fireEvent.keyDown(input, { key: "Escape" });
-		expect(option).toHaveAttribute("aria-selected", "false");
 	});
 });

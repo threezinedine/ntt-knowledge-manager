@@ -1,6 +1,5 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { StatelessDictionary, type DictionaryEntry, type DictionarySuggestion } from "./stateless-dictionary";
+import { StatelessDictionary, type DictionaryEntry } from "./stateless-dictionary";
 
 const MOCK_ENTRY: DictionaryEntry = {
 	word: "abandon",
@@ -33,32 +32,20 @@ const MOCK_ENTRY: DictionaryEntry = {
 	vietnamese_meaning: "bỏ rơi, từ bỏ",
 };
 
-const ALL_SUGGESTIONS: DictionarySuggestion[] = [
-	{ id: 1, word: "abandon", phonetic: "/əˈbæn.dən/" },
-	{ id: 2, word: "abandoned", phonetic: "/əˈbæn.dənd/" },
-	{ id: 3, word: "ability", phonetic: "/əˈbɪl.ɪ.ti/" },
-	{ id: 4, word: "about", phonetic: "/əˈbaʊt/" },
-	{ id: 5, word: "above", phonetic: "/əˈbʌv/" },
-];
-
 const meta = {
 	title: "Components/StatelessDictionary",
 	component: StatelessDictionary,
 	args: {
-		query: "",
-		suggestions: [],
 		entry: null,
 		loading: false,
 		error: null,
-		onQueryChange: () => {},
 		onSubmit: () => {},
-		onSuggestionClick: () => {},
 		onPlayAudio: () => {},
 		onAdd: (word: string) => alert(`Add: ${word}`),
 	},
 	decorators: [
 		(Story) => (
-			<div style={{ width: 600, height: 500, border: "1px solid var(--color-border)", borderRadius: 8, overflow: "hidden" }}>
+			<div style={{ width: 600, height: 400, border: "1px solid var(--color-border)", borderRadius: 8, overflow: "hidden" }}>
 				<Story />
 			</div>
 		),
@@ -70,78 +57,14 @@ type Story = StoryObj<typeof meta>;
 
 export const Empty: Story = {};
 
-export const WithSuggestions: Story = {
-	args: {
-		query: "aban",
-		suggestions: [
-			{ id: 1, word: "abandon", phonetic: "/əˈbæn.dən/" },
-			{ id: 2, word: "abandoned", phonetic: "/əˈbæn.dənd/" },
-		],
-		onSuggestionClick: (s) => alert(`Selected: ${s.word}`),
-		onSubmit: (word) => alert(`Submit: ${word}`),
-	},
-};
-
-export const Interactive: Story = {
-	render: () => {
-		const [query, setQuery] = useState("");
-		const [entry, setEntry] = useState<DictionaryEntry | null>(null);
-
-		const filtered = query.length >= 2
-			? ALL_SUGGESTIONS.filter((s) => s.word.startsWith(query.toLowerCase()))
-			: [];
-
-		const handleSubmit = (word: string) => {
-			if (word === "abandon") {
-				setEntry(MOCK_ENTRY);
-			} else {
-				setEntry({
-					word,
-					phonetic: "",
-					audio_url: "",
-					meanings: [{ partOfSpeech: "noun", definitions: [{ definition: `Definition of ${word}`, example: "" }] }],
-					vietnamese_meaning: "",
-				});
-			}
-		};
-
-		const handleSuggestionClick = (suggestion: DictionarySuggestion) => {
-			setQuery(suggestion.word);
-			handleSubmit(suggestion.word);
-		};
-
-		return (
-			<StatelessDictionary
-				query={query}
-				suggestions={entry ? [] : filtered}
-				entry={entry}
-				loading={false}
-				error={null}
-				onQueryChange={(q) => { setQuery(q); if (entry) setEntry(null); }}
-				onSubmit={handleSubmit}
-				onSuggestionClick={handleSuggestionClick}
-				onAdd={(word) => alert(`Add: ${word}`)}
-			/>
-		);
-	},
-};
-
-export const LookupPrompt: Story = {
-	args: {
-		query: "newword",
-	},
-};
-
 export const Loading: Story = {
 	args: {
-		query: "abandon",
 		loading: true,
 	},
 };
 
 export const Error: Story = {
 	args: {
-		query: "xyznotaword",
 		error: 'Could not find "xyznotaword"',
 		similarWords: ["xylophone"],
 	},
@@ -149,7 +72,6 @@ export const Error: Story = {
 
 export const EnglishTab: Story = {
 	args: {
-		query: "abandon",
 		entry: MOCK_ENTRY,
 		similarWords: ["abandonment", "abandoned", "abolish", "abscond", "abstain"],
 	},
@@ -157,7 +79,6 @@ export const EnglishTab: Story = {
 
 export const NoVietnamese: Story = {
 	args: {
-		query: "abandon",
 		entry: { ...MOCK_ENTRY, vietnamese_meaning: "" },
 	},
 };
