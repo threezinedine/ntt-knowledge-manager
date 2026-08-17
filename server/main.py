@@ -14,6 +14,10 @@ from server.features.login.middleware import require_login
 from server.features.node.node import router as nodes_router
 from server.features.settings.settings import router as settings_router
 from server.features.vocabulary.vocabulary import router as vocabulary_router
+from server.features.todos.period_types import router as period_types_router
+from server.features.todos.categories import router as categories_router
+from server.features.todos.task_templates import router as task_templates_router
+from server.features.todos.tasks import router as tasks_router
 
 
 @asynccontextmanager
@@ -59,6 +63,10 @@ api.include_router(login_router)
 api.include_router(nodes_router)
 api.include_router(settings_router)
 api.include_router(vocabulary_router)
+api.include_router(period_types_router)
+api.include_router(categories_router)
+api.include_router(task_templates_router)
+api.include_router(tasks_router)
 app.include_router(api)
 app.mount(
     "/",
