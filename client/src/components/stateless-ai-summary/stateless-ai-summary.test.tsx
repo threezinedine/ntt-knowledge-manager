@@ -39,10 +39,10 @@ describe("StatelessAiSummary", () => {
 		expect(screen.getByText("This is a greeting.")).toBeVisible();
 	});
 
-	it("does not show result while loading", () => {
+	it("shows result and thinking indicator while loading follow-up", () => {
 		render(<StatelessAiSummary {...defaultProps} result={MOCK_RESULT} loading />);
 
-		expect(screen.getByText("Processing...")).toBeVisible();
-		expect(screen.queryByText("This is a greeting.")).toBeNull();
+		expect(screen.getByText("This is a greeting.")).toBeVisible();
+		expect(screen.getByText("Thinking...")).toBeVisible();
 	});
 });

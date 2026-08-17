@@ -48,7 +48,7 @@ export function StatelessAiSummary({
 	const hasResult = result !== null;
 
 	useEffect(() => {
-		bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+		bottomRef.current?.scrollIntoView?.({ behavior: "smooth" });
 	}, [messages.length, loading]);
 
 	const initialHtml = useMemo(() => {
