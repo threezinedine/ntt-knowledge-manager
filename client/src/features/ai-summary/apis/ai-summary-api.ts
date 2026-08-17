@@ -4,7 +4,7 @@ import { GeminiProvider } from "./gemini-provider";
 import { GroqProvider } from "./groq-provider";
 import { MockAiSummaryProvider } from "./mock-ai-summary-provider";
 
-export type { AiSummaryResult, AiSummaryProvider } from "./ai-summary-provider";
+export type { AiSummaryResult, AiSummaryProvider, ChatMessage } from "./ai-summary-provider";
 
 function createDefaultProvider(): AiSummaryProvider {
 	const providers: AiSummaryProvider[] = [];
@@ -31,4 +31,8 @@ export function getAiSummaryProvider(): AiSummaryProvider {
 
 export function summarize(systemPrompt: string, userInput: string) {
 	return activeProvider.summarize(systemPrompt, userInput);
+}
+
+export function chatComplete(messages: { role: "system" | "user" | "assistant"; content: string }[]) {
+	return activeProvider.chatComplete(messages);
 }

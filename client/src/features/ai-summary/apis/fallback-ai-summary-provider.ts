@@ -1,4 +1,4 @@
-import type { AiSummaryProvider, AiSummaryResult } from "./ai-summary-provider";
+import type { AiSummaryProvider, AiSummaryResult, ChatMessage } from "./ai-summary-provider";
 
 export class FallbackAiSummaryProvider implements AiSummaryProvider {
 	name: string;
@@ -15,6 +15,20 @@ export class FallbackAiSummaryProvider implements AiSummaryProvider {
 		for (const provider of this.providers) {
 			try {
 				return await provider.summarize(systemPrompt, userInput);
+			} catch (err) {
+				lastError = err;
+			}
+		}
+
+		throw lastError;
+	}
+
+	async chatComplete(messages: ChatMessage[]): Promise<string> {
+		let lastError: unknown;
+
+		for (const provider of this.providers) {
+			try {
+				return await provider.chatComplete(messages);
 			} catch (err) {
 				lastError = err;
 			}

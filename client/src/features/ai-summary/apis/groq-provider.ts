@@ -1,4 +1,4 @@
-import type { AiSummaryProvider, AiSummaryResult } from "./ai-summary-provider";
+import type { AiSummaryProvider, AiSummaryResult, ChatMessage } from "./ai-summary-provider";
 
 const API_URL = `${import.meta.env.VITE_API_URL ?? ""}/ai/chat`;
 
@@ -43,5 +43,27 @@ export class GroqProvider implements AiSummaryProvider {
 		if (!output) throw new Error("Groq returned an empty response");
 
 		return { systemPrompt, userInput, output };
+	}
+
+	async chatComplete(messages: ChatMessage[]): Promise<string> {
+		const response = await fetch(API_URL, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				model: this.model,
+				messages,
+				temperature: 0.7,
+				max_tokens: 1024,
+			}),
+		});
+
+		if (!response.ok) {
+			const err = await response.json().catch(() => ({}));
+			throw new Error(err?.detail ?? err?.error?.message ?? `Groq error ${response.status}`);
+		}
+
+		const data = await response.json();
+		const raw: string = data?.choices?.[0]?.message?.content ?? "";
+		return raw.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
 	}
 }
