@@ -30,4 +30,8 @@ export { StatelessTranslator } from "./stateless-translator";
 export type { TranslationResult } from "./stateless-translator";
 export { StatelessTranslatorSearch } from "./stateless-translator-search";
 export type { StatelessTranslatorSearchHandle } from "./stateless-translator-search";
+export { StatelessAiSummary } from "./stateless-ai-summary";
+export type { AiSummaryOutput } from "./stateless-ai-summary";
+export { StatelessAiSummarySearch } from "./stateless-ai-summary-search";
+export type { StatelessAiSummarySearchHandle } from "./stateless-ai-summary-search";
 export type { Size, Variant } from "./common";

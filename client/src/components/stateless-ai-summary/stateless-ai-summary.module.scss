@@ -1,0 +1,48 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+
+.content {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	position: relative;
+}
+
+.empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: $muted;
+	font-size: 0.875rem;
+}
+
+.loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: $muted;
+}
+
+.error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem 1rem;
+	color: var(--color-error, #e53e3e);
+	font-size: 0.875rem;
+}
+
+.result {
+	padding: 1rem;
+}
+
+.output {
+	font-size: 1rem;
+	line-height: 1.7;
+	color: $foreground;
+	white-space: pre-wrap;
+}
