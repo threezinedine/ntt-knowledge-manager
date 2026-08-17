@@ -16,6 +16,7 @@ from server.features.settings.settings import router as settings_router
 from server.features.vocabulary.vocabulary import router as vocabulary_router
 from server.features.ai.ai import router as ai_router
 from server.features.chunks.chunks import router as chunks_router
+from server.features.epub.epub import router as epub_router
 
 
 @asynccontextmanager
@@ -63,6 +64,7 @@ api.include_router(settings_router)
 api.include_router(vocabulary_router)
 api.include_router(chunks_router)
 api.include_router(ai_router)
+api.include_router(epub_router)
 app.include_router(api)
 app.mount(
     "/",

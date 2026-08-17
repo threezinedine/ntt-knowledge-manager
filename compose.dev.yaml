@@ -15,6 +15,7 @@ services:
     volumes:
       - ./server:/app/server
       - ./.dev.env:/app/.env
+      - epub_uploads:/app/uploads/epubs
   web:
     build:
       context: .
@@ -127,3 +128,4 @@ volumes:
   client_node_modules:
   e2e_node_modules:
   playwright_browsers:
+  epub_uploads:
