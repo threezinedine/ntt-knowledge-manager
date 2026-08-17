@@ -19,7 +19,7 @@ const POPUP_WIDTH = 380;
 const POPUP_MAX_HEIGHT = 350;
 const POPUP_GAP = 4;
 const CONTEXT_MENU_WIDTH = 160;
-const CONTEXT_MENU_HEIGHT = 120;
+const CONTEXT_MENU_HEIGHT = 160;
 
 function clampPopup(
 	rawX: number,
@@ -61,6 +61,7 @@ export function Epub({
 		showDictionary,
 		showTranslator,
 		showAiSummary,
+		showAiExplain,
 		clearSelection,
 	} = useEpubStore();
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -163,6 +164,13 @@ export function Epub({
 				>
 					Summary with AI
 				</button>
+				<button
+					type="button"
+					className={styles.contextMenuItem}
+					onClick={() => showAiExplain()}
+				>
+					Explain with AI
+				</button>
 			</div>
 		);
 	}
@@ -226,7 +234,32 @@ export function Epub({
 				style={{ left: pos.left, top: pos.top }}
 			>
 				<FreeAiSummary
-					systemPrompt="Bro, i will input you a selected text, you just needa summary its content for me. Format your output in markdown."
+					systemPrompt="Bro, i will input you a selected text, you just needa summary its content for me. Format your output in markdown. Do not include any thinking process, internal reasoning, or <think> tags — only output the final result."
+					userInput={selectedText}
+					className={styles.popupContent}
+				/>
+			</div>
+		);
+	}
+
+	if (selectedText && popupPosition && view === "ai-explain") {
+		const pos = clampPopup(
+			popupPosition.x,
+			popupPosition.y,
+			storedWordTop,
+			storedContainerW,
+			storedContainerH,
+			POPUP_WIDTH,
+			POPUP_MAX_HEIGHT,
+		);
+		popupContent = (
+			<div
+				ref={popupRef}
+				className={styles.popup}
+				style={{ left: pos.left, top: pos.top }}
+			>
+				<FreeAiSummary
+					systemPrompt="Hey, I'll give you a selected text. Break it down for me in a chill, easy-to-understand way — like you're explaining it to a friend who has zero context. Keep it casual and clear. Format your output in markdown. Do not include any thinking process, internal reasoning, or <think> tags — only output the final result."
 					userInput={selectedText}
 					className={styles.popupContent}
 				/>

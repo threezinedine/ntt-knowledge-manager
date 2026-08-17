@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type EpubView = "context-menu" | "dictionary" | "translator" | "ai-summary";
+type EpubView = "context-menu" | "dictionary" | "translator" | "ai-summary" | "ai-explain";
 
 type EpubState = {
 	selectedText: string | null;
@@ -19,6 +19,7 @@ type EpubState = {
 	showDictionary: () => void;
 	showTranslator: () => void;
 	showAiSummary: () => void;
+	showAiExplain: () => void;
 	clearSelection: () => void;
 };
 
@@ -51,6 +52,10 @@ export const useEpubStore = create<EpubState>((set) => ({
 
 	showAiSummary: () => {
 		set({ view: "ai-summary" });
+	},
+
+	showAiExplain: () => {
+		set({ view: "ai-explain" });
 	},
 
 	clearSelection: () => {
