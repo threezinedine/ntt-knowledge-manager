@@ -26,4 +26,8 @@ export { StatelessDictionary } from "./stateless-dictionary";
 export type { DictionaryEntry } from "./stateless-dictionary";
 export { StatelessDictionarySearch } from "./stateless-dictionary-search";
 export type { StatelessDictionarySearchHandle, DictionarySuggestion } from "./stateless-dictionary-search";
+export { StatelessTranslator } from "./stateless-translator";
+export type { TranslationResult } from "./stateless-translator";
+export { StatelessTranslatorSearch } from "./stateless-translator-search";
+export type { StatelessTranslatorSearchHandle } from "./stateless-translator-search";
 export type { Size, Variant } from "./common";

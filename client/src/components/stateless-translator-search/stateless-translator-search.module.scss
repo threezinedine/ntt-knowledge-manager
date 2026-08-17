@@ -1,0 +1,147 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+
+.translator {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: $surface;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.langBar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	padding: 0.625rem 1rem;
+	border-bottom: 1px solid $border;
+	background: color-mix(in srgb, $foreground 3%, $surface);
+}
+
+.langLabel {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: $foreground;
+	min-width: 5rem;
+	text-align: center;
+	user-select: none;
+}
+
+.swapBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 1px solid $border;
+	border-radius: 50%;
+	background: $surface;
+	color: $muted;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 8%, $surface);
+		color: $foreground;
+	}
+}
+
+.panels {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+}
+
+.panel {
+	flex: 1;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.divider {
+	width: 1px;
+	background: $border;
+	flex-shrink: 0;
+}
+
+.textarea {
+	flex: 1;
+	width: 100%;
+	padding: 1rem;
+	padding-right: 2.5rem;
+	border: none;
+	background: transparent;
+	color: $foreground;
+	font: inherit;
+	font-size: 1.125rem;
+	line-height: 1.6;
+	outline: none;
+	resize: none;
+	box-sizing: border-box;
+
+	&::placeholder {
+		color: $muted;
+	}
+}
+
+.clearBtn {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: $muted;
+	font-size: 1.25rem;
+	cursor: pointer;
+	line-height: 1;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 6%, $surface);
+		color: $foreground;
+	}
+}
+
+.output {
+	flex: 1;
+	padding: 1rem;
+	font-size: 1.125rem;
+	line-height: 1.6;
+	color: $foreground;
+	white-space: pre-wrap;
+	overflow-y: auto;
+	background: color-mix(in srgb, $foreground 2%, $surface);
+}
+
+.outputPlaceholder {
+	flex: 1;
+	padding: 1rem;
+	font-size: 1.125rem;
+	line-height: 1.6;
+	color: $muted;
+	background: color-mix(in srgb, $foreground 2%, $surface);
+}
+
+.outputError {
+	flex: 1;
+	padding: 1rem;
+	font-size: 0.875rem;
+	color: var(--color-error, #e53e3e);
+	background: color-mix(in srgb, $foreground 2%, $surface);
+}
