@@ -9,6 +9,10 @@ const config: StorybookConfig = {
 		disableLazyCompilation: true,
 	},
 	viteFinal: (config) => {
+		config.define = {
+			...config.define,
+			"import.meta.env.VITE_API_URL": JSON.stringify("https://dev.ntt-space.org/api"),
+		};
 		config.server = {
 			...config.server,
 			hmr: false,

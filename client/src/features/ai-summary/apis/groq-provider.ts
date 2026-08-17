@@ -1,13 +1,12 @@
 import type { AiSummaryProvider, AiSummaryResult } from "./ai-summary-provider";
 
-const API_KEY = (import.meta.env.VITE_GROQ_API_KEY as string | undefined) ?? "";
-const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const API_URL = `${import.meta.env.VITE_API_URL ?? ""}/ai/chat`;
 
 export class GroqProvider implements AiSummaryProvider {
 	name: string;
 	private model: string;
 
-	constructor(model = "llama3-8b-8192") {
+	constructor(model = "qwen/qwen3.6-27b") {
 		this.model = model;
 		this.name = `Groq (${model})`;
 	}
@@ -23,10 +22,7 @@ export class GroqProvider implements AiSummaryProvider {
 
 		const response = await fetch(API_URL, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${API_KEY}`,
-			},
+			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				model: this.model,
 				messages,
@@ -37,11 +33,12 @@ export class GroqProvider implements AiSummaryProvider {
 
 		if (!response.ok) {
 			const err = await response.json().catch(() => ({}));
-			throw new Error(err?.error?.message ?? `Groq error ${response.status}`);
+			throw new Error(err?.detail ?? err?.error?.message ?? `Groq error ${response.status}`);
 		}
 
 		const data = await response.json();
-		const output: string = data?.choices?.[0]?.message?.content ?? "";
+		const raw: string = data?.choices?.[0]?.message?.content ?? "";
+		const output = raw.replace(/<think>[\s\S]*?<\/think>\s*/g, "").trim();
 
 		if (!output) throw new Error("Groq returned an empty response");
 
