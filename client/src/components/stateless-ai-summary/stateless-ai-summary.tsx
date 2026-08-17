@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { marked } from "marked";
 import styles from "./stateless-ai-summary.module.scss";
 
 export type AiSummaryOutput = {
@@ -21,6 +23,11 @@ export function StatelessAiSummary({
 }: StatelessAiSummaryProps) {
 	const classes = [styles.content, className].filter(Boolean).join(" ");
 
+	const html = useMemo(() => {
+		if (!result?.output) return "";
+		return marked.parse(result.output, { async: false }) as string;
+	}, [result?.output]);
+
 	return (
 		<div className={classes} data-testid="ai-summary-content">
 			{loading && (
@@ -36,7 +43,10 @@ export function StatelessAiSummary({
 			)}
 			{result && !loading && (
 				<div className={styles.result}>
-					<div className={styles.output}>{result.output}</div>
+					<div
+						className={styles.output}
+						dangerouslySetInnerHTML={{ __html: html }}
+					/>
 				</div>
 			)}
 		</div>

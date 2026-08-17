@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EpubReader, type EpubPage, type EpubReaderConfig } from "../../../components";
+import { FreeAiSummary } from "../../ai-summary";
 import { FreeDictionary } from "../../dictionary";
 import { FreeTranslator } from "../../translator";
 import { useEpubStore } from "../store/epub-store";
@@ -18,7 +19,7 @@ const POPUP_WIDTH = 380;
 const POPUP_MAX_HEIGHT = 350;
 const POPUP_GAP = 4;
 const CONTEXT_MENU_WIDTH = 160;
-const CONTEXT_MENU_HEIGHT = 80;
+const CONTEXT_MENU_HEIGHT = 120;
 
 function clampPopup(
 	rawX: number,
@@ -59,6 +60,7 @@ export function Epub({
 		showContextMenu,
 		showDictionary,
 		showTranslator,
+		showAiSummary,
 		clearSelection,
 	} = useEpubStore();
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -154,6 +156,13 @@ export function Epub({
 				>
 					Translate
 				</button>
+				<button
+					type="button"
+					className={styles.contextMenuItem}
+					onClick={() => showAiSummary()}
+				>
+					Summary with AI
+				</button>
 			</div>
 		);
 	}
@@ -174,7 +183,7 @@ export function Epub({
 				className={styles.popup}
 				style={{ left: pos.left, top: pos.top }}
 			>
-				<FreeDictionary word={selectedText} className={styles.popupContent} />
+				<FreeDictionary word={selectedText.toLowerCase()} className={styles.popupContent} />
 			</div>
 		);
 	}
@@ -196,6 +205,31 @@ export function Epub({
 				style={{ left: pos.left, top: pos.top }}
 			>
 				<FreeTranslator text={selectedText} className={styles.popupContent} />
+			</div>
+		);
+	}
+
+	if (selectedText && popupPosition && view === "ai-summary") {
+		const pos = clampPopup(
+			popupPosition.x,
+			popupPosition.y,
+			storedWordTop,
+			storedContainerW,
+			storedContainerH,
+			POPUP_WIDTH,
+			POPUP_MAX_HEIGHT,
+		);
+		popupContent = (
+			<div
+				ref={popupRef}
+				className={styles.popup}
+				style={{ left: pos.left, top: pos.top }}
+			>
+				<FreeAiSummary
+					systemPrompt="Bro, i will input you a selected text, you just needa summary its content for me. Format your output in markdown."
+					userInput={selectedText}
+					className={styles.popupContent}
+				/>
 			</div>
 		);
 	}

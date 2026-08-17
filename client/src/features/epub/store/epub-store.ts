@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type EpubView = "context-menu" | "dictionary" | "translator";
+type EpubView = "context-menu" | "dictionary" | "translator" | "ai-summary";
 
 type EpubState = {
 	selectedText: string | null;
@@ -18,6 +18,7 @@ type EpubState = {
 	) => void;
 	showDictionary: () => void;
 	showTranslator: () => void;
+	showAiSummary: () => void;
 	clearSelection: () => void;
 };
 
@@ -31,7 +32,7 @@ export const useEpubStore = create<EpubState>((set) => ({
 
 	showContextMenu: (text, position, wordTop, containerWidth, containerHeight) => {
 		set({
-			selectedText: text.trim().toLowerCase(),
+			selectedText: text.trim(),
 			view: "context-menu",
 			popupPosition: position,
 			wordTop,
@@ -46,6 +47,10 @@ export const useEpubStore = create<EpubState>((set) => ({
 
 	showTranslator: () => {
 		set({ view: "translator" });
+	},
+
+	showAiSummary: () => {
+		set({ view: "ai-summary" });
 	},
 
 	clearSelection: () => {
