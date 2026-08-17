@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EpubReader, type EpubPage, type EpubReaderConfig } from "../../../components";
 import { FreeDictionary } from "../../dictionary";
+import { FreeTranslator } from "../../translator";
 import { useEpubStore } from "../store/epub-store";
 import styles from "./epub.module.scss";
 
@@ -57,6 +58,7 @@ export function Epub({
 		containerHeight: storedContainerH,
 		showContextMenu,
 		showDictionary,
+		showTranslator,
 		clearSelection,
 	} = useEpubStore();
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -148,7 +150,7 @@ export function Epub({
 				<button
 					type="button"
 					className={styles.contextMenuItem}
-					onClick={() => {}}
+					onClick={() => showTranslator()}
 				>
 					Translate
 				</button>
@@ -173,6 +175,27 @@ export function Epub({
 				style={{ left: pos.left, top: pos.top }}
 			>
 				<FreeDictionary word={selectedText} className={styles.popupContent} />
+			</div>
+		);
+	}
+
+	if (selectedText && popupPosition && view === "translator") {
+		const pos = clampPopup(
+			popupPosition.x,
+			popupPosition.y,
+			storedWordTop,
+			storedContainerW,
+			storedContainerH,
+			POPUP_WIDTH,
+			POPUP_MAX_HEIGHT,
+		);
+		popupContent = (
+			<div
+				ref={popupRef}
+				className={styles.popup}
+				style={{ left: pos.left, top: pos.top }}
+			>
+				<FreeTranslator text={selectedText} className={styles.popupContent} />
 			</div>
 		);
 	}

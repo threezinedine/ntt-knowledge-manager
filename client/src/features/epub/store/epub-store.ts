@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type EpubView = "context-menu" | "dictionary";
+type EpubView = "context-menu" | "dictionary" | "translator";
 
 type EpubState = {
 	selectedText: string | null;
@@ -17,6 +17,7 @@ type EpubState = {
 		containerHeight: number,
 	) => void;
 	showDictionary: () => void;
+	showTranslator: () => void;
 	clearSelection: () => void;
 };
 
@@ -41,6 +42,10 @@ export const useEpubStore = create<EpubState>((set) => ({
 
 	showDictionary: () => {
 		set({ view: "dictionary" });
+	},
+
+	showTranslator: () => {
+		set({ view: "translator" });
 	},
 
 	clearSelection: () => {
