@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProtectedRoute, ThemeProvider, ToastContainer } from "./features";
-import { Home, Login, NotFound, Settings, Workspace } from "./pages";
+import { Home, Login, NotFound, Settings, Workspace, TodoPage } from "./pages";
 
 function getRoute(): string {
 	return window.location.hash.replace(/^#\/?/, "");
@@ -37,6 +37,14 @@ function AppContent() {
 		return (
 			<ProtectedRoute>
 				<Workspace />
+			</ProtectedRoute>
+		);
+	}
+
+	if (route === "todo") {
+		return (
+			<ProtectedRoute>
+				<TodoPage />
 			</ProtectedRoute>
 		);
 	}
