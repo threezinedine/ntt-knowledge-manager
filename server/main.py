@@ -14,6 +14,7 @@ from server.features.login.middleware import require_login
 from server.features.node.node import router as nodes_router
 from server.features.settings.settings import router as settings_router
 from server.features.vocabulary.vocabulary import router as vocabulary_router
+from server.features.chunks.chunks import router as chunks_router
 
 
 @asynccontextmanager
@@ -59,6 +60,7 @@ api.include_router(login_router)
 api.include_router(nodes_router)
 api.include_router(settings_router)
 api.include_router(vocabulary_router)
+api.include_router(chunks_router)
 app.include_router(api)
 app.mount(
     "/",
