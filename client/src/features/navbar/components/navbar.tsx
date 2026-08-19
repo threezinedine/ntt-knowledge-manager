@@ -52,11 +52,11 @@ export function Navbar({
 
 	const accountItems: DropdownItem[] = [
 		{
-			id: "settings",
-			label: "Settings",
-			icon: "fa-solid fa-gear",
+			id: "todo",
+			label: "Todo",
+			icon: "fa-solid fa-list-check",
 			onSelect: () => {
-				window.location.hash = "#/settings";
+				window.location.hash = "#/todo";
 			},
 		},
 		{
@@ -65,6 +65,14 @@ export function Navbar({
 			icon: "fa-solid fa-diagram-project",
 			onSelect: () => {
 				window.location.hash = "#/workspace";
+			},
+		},
+		{
+			id: "settings",
+			label: "Settings",
+			icon: "fa-solid fa-gear",
+			onSelect: () => {
+				window.location.hash = "#/settings";
 			},
 		},
 		{ id: "account-separator", separator: true },
