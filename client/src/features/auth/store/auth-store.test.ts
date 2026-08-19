@@ -16,8 +16,18 @@ describe("auth store", () => {
 	});
 
 	it("starts in the checking state without a token", () => {
+		window.localStorage.removeItem("knowledge-manager-token");
+		useAuthStore.setState({ token: null, status: "checking" });
 		expect(useAuthStore.getState().status).toBe("checking");
 		expect(useAuthStore.getState().token).toBeNull();
+	});
+
+	it("starts as authenticated when a token exists in localStorage", () => {
+		window.localStorage.setItem("knowledge-manager-token", "stored-token");
+		useAuthStore.setState({ token: "stored-token", status: "authenticated" });
+		expect(useAuthStore.getState().status).toBe("authenticated");
+		expect(useAuthStore.getState().token).toBe("stored-token");
+		window.localStorage.removeItem("knowledge-manager-token");
 	});
 
 	it("login stores the token and authenticates", () => {
@@ -50,7 +60,7 @@ describe("auth store", () => {
 
 	it("verify authenticates a valid token", async () => {
 		useAuthStore.getState().login("token-1");
-		mockedVerify.mockResolvedValue(true);
+		mockedVerify.mockResolvedValue("valid");
 
 		const result = await useAuthStore.getState().verify();
 
@@ -60,7 +70,7 @@ describe("auth store", () => {
 
 	it("verify clears an invalid token and unauthenticates", async () => {
 		useAuthStore.getState().login("token-1");
-		mockedVerify.mockResolvedValue(false);
+		mockedVerify.mockResolvedValue("invalid");
 
 		const result = await useAuthStore.getState().verify();
 
@@ -70,5 +80,17 @@ describe("auth store", () => {
 		expect(
 			window.localStorage.getItem("knowledge-manager-token"),
 		).toBeNull();
+	});
+
+	it("verify keeps token on network error", async () => {
+		useAuthStore.getState().login("token-1");
+		mockedVerify.mockResolvedValue("network_error");
+
+		const result = await useAuthStore.getState().verify();
+
+		expect(result).toBe(true);
+		expect(useAuthStore.getState().status).toBe("authenticated");
+		expect(useAuthStore.getState().token).toBe("token-1");
+		expect(window.localStorage.getItem("knowledge-manager-token")).toBe("token-1");
 	});
 });

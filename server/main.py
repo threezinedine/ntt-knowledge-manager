@@ -17,6 +17,10 @@ from server.features.vocabulary.vocabulary import router as vocabulary_router
 from server.features.ai.ai import router as ai_router
 from server.features.chunks.chunks import router as chunks_router
 from server.features.epub.epub import router as epub_router
+from server.features.todos.period_types import router as period_types_router
+from server.features.todos.categories import router as categories_router
+from server.features.todos.task_templates import router as task_templates_router
+from server.features.todos.tasks import router as tasks_router
 
 
 @asynccontextmanager
@@ -65,6 +69,10 @@ api.include_router(vocabulary_router)
 api.include_router(chunks_router)
 api.include_router(ai_router)
 api.include_router(epub_router)
+api.include_router(period_types_router)
+api.include_router(categories_router)
+api.include_router(task_templates_router)
+api.include_router(tasks_router)
 app.include_router(api)
 app.mount(
     "/",

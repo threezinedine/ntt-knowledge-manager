@@ -14,7 +14,7 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
 	token: getStoredToken(),
-	status: "checking",
+	status: getStoredToken() ? "authenticated" : "checking",
 	login: (token) => {
 		storeToken(token);
 		set({ token, status: "authenticated" });
@@ -30,13 +30,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 			return false;
 		}
 
-		const valid = await verifyTokenWithServer(token);
-		if (valid) {
+		const result = await verifyTokenWithServer(token);
+		if (result === "valid") {
 			set({ status: "authenticated" });
-		} else {
-			clearToken();
-			set({ token: null, status: "unauthenticated" });
+			return true;
 		}
-		return valid;
+		if (result === "network_error") {
+			set({ status: "authenticated" });
+			return true;
+		}
+		clearToken();
+		set({ token: null, status: "unauthenticated" });
+		return false;
 	},
 }));
