@@ -34,4 +34,6 @@ export { StatelessAiSummary } from "./stateless-ai-summary";
 export type { AiSummaryOutput, AiChatMessage, FollowUpButton } from "./stateless-ai-summary";
 export { StatelessAiSummarySearch } from "./stateless-ai-summary-search";
 export type { StatelessAiSummarySearchHandle } from "./stateless-ai-summary-search";
+export { StatelessEpubList } from "./stateless-epub-list";
+export type { EpubItem } from "./stateless-epub-list";
 export type { Size, Variant } from "./common";

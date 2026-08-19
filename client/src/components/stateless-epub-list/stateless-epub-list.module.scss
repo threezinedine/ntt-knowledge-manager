@@ -1,0 +1,131 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+
+.container {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+.empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: $muted;
+	font-size: 0.875rem;
+}
+
+.error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem 1rem;
+	color: var(--color-error, #e53e3e);
+	font-size: 0.875rem;
+}
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.item {
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid $border;
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+.itemBody {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	border: none;
+	background: none;
+	color: $foreground;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition: background 0.15s ease;
+
+	&:hover {
+		background: color-mix(in srgb, $foreground 4%, $surface);
+	}
+}
+
+.bookIcon {
+	font-size: 1.5rem;
+	flex-shrink: 0;
+	width: 2.5rem;
+	height: 2.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	background: color-mix(in srgb, $accent 8%, $surface);
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	min-width: 0;
+}
+
+.name {
+	font-size: 0.9375rem;
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.meta {
+	font-size: 0.75rem;
+	color: $muted;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	margin-right: 0.75rem;
+	flex-shrink: 0;
+}
+
+.actionBtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: none;
+	color: $muted;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+
+	&:hover {
+		background: color-mix(in srgb, $accent 10%, $surface);
+		color: $foreground;
+	}
+
+	&[data-danger]:hover {
+		background: color-mix(in srgb, var(--color-error, #e53e3e) 12%, $surface);
+		color: var(--color-error, #e53e3e);
+	}
+}
