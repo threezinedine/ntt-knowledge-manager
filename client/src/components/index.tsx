@@ -39,3 +39,5 @@ export type { EpubItem } from "./stateless-epub-list";
 export type { Size, Variant } from "./common";
 export { StatelessTaskList } from "./stateless-task-list";
 export type { TaskItem, TaskFilter } from "./stateless-task-list";
+export { StatelessPomodoro } from "./stateless-pomodoro";
+export type { PomodoroMode, PomodoroState } from "./stateless-pomodoro";

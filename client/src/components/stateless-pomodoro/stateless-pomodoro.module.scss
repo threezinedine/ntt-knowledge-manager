@@ -1,0 +1,161 @@
+$surface: var(--color-surface);
+$border: var(--color-border);
+$foreground: var(--color-foreground);
+$muted: var(--color-muted-fg);
+$accent: var(--color-accent);
+$bg: var(--color-background);
+
+$working: #ef4444;
+$short-break: #22c55e;
+$long-break: #3b82f6;
+
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5rem;
+	padding: 2rem;
+	border-radius: 12px;
+	background: $surface;
+	border: 1px solid $border;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+// ── Mode bar ─────────────────────────────────────────────────────────────────
+
+.modeBar {
+	display: flex;
+	gap: 0.25rem;
+	padding: 0.25rem;
+	background: $bg;
+	border-radius: 24px;
+	border: 1px solid $border;
+}
+
+.modeTab {
+	padding: 0.4rem 1rem;
+	border: none;
+	border-radius: 20px;
+	background: transparent;
+	color: $muted;
+	font-size: 0.8rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s;
+
+	&:hover:not(:disabled) {
+		color: $foreground;
+		background: color-mix(in srgb, $foreground 6%, transparent);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+.modeTabActive {
+	font-weight: 600;
+
+	[data-mode="working"] & {
+		background: color-mix(in srgb, $working 15%, transparent);
+		color: $working;
+	}
+
+	[data-mode="short_break"] & {
+		background: color-mix(in srgb, $short-break 15%, transparent);
+		color: $short-break;
+	}
+
+	[data-mode="long_break"] & {
+		background: color-mix(in srgb, $long-break 15%, transparent);
+		color: $long-break;
+	}
+}
+
+// ── Task name ────────────────────────────────────────────────────────────────
+
+.taskName {
+	font-size: 1rem;
+	font-weight: 500;
+	color: $foreground;
+	text-align: center;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+// ── Timer ────────────────────────────────────────────────────────────────────
+
+.timer {
+	font-size: 4rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+	line-height: 1;
+
+	[data-mode="working"] & {
+		color: $working;
+	}
+
+	[data-mode="short_break"] & {
+		color: $short-break;
+	}
+
+	[data-mode="long_break"] & {
+		color: $long-break;
+	}
+}
+
+// ── Controls ─────────────────────────────────────────────────────────────────
+
+.controls {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.primaryBtn {
+	padding: 0.6rem 2rem;
+	border: none;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #fff;
+	cursor: pointer;
+	transition: opacity 0.15s;
+
+	[data-mode="working"] & {
+		background: $working;
+	}
+
+	[data-mode="short_break"] & {
+		background: $short-break;
+	}
+
+	[data-mode="long_break"] & {
+		background: $long-break;
+	}
+
+	&:hover {
+		opacity: 0.85;
+	}
+}
+
+.secondaryBtn {
+	padding: 0.6rem 1.25rem;
+	border: 1px solid $border;
+	border-radius: 8px;
+	background: transparent;
+	color: $muted;
+	font-size: 0.95rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s;
+
+	&:hover {
+		color: $foreground;
+		border-color: $foreground;
+	}
+}
