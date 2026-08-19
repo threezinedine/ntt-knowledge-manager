@@ -1,6 +1,6 @@
 # Knowledge Manager
 
-A full-stack knowledge management app with a FastAPI backend and React + Electron frontend. Features include node-based knowledge graphs, vocabulary/dictionary lookup, todo/task management with recurring templates, user settings, and authentication.
+A full-stack knowledge management app with a FastAPI backend and React + Electron frontend. Features include node-based knowledge graphs, vocabulary/dictionary lookup, user settings, and authentication.
 
 ## Architecture
 
@@ -18,13 +18,11 @@ A full-stack knowledge management app with a FastAPI backend and React + Electro
 - `server/features/node/` — Knowledge nodes: CRUD, hierarchical parent-child relationships
 - `server/features/settings/` — User settings: key-value store
 - `server/features/vocabulary/` — Vocabulary manager: word lookup via dictionary API, search tracking, CRUD
-- `server/features/todos/` — Todo system: period types, categories, task templates (recurring), tasks; split across four router files (`period_types.py`, `categories.py`, `task_templates.py`, `tasks.py`)
-- `server/migrations/versions/` — Alembic migration files (numbered `0001_` through `0006_`)
+- `server/migrations/versions/` — Alembic migration files (numbered `0001_` through `0005_`)
 - `server/tests/` — pytest tests using in-memory SQLite
 
 ### Client structure
-- `client/src/components/` — Reusable UI components (avatar, button, card, command-palette, dropdown, editor, editor-preview, epub-reader, form, list, modal, stateless-graph, stateless-navbar, stateless-dictionary, stateless-dropdown, stateless-task-list, stateless-toggle-button, tab-space, toast-message, toggle-button)
-- `client/src/components/form/fields/` — Form field components (text, textarea, number, select, combobox, multi-select, radio, slider)
+- `client/src/components/` — Reusable UI components (button, editor, list, modal, stateless-graph, stateless-navbar, stateless-dictionary, stateless-dropdown, tab-space, toast-message, toggle-button)
 - `client/src/features/` — Stateful feature modules:
   - `auth/` — Authentication store, API calls, protected route component
   - `navbar/` — Navigation bar component
@@ -33,8 +31,7 @@ A full-stack knowledge management app with a FastAPI backend and React + Electro
   - `settings/` — Settings API and store
   - `avatar-upload/` — Avatar upload API, component, and store
   - `toast/` — Toast notification system with store
-  - `todo/` — Todo/task management: APIs, store, and components
-- `client/src/pages/` — Page components: home, login, workspace, settings, todo, not-found
+- `client/src/pages/` — Page components: home, login, workspace, settings, not-found
 - `client/src/icons/` — SVG icon components (add, error, info, speaker, success, warn)
 - `client/src/components/stateless-graph/engine/` — Canvas-based graph rendering engine with tween animations
 - Routing: hash-based (`window.location.hash`), implemented in `App.tsx`
@@ -47,10 +44,6 @@ All routes are prefixed with `/api`:
 - `/api/nodes/` — Knowledge node CRUD
 - `/api/settings/` — User settings CRUD
 - `/api/vocabulary/` — Vocabulary CRUD with dictionary lookup
-- `/api/todos/period-types/` — Period type CRUD (interval-based and weekly scheduling)
-- `/api/todos/categories/` — Task category CRUD
-- `/api/todos/templates/` — Task template CRUD with spawn endpoint to create tasks from templates
-- `/api/todos/tasks/` — Task CRUD with filtering by status, category, priority, and date range
 
 ## Development
 
@@ -102,13 +95,13 @@ python serve.py          # serve dashboard at localhost
 
 ### Database migrations
 ```bash
-# Create new migration (number sequentially: 0007_, 0008_, etc.)
+# Create new migration (number sequentially: 0006_, 0007_, etc.)
 .venv/bin/alembic revision -m "description"
 # Apply migrations (also runs automatically on server startup)
 .venv/bin/alembic upgrade head
 ```
 
-Current migrations: initial schema → parent_node_id → settings table → settings value to text → vocabulary table → todos tables (period_types, categories, task_templates, tasks, association tables)
+Current migrations: initial schema → parent_node_id → settings table → settings value to text → vocabulary table
 
 ## Conventions
 
@@ -147,8 +140,6 @@ feature-name/
   model.py               # SQLAlchemy model
   schemas.py             # Pydantic request/response schemas
 ```
-
-The `todos` feature is an exception: it has multiple router files (`period_types.py`, `categories.py`, `task_templates.py`, `tasks.py`) sharing a single `model.py` and `schemas.py`, each registered separately in `main.py`.
 
 ### Server test pattern
 Tests use an in-memory SQLite database via the `db_session` and `client` fixtures in `server/tests/conftest.py`. The `APP_ENV=test` env var loads `.test.env`.
